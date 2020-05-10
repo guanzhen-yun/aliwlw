@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <View
+        android:id="@+id/view_green"
+        android:layout_width="3dp"
+        android:layout_height="15dp"
+        android:layout_centerVertical="true"
+        android:background="#00ff00" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@id/view_green"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="美的"
+        android:textColor="#000000" />
+
+</RelativeLayout>

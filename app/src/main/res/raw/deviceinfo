@@ -1,0 +1,16 @@
+{
+    "productKey": "a1DyFgDz1iX",
+    "deviceName": "jigui",
+    "productSecret": "r6XU9xehSy9yTIQs",
+    "deviceSecret": "JbkWMkz6OajGZzyOFcnJeG6RKBuZAKvU",
+    "subDevice": [
+      {
+          "productKey": "",
+          "deviceName": ""
+      },
+      {
+        "productKey": "",
+        "deviceName": ""
+    }
+  ]
+}
