@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -25,7 +26,7 @@ import com.ali.alisimulate.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeImageViewCycle extends FrameLayout {
+public class TopViewCycle extends FrameLayout {
     /**
      * 上下文
      */
@@ -87,13 +88,13 @@ public class HomeImageViewCycle extends FrameLayout {
     private CyclePageChangeListener mListener;
 
 
-    public HomeImageViewCycle(Context context) {
+    public TopViewCycle(Context context) {
         super(context);
         init(context);
     }
 
 
-    public HomeImageViewCycle(Context context, AttributeSet attrs) {
+    public TopViewCycle(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
@@ -119,7 +120,7 @@ public class HomeImageViewCycle extends FrameLayout {
         View.inflate(mContext, R.layout.view_cycle, this);
         FrameLayout fl_cycle = findViewById(R.id.fl_cycle);
         mViewPager = new CycleViewPager(mContext);
-        mViewPager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mViewPager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         fl_cycle.addView(mViewPager);
         mListener = new CyclePageChangeListener();
         mViewPager.setOnPageChangeListener(mListener);
@@ -391,13 +392,17 @@ public class HomeImageViewCycle extends FrameLayout {
     private class CycleAdapter extends PagerAdapter {
 
         @Override
-        public Object instantiateItem(ViewGroup container, final int position) {
+        public Object instantiateItem(ViewGroup container, int position) {
             View view = View.inflate(mContext, R.layout.item_banner, null);
-            Button btn = view.findViewById(R.id.btn);
+            position = position % mCount;
+            TextView tv_test = view.findViewById(R.id.tv_name);
+            tv_test.setText(data.get(position));
+            TextView tv_look = view.findViewById(R.id.tv_look);
             // 设置图片点击监听
-            btn.setOnClickListener(v -> {
+            int finalPosition = position;
+            tv_look.setOnClickListener(v -> {
                 if (mOnPageClickListener != null) {
-                    mOnPageClickListener.onClick(position);
+                    mOnPageClickListener.onClick(finalPosition);
                 }
             });
             container.addView(view);

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ali.alisimulate.R;
@@ -24,8 +25,15 @@ public class DropDownPop {
         if(activity != null) {
             @SuppressLint("InflateParams")
             View popView = LayoutInflater.from(activity).inflate(R.layout.view_popup_fromdown, null);
+            RelativeLayout rl_body = popView.findViewById(R.id.rl_body);
+            rl_body.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    hidePop();
+                }
+            });
             mPopupWindow = new PopupWindow(popView, ViewGroup.LayoutParams.MATCH_PARENT,//添加一个布局
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                    ViewGroup.LayoutParams.MATCH_PARENT);
             mPopupWindow.setFocusable(true);//获取焦点
             mPopupWindow.setOutsideTouchable(false);
             mPopupWindow.setBackgroundDrawable(null);

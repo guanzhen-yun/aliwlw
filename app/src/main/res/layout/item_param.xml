@@ -1,5 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
+    <RelativeLayout
+        android:id="@+id/rl_top"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="109dp"
+            android:paddingLeft="15dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="故障上报" />
+
+        <RelativeLayout
+            android:id="@+id/rl_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#10000000"
+            android:layout_marginRight="15dp"
+            android:layout_toRightOf="@id/tv_name">
+
+            <EditText
+                android:id="@+id/tv_prop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:textSize="13sp"
+                android:paddingLeft="10dp"
+                android:text="0（恢复正常）" />
+
+            <ImageView
+                android:id="@+id/iv_select"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:background="@mipmap/ic_launcher"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/tv_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:text="μg/m³"
+                />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rl_top"
+        android:layout_marginLeft="109dp"
+        android:layout_marginTop="3dp"
+        android:text="int32型，范围：0～500，步长1"
+        android:textColor="#ff0000"
+        android:textSize="12sp" />
 </RelativeLayout>

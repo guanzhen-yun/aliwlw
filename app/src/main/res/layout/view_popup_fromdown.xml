@@ -1,6 +1,275 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+  android:id="@+id/rl_body"
+  >
 
-</LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bg_radius_4">
+
+        <TextView
+            android:id="@+id/tv_pp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:text="品牌： "
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_pp_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_toRightOf="@id/tv_pp"
+            android:text="海尔"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_xh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_pp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:text="型号： "
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_xh_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_pp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/tv_xh"
+            android:text="PF-001"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_lx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_xh"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:text="类型： "
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_lx_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_xh"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/tv_xh"
+            android:text="活性炭"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_dn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_lx"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="14dp"
+            android:text="DeviceName:"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <RelativeLayout
+            android:id="@+id/rl_dn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/tv_dn"
+            android:layout_marginRight="20dp"
+            android:layout_below="@id/tv_lx"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
+            android:background="#10000000"
+            >
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_devicename"
+                android:text="YjAhIDS6UFGhZsktLe"
+                android:background="@null"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:textSize="16sp"
+                />
+
+            <ImageView
+                android:layout_centerVertical="true"
+                android:id="@+id/iv_scan"
+                android:layout_marginRight="10dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:background="@mipmap/ic_launcher" />
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/tv_ky"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_dn"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="26dp"
+            android:text="预计可用:"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <RelativeLayout
+            android:id="@+id/rl_ky"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/rl_dn"
+            android:layout_marginRight="20dp"
+            android:layout_below="@id/tv_dn"
+            android:layout_marginTop="20dp"
+            android:background="#10000000"
+            >
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_kyname"
+                android:text="40"
+                android:background="@null"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:textSize="16sp"
+                />
+
+            <TextView
+                android:layout_centerVertical="true"
+                android:id="@+id/tv_unit"
+                android:layout_marginRight="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="天"
+                android:layout_centerInParent="true"
+                android:layout_alignParentRight="true"
+                />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_tip_yj"
+            android:layout_alignLeft="@id/rl_dn"
+            android:layout_below="@id/rl_ky"
+            android:text="double型，范围：0～1100，步长0.01"
+            android:textSize="12sp"
+            android:textColor="#ff0000"
+            />
+
+        <TextView
+            android:id="@+id/tv_sy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_tip_yj"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="13dp"
+            android:text="剩余:"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <RelativeLayout
+            android:id="@+id/rl_sy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/rl_dn"
+            android:layout_marginRight="20dp"
+            android:layout_below="@id/tv_tip_yj"
+            android:layout_marginTop="10dp"
+            android:background="#10000000"
+            >
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_syname"
+                android:text="20"
+                android:background="@null"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:textSize="16sp"
+                />
+
+            <TextView
+                android:layout_centerVertical="true"
+                android:id="@+id/tv_syunit"
+                android:layout_marginRight="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="%"
+                android:layout_centerInParent="true"
+                android:layout_alignParentRight="true"
+                />
+        </RelativeLayout>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_tip_sy"
+            android:layout_alignLeft="@id/rl_dn"
+            android:layout_below="@id/rl_sy"
+            android:text="int32型，范围：0～100，步长1"
+            android:textSize="12sp"
+            android:textColor="#ff0000"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:text="取消"
+            android:id="@+id/tv_cancel"
+            android:background="@drawable/bg_green_2dp"
+            android:gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_below="@id/tv_tip_sy"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:text="确定"
+            android:id="@+id/tv_ok"
+            android:background="@drawable/bg_greenn_2dp"
+            android:gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="15dp"
+            android:textColor="#ffffff"
+            android:layout_marginBottom="20dp"
+            android:layout_below="@id/tv_cancel"
+            />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

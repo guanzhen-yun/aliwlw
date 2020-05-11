@@ -82,7 +82,6 @@ public class DesignAdapter extends RecyclerView.Adapter {
         return mData.size();
     }
 
-    //缓存View 内存友好设计
     public class DesignViewHolder extends RecyclerView.ViewHolder {
         private TextView mTv1;
         private TextView mTv2;

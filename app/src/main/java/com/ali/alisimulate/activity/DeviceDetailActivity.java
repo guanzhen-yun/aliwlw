@@ -15,15 +15,20 @@ import androidx.viewpager.widget.ViewPager;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.fragment.ControlFragment;
 import com.ali.alisimulate.fragment.ParamFragment;
+import com.ali.alisimulate.util.ToastUtils;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 设备详情
+ */
 public class DeviceDetailActivity extends FragmentActivity {
     private List<Fragment> fragmentList = new ArrayList<Fragment>();
     private String[] strings = new String[]{"控制","参数设置"};
     private ImageView iv_close;
+    private ImageView iv_back;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,10 +37,17 @@ public class DeviceDetailActivity extends FragmentActivity {
         fragmentList.add(new ControlFragment());
         fragmentList.add(new ParamFragment());
         initView();
+        iv_back = findViewById(R.id.iv_back);
+        iv_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO关闭设备
+                ToastUtils.showToast("关闭设备");
             }
         });
     }
