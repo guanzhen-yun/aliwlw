@@ -1,6 +1,6 @@
-package com.ali.alisimulate.activity.testapi;
+package com.ali.alisimulate.activity.orgmain;
 
-import com.ali.alisimulate.entity.RegistModel;
+import com.ali.alisimulate.entity.LoginSuccess;
 import com.ali.alisimulate.service.AppService;
 import com.ali.alisimulate.util.ToastUtils;
 import com.ziroom.mvp.base.BaseMvpPresenter;
@@ -11,19 +11,14 @@ import com.ziroom.net.exception.ApiException;
 
 import io.reactivex.disposables.Disposable;
 
-/**
- * Author:关震
- * Date:2020/5/11 12:22
- * Description:TestPresenter
- **/
-public class TestPresenter extends BaseMvpPresenter<TestContract.IView> implements TestContract.IPresenter {
-    public TestPresenter(TestContract.IView view) {
+public class OrgMainPresenter extends BaseMvpPresenter<OrgMainContract.IView> implements OrgMainContract.IPresenter {
+    public OrgMainPresenter(OrgMainContract.IView view) {
         super(view);
     }
 
     @Override
-    public void sendMvpRequest(RegistModel registModel) {
-        ApiUtil.getResponseNoBody(ApiUtil.getService(AppService.class).regist(registModel), new OnResponseListener<Result>() {
+    public void getDevice(String productKey) {
+        ApiUtil.getResponseNoBody(ApiUtil.getService(AppService.class).getDevices(productKey), new OnResponseListener<Result>() {
             @Override
             public void onSubscribe(Disposable d) {
                 addDisposable(d);
@@ -31,13 +26,12 @@ public class TestPresenter extends BaseMvpPresenter<TestContract.IView> implemen
 
             @Override
             public void onNext(Result entity) {
-                mView.getResult();
+
             }
 
             @Override
             public void onError(ApiException e) {
-                super.onError(e);
-                ToastUtils.showToast("注册失败" + e.getDisplayMessage());
+//                super.onError(e);
             }
         });
     }

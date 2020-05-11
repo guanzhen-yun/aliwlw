@@ -8,4 +8,7 @@ package com.ali.alisimulate;
 public class Constants {
     public final static String DOMAIN_ALI_KEY = "aliwlw";
     public final static String DOMAIN_ALI_HEADR = "Domain-Name: aliwlw";
+
+    public final static String DOMAIN_ALI2_KEY = "aliwlw2";
+    public final static String DOMAIN_ALI2_HEADR = "Domain-Name: aliwlw2";
 }

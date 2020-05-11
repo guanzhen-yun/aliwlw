@@ -109,6 +109,8 @@ public class MyApp extends Application {
      */
     public static void initNetInfo() {
         RetrofitUrlManager.getInstance().putDomain(Constants.DOMAIN_ALI_KEY, ConfigManager.getInstance().getHost());
+        RetrofitUrlManager.getInstance().putDomain(Constants.DOMAIN_ALI2_KEY, ConfigManager.getInstance().getHost2());
+
     }
 
     private void initAli() {

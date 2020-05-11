@@ -6,45 +6,16 @@ import android.Manifest;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 
-import com.ali.alisimulate.activity.LoginActivity;
-import com.ali.alisimulate.activity.OrgMainActivity;
+import com.ali.alisimulate.activity.login.LoginActivity;
+import com.ali.alisimulate.activity.orgmain.OrgMainActivity;
 import com.ali.alisimulate.activity.ProductActivity;
 import com.ali.alisimulate.activity.testapi.TestActivity;
 import com.ali.alisimulate.util.ToastUtils;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import com.aliyun.alink.dm.api.DeviceInfo;
-import com.aliyun.alink.dm.model.ResponseModel;
-import com.aliyun.alink.linkkit.api.ILinkKitConnectListener;
-import com.aliyun.alink.linkkit.api.IoTDMConfig;
-import com.aliyun.alink.linkkit.api.IoTMqttClientConfig;
 import com.aliyun.alink.linkkit.api.LinkKit;
-import com.aliyun.alink.linkkit.api.LinkKitInitParams;
-import com.aliyun.alink.linksdk.channel.core.persistent.PersistentNet;
-import com.aliyun.alink.linksdk.channel.core.persistent.mqtt.MqttConfigure;
-import com.aliyun.alink.linksdk.channel.core.persistent.mqtt.request.MqttPublishRequest;
-import com.aliyun.alink.linksdk.cmp.connect.hubapi.HubApiRequest;
-import com.aliyun.alink.linksdk.cmp.core.base.AMessage;
-import com.aliyun.alink.linksdk.cmp.core.base.ARequest;
-import com.aliyun.alink.linksdk.cmp.core.base.AResponse;
-import com.aliyun.alink.linksdk.cmp.core.base.ConnectState;
-import com.aliyun.alink.linksdk.cmp.core.listener.IConnectNotifyListener;
-import com.aliyun.alink.linksdk.cmp.core.listener.IConnectSendListener;
-import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
-import com.aliyun.alink.linksdk.tools.AError;
-import com.aliyun.alink.linksdk.tools.ALog;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
-
-import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
-import org.mozilla.javascript.tools.jsc.Main;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -117,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getnet(View view) {
+    public void regist(View view) {
         startActivity(new Intent(MainActivity.this, TestActivity.class));
     }
 }

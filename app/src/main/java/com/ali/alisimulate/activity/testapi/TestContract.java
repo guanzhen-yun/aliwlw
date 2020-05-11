@@ -1,5 +1,6 @@
 package com.ali.alisimulate.activity.testapi;
 
+import com.ali.alisimulate.entity.RegistModel;
 import com.ziroom.mvp.ILifeCircle;
 import com.ziroom.mvp.IMvpView;
 
@@ -8,10 +9,10 @@ import com.ziroom.mvp.IMvpView;
  **/
 public interface TestContract {
     interface IView extends IMvpView {
-        void getMvpResult(String result);
+        void getResult();
     }
 
     interface IPresenter extends ILifeCircle {
-        void sendMvpRequest();
+        void sendMvpRequest(RegistModel registModel);
     }
 }

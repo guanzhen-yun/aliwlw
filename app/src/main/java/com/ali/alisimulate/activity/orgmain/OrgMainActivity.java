@@ -1,52 +1,93 @@
-package com.ali.alisimulate.activity;
+package com.ali.alisimulate.activity.orgmain;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.R;
+import com.ali.alisimulate.activity.AddDeviceActivity;
+import com.ali.alisimulate.activity.DeviceDetailActivity;
 import com.ali.alisimulate.adapter.PopDeviceListAdapter;
 import com.ali.alisimulate.dialog.BottomTwoButtonDialog;
 import com.ali.alisimulate.dialog.SecondWCodeDialog;
+import com.ziroom.base.BaseActivity;
+import com.ziroom.base.ViewInject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrgMainActivity extends Activity {
-    private ImageView iv_code;
-    private RelativeLayout rl_device;
-    private TextView tv_device;
-    private ImageView iv_loginout;
-    private RelativeLayout rl_body;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+@ViewInject(layoutId = R.layout.activity_orgmain)
+public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements OrgMainContract.IView {
+
+    @BindView(R.id.tv_username)
+    TextView tvUsername;
+    @BindView(R.id.tv_companyname)
+    TextView tvCompanyname;
+    @BindView(R.id.iv_loginout)
+    ImageView ivLoginout;
+    @BindView(R.id.iv_arrow)
+    ImageView ivArrow;
+    @BindView(R.id.tv_device)
+    TextView tvDevice;
+    @BindView(R.id.rl_device)
+    RelativeLayout rlDevice;
+    @BindView(R.id.ll_none)
+    LinearLayout llNone;
+    @BindView(R.id.iv_code)
+    ImageView ivCode;
+    @BindView(R.id.rb_net)
+    RadioButton rbNet;
+    @BindView(R.id.rb_unnet)
+    RadioButton rbUnnet;
+    @BindView(R.id.rg_net)
+    RadioGroup rgNet;
+    @BindView(R.id.tv_devicename)
+    TextView tvDevicename;
+    @BindView(R.id.tv_devicekey)
+    TextView tvDevicekey;
+    @BindView(R.id.tv_alias)
+    TextView tvAlias;
+    @BindView(R.id.tv_status)
+    TextView tvStatus;
+    @BindView(R.id.rl_body)
+    RelativeLayout rlBody;
+    @BindView(R.id.iv_addDevice)
+    ImageView ivAddDevice;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_orgmain);
-        rl_body = findViewById(R.id.rl_body);
-        rl_body.setOnClickListener(new View.OnClickListener() {
+    public void initDatas() {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                mPresenter.getDevice("a1DyFgDz1iX");
+            }
+        });
+    }
+
+    @Override
+    public void initViews() {
+        rlBody.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(OrgMainActivity.this, DeviceDetailActivity.class));
             }
         });
-        iv_code = findViewById(R.id.iv_code);
-        iv_loginout = findViewById(R.id.iv_loginout);
-        tv_device = findViewById(R.id.tv_device);
-        iv_loginout.setOnClickListener(new View.OnClickListener() {
+        ivLoginout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 BottomTwoButtonDialog dialog = new BottomTwoButtonDialog(OrgMainActivity.this);
@@ -65,7 +106,7 @@ public class OrgMainActivity extends Activity {
                 dialog.show();
             }
         });
-        iv_code.setOnClickListener(new View.OnClickListener() {
+        ivCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SecondWCodeDialog dialog = new SecondWCodeDialog(OrgMainActivity.this);
@@ -73,8 +114,7 @@ public class OrgMainActivity extends Activity {
             }
         });
 
-        rl_device = findViewById(R.id.rl_device);
-        rl_device.setOnClickListener(new View.OnClickListener() {
+        rlDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LayoutInflater mLayoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -83,7 +123,7 @@ public class OrgMainActivity extends Activity {
                 PopupWindow pw = new PopupWindow(menuView, RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.WRAP_CONTENT);
                 pw.setOutsideTouchable(true);
-                pw.showAsDropDown(rl_device);
+                pw.showAsDropDown(rlDevice);
                 RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
                 rv_device.setLayoutManager(new LinearLayoutManager(OrgMainActivity.this));
                 List<String> list = new ArrayList<>();
@@ -96,7 +136,7 @@ public class OrgMainActivity extends Activity {
                 adapter.setOnCheckedListener(new PopDeviceListAdapter.OnCheckedListener() {
                     @Override
                     public void onCheck(int position) {
-                        tv_device.setText(list.get(position));
+                        tvDevice.setText(list.get(position));
                         pw.dismiss();
                     }
                 });
@@ -111,8 +151,18 @@ public class OrgMainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK && requestCode == 100) {
+        if (resultCode == RESULT_OK && requestCode == 100) {
             //刷新设备列表
         }
+    }
+
+    @Override
+    public OrgMainPresenter getPresenter() {
+        return new OrgMainPresenter(this);
+    }
+
+    @Override
+    public void getDeviceResult() {
+
     }
 }

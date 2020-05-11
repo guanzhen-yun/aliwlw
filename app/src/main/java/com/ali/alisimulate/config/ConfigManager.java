@@ -27,4 +27,8 @@ public class ConfigManager {
     public String getHost() {
         return BuildConfig.DOMAIN_NAME;
     }
+
+    public String getHost2() {
+        return BuildConfig.DOMAIN_NAME2;
+    }
 }

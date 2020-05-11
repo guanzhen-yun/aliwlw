@@ -46,10 +46,10 @@
         />
 
     <TextView
-        android:onClick="getnet"
+        android:onClick="regist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="获取请求"
+        android:text="注册"
         android:layout_marginTop="10dp"
         android:textSize="25sp"
         android:layout_gravity="center_horizontal"
