@@ -2,7 +2,9 @@ package com.ali.alisimulate;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.view.View;
 import com.ali.alisimulate.activity.LoginActivity;
 import com.ali.alisimulate.activity.OrgMainActivity;
 import com.ali.alisimulate.activity.ProductActivity;
+import com.ali.alisimulate.activity.testapi.TestActivity;
 import com.ali.alisimulate.util.ToastUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
@@ -48,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 100);
+        }
     }
 
     public void jump(View view) {
@@ -109,5 +115,9 @@ public class MainActivity extends AppCompatActivity {
                 ToastUtils.showToast("扫描结果为：" + content);
             }
         }
+    }
+
+    public void getnet(View view) {
+        startActivity(new Intent(MainActivity.this, TestActivity.class));
     }
 }

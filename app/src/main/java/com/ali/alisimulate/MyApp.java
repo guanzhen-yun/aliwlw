@@ -10,6 +10,10 @@ import android.widget.Toast;
 
 import androidx.multidex.MultiDex;
 
+import com.ali.alisimulate.config.ConfigManager;
+import com.ali.alisimulate.config.LogUtils;
+import com.ali.alisimulate.config.ParamsInterceptor;
+import com.ali.alisimulate.config.SSLSocketClient;
 import com.ali.alisimulate.entity.DeviceInfoData;
 import com.ali.alisimulate.util.IDemoCallback;
 import com.ali.alisimulate.util.InitManager;
@@ -30,16 +34,24 @@ import com.aliyun.alink.linksdk.tools.AError;
 import com.aliyun.alink.linksdk.tools.ALog;
 import com.aliyun.alink.linksdk.tools.ThreadTools;
 import com.google.gson.Gson;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.https.HttpsUtils;
+import com.ziroom.net.RetrofitManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import me.jessyan.retrofiturlmanager.RetrofitUrlManager;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 public class MyApp extends Application {
     private static final String TAG = "MyApp";
-
+    private static MyApp app;
     public static Context mAppContext = null;
     public static boolean userDevInfoError = false;
     public static DeviceInfoData mDeviceInfoData = null;
@@ -52,7 +64,54 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        app = this;
         MultiDex.install(this);
+        initAli();
+        RetrofitManager.initClient(getOkhttpClient(), ConfigManager.getInstance().getHost());
+        initNetInfo();
+        initOkhttpUtils();
+    }
+
+    public static MyApp getApp() {
+        return app;
+    }
+
+    /**
+     * 创建OkHttpClient
+     */
+    private static OkHttpClient getOkhttpClient() {
+        HttpLoggingInterceptor.Logger logger =
+                (String message) -> LogUtils.d("OkHttp_Log", message);
+        OkHttpClient.Builder builder = RetrofitUrlManager.getInstance().with(new OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .writeTimeout(20, TimeUnit.SECONDS)
+                .addInterceptor(
+                        new HttpLoggingInterceptor(logger).setLevel(HttpLoggingInterceptor.Level.BODY)));
+//                .addInterceptor(new ParamsInterceptor()));
+
+        if (BuildConfig.DEBUG) {
+            builder.sslSocketFactory(SSLSocketClient.getSSLSocketFactory());
+            builder.hostnameVerifier(SSLSocketClient.getHostnameVerifier());
+        }
+        return builder.build();
+    }
+
+    private void initOkhttpUtils() {
+        //okhttp
+        HttpsUtils.SSLParams sslParams = HttpsUtils.getSslSocketFactory(null, null, null);
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager).build();
+        OkHttpUtils.initClient(okHttpClient);
+    }
+
+    /**
+     * 初始化域名信息
+     */
+    public static void initNetInfo() {
+        RetrofitUrlManager.getInstance().putDomain(Constants.DOMAIN_ALI_KEY, ConfigManager.getInstance().getHost());
+    }
+
+    private void initAli() {
         MqttConfigure.itlsLogLevel = Id2ItlsSdk.DEBUGLEVEL_NODEBUG;
         HLog.setLogLevel(Log.ERROR);
         PersistentNet.getInstance().openLog(true);
@@ -64,7 +123,7 @@ public class MyApp extends Application {
         // 从 raw 读取指定测试文件
         String testData = getFromRaw();
         ALog.i(TAG, "sdk version = " + LinkKit.getInstance().getSDKVersion());
-         // 解析数据
+        // 解析数据
         getDeviceInfoFrom(testData);
         if (userDevInfoError) {
             showToast("三元组文件格式不正确，请重新检查格式");
