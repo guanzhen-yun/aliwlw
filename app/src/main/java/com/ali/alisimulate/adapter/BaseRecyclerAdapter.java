@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final int TYPE_HEADER = 0;
@@ -30,7 +31,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
         return mHeadView;
     }
 
-    public void addDatas(ArrayList<T> datas) {
+    public void addDatas(List<T> datas) {
         mDatas.addAll(datas);
         notifyDataSetChanged();
     }

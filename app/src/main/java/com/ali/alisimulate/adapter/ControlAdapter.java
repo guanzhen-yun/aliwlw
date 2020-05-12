@@ -16,19 +16,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.R;
-import com.ali.alisimulate.entity.DeviceControl;
+import com.aliyun.alink.linkkit.api.LinkKit;
+import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
+import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
-
 public class ControlAdapter extends RecyclerView.Adapter {
-    private final List<DeviceControl> mData;
+    private final List<Property> mData;
     private final Context context;
     private OnCheckListener onCheckListener;
 
-    public ControlAdapter(Context context, List<DeviceControl> data) {
+    public ControlAdapter(Context context, List<Property> data) {
         mData = data;
         this.context = context;
     }
@@ -44,59 +44,77 @@ public class ControlAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         DesignViewHolder viewHolder = (DesignViewHolder) holder;
-        DeviceControl name = mData.get(position);
+        Property name = mData.get(position);
         viewHolder.tv_name.setText(name.getName());
-        viewHolder.tv_status.setText(name.getStatus());
-        if(name.getType() == 0) {//开关
-            viewHolder.sw.setChecked(name.isOpen());
+        ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(name.getIdentifier());
+        if(propertyValue != null) {
+            Integer value = ((ValueWrapper.BooleanValueWrapper) propertyValue).getValue();
             viewHolder.sw.setVisibility(View.VISIBLE);
-            viewHolder.tv_choose.setVisibility(View.GONE);
-            viewHolder.iv_arrow.setVisibility(View.GONE);
-            viewHolder.sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if(onCheckListener != null) {
-                        onCheckListener.onCheck(position, b);
-                    }
-                }
-            });
-        } else {//下拉选
-            viewHolder.sw.setVisibility(View.GONE);
-            viewHolder.tv_choose.setText(name.getLevel());
-            viewHolder.tv_choose.setVisibility(View.VISIBLE);
-            viewHolder.iv_arrow.setVisibility(View.VISIBLE);
-            viewHolder.tv_choose.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    LayoutInflater mLayoutInflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-                    ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
-                            R.layout.pop_device, null, true);
-                    PopupWindow pw = new PopupWindow(menuView, RelativeLayout.LayoutParams.WRAP_CONTENT,
-                            RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    pw.setOutsideTouchable(true);
-                    pw.showAsDropDown(viewHolder.tv_choose);
-                    RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
-                    rv_device.setLayoutManager(new LinearLayoutManager(context));
-                    List<String> list = new ArrayList<>();
-                    list.add("1档");
-                    list.add("2档");
-                    list.add("3档");
-                    list.add("4档");
-                    PopDeviceListAdapter adapter = new PopDeviceListAdapter(list);
-                    rv_device.setAdapter(adapter);
-                    adapter.setOnCheckedListener(new PopDeviceListAdapter.OnCheckedListener() {
-                        @Override
-                        public void onCheck(int pos) {
-                            viewHolder.tv_choose.setText(list.get(pos));
-                            pw.dismiss();
-                            if(onCheckListener != null) {
-                                onCheckListener.onSelect(position, list.get(pos));
-                            }
-                        }
-                    });
-                }
-            });
+            if(value != null && value == 1) {
+                viewHolder.sw.setChecked(true);
+                viewHolder.tv_status.setText("已开启");
+            } else {
+                viewHolder.sw.setChecked(false);
+                viewHolder.tv_status.setText("未开启");
+            }
+        } else {
+            viewHolder.sw.setChecked(false);
+            viewHolder.tv_status.setText("未开启");
         }
+        viewHolder.sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b) {
+                    viewHolder.tv_status.setText("已开启");
+                } else {
+                    viewHolder.tv_status.setText("未开启");
+                }
+                if(onCheckListener != null) {
+                    onCheckListener.onCheck(position, b);
+                }
+            }
+        });
+        viewHolder.tv_choose.setVisibility(View.GONE);
+        viewHolder.iv_arrow.setVisibility(View.GONE);
+
+//        if(name.getType() == 0) {//开关
+//        } else {//下拉选
+//            viewHolder.sw.setVisibility(View.GONE);
+//            viewHolder.tv_choose.setText(name.getLevel());
+//            viewHolder.tv_choose.setVisibility(View.VISIBLE);
+//            viewHolder.iv_arrow.setVisibility(View.VISIBLE);
+//            viewHolder.tv_choose.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    LayoutInflater mLayoutInflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+//                    ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
+//                            R.layout.pop_device, null, true);
+//                    PopupWindow pw = new PopupWindow(menuView, RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                            RelativeLayout.LayoutParams.WRAP_CONTENT);
+//                    pw.setOutsideTouchable(true);
+//                    pw.showAsDropDown(viewHolder.tv_choose);
+//                    RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
+//                    rv_device.setLayoutManager(new LinearLayoutManager(context));
+//                    List<String> list = new ArrayList<>();
+//                    list.add("1档");
+//                    list.add("2档");
+//                    list.add("3档");
+//                    list.add("4档");
+//                    PopDeviceListAdapter adapter = new PopDeviceListAdapter(list);
+//                    rv_device.setAdapter(adapter);
+//                    adapter.setOnCheckedListener(new PopDeviceListAdapter.OnCheckedListener() {
+//                        @Override
+//                        public void onCheck(int pos) {
+//                            viewHolder.tv_choose.setText(list.get(pos));
+//                            pw.dismiss();
+//                            if(onCheckListener != null) {
+//                                onCheckListener.onSelect(position, list.get(pos));
+//                            }
+//                        }
+//                    });
+//                }
+//            });
+//        }
     }
 
     @Override
@@ -121,7 +139,7 @@ public class ControlAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private void setOnCheckListener(OnCheckListener onCheckListener) {
+    public void setOnCheckListener(OnCheckListener onCheckListener) {
         this.onCheckListener = onCheckListener;
     }
 

@@ -16,8 +16,12 @@ import com.ali.alisimulate.adapter.ParamAdapter;
 import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.view.DropDownPop;
 import com.ali.alisimulate.view.TopViewCycle;
+import com.aliyun.alink.linkkit.api.LinkKit;
+import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
+import com.aliyun.alink.linksdk.tmp.utils.TmpConstant;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ParamFragment extends Fragment {
     private RecyclerView rv_list;
@@ -36,12 +40,17 @@ public class ParamFragment extends Fragment {
         rv_list = v.findViewById(R.id.rv_list);
         rv_list.setLayoutManager(new LinearLayoutManager(getActivity()));
         ParamAdapter adapter = new ParamAdapter();
-        ArrayList<String> list = new ArrayList<>();
-        list.add("sss");
-        list.add("sss");
-        list.add("sss");
-        list.add("sss");
-        adapter.addDatas(list);
+
+        // 获取所有属性
+        List<Property> properties = LinkKit.getInstance().getDeviceThing().getProperties();
+        List<Property> paramList = new ArrayList<>();
+        for (Property property : properties) {
+            if(!TmpConstant.TYPE_VALUE_BOOLEAN.equals(property.getDataType().getType())) {
+                paramList.add(property);
+            }
+        }
+
+        adapter.addDatas(paramList);
         rv_list.setAdapter(adapter);
 
         TopViewCycle topViewCycle = new TopViewCycle(getActivity());

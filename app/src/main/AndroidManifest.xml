@@ -24,7 +24,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.login.LoginActivity" />
-        <activity android:name=".activity.ProductActivity" />
         <activity android:name=".activity.orgmain.OrgMainActivity" />
         <activity android:name=".activity.adddevice.AddDeviceActivity" />
         <activity android:name=".activity.DeviceDetailActivity" />

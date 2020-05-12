@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.ali.alisimulate.activity.ProductActivity;
+import com.ali.alisimulate.activity.DeviceDetailActivity;
 import com.ali.alisimulate.activity.login.LoginActivity;
 import com.ali.alisimulate.activity.orgmain.OrgMainActivity;
 import com.ali.alisimulate.activity.regist.RegistActivity;
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             ToastUtils.showToast("物模型功能未启用");
             return;
         }
-        startActivity(new Intent(MainActivity.this, ProductActivity.class));
+        startActivity(new Intent(MainActivity.this, DeviceDetailActivity.class));
     }
 
     private boolean checkReady() {
