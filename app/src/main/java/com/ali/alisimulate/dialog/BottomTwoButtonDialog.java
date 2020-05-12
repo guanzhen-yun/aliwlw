@@ -24,6 +24,7 @@ public class BottomTwoButtonDialog extends Dialog {
 
     private OnClickDialogListener mOnClickDialogListener;
     private OnSingleClickDialogListener mOnSingleClickDialogListener;
+    private TextView tv_content;
 
     public BottomTwoButtonDialog(@NonNull Activity activity) {
         super(activity, R.style.DialogStyle);
@@ -37,7 +38,7 @@ public class BottomTwoButtonDialog extends Dialog {
     }
 
     private void setView() {
-        TextView tv_content = findViewById(R.id.tv_content);
+        tv_content = findViewById(R.id.tv_content);
         TextView tv_title = findViewById(R.id.tv_title);
         if (!TextUtils.isEmpty(mTitle)) {
             tv_title.setText(mTitle);
@@ -87,6 +88,9 @@ public class BottomTwoButtonDialog extends Dialog {
 
     public void setContent(String content) {
         this.mContent = content;
+        if(tv_content != null) {
+            tv_content.setText(mContent);
+        }
     }
 
     /**

@@ -1,13 +1,13 @@
-package com.ali.alisimulate.activity.testapi;
+package com.ali.alisimulate.activity.regist;
 
 import com.ali.alisimulate.entity.RegistModel;
 import com.ziroom.mvp.ILifeCircle;
 import com.ziroom.mvp.IMvpView;
 
 /**
- * Description:TestContract
+ * Description:RegistContract
  **/
-public interface TestContract {
+public interface RegistContract {
     interface IView extends IMvpView {
         void getResult();
     }

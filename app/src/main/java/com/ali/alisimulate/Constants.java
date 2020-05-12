@@ -11,4 +11,10 @@ public class Constants {
 
     public final static String DOMAIN_ALI2_KEY = "aliwlw2";
     public final static String DOMAIN_ALI2_HEADR = "Domain-Name: aliwlw2";
+
+
+    public static final String SP_NAME = "aliyun";
+    public static final String KEY_LOGIN_INFO = "loginInfo";
+    public static final String KEY_CONNECT_STATUS = "connect_status";
+
 }

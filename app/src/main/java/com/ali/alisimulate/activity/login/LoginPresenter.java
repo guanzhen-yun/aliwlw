@@ -31,7 +31,6 @@ public class LoginPresenter extends BaseMvpPresenter<LoginContract.IView> implem
 
             @Override
             public void onError(ApiException e) {
-//                super.onError(e);
                 ToastUtils.showToast("登录失败");
             }
         });

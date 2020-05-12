@@ -1,4 +1,4 @@
-package com.ali.alisimulate.activity.testapi;
+package com.ali.alisimulate.activity.regist;
 
 import android.widget.EditText;
 
@@ -13,10 +13,10 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
- * Description:TestActivity
+ * Description:RegistActivity
  **/
 @ViewInject(layoutId = R.layout.activity_test)
-public class TestActivity extends BaseActivity<TestPresenter> implements TestContract.IView {
+public class RegistActivity extends BaseActivity<RegistPresenter> implements RegistContract.IView {
     @BindView(R.id.et_email)
     EditText etEmail;
     @BindView(R.id.et_name)
@@ -36,7 +36,7 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestCon
     @BindView(R.id.et_service)
     EditText etService;
 
-    @OnClick(R.id.btn_get)
+    @OnClick(R.id.btn_regist)
     public void onViewClicked() {
         RegistModel model = new RegistModel();
         model.CompanyName = Utils.getStr(etCompany);
@@ -52,8 +52,8 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestCon
     }
 
     @Override
-    public TestPresenter getPresenter() {
-        return new TestPresenter(this);
+    public RegistPresenter getPresenter() {
+        return new RegistPresenter(this);
     }
 
     @Override

@@ -8,6 +8,7 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/tv_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="去登录"
@@ -46,6 +47,7 @@
         />
 
     <TextView
+        android:id="@+id/tv_regist"
         android:onClick="regist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

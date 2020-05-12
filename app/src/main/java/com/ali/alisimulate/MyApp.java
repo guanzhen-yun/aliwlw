@@ -55,12 +55,15 @@ public class MyApp extends Application {
     public static Context mAppContext = null;
     public static boolean userDevInfoError = false;
     public static DeviceInfoData mDeviceInfoData = null;
+
     /**
      * 判断是否初始化完成
      * 未初始化完成，所有和云端的长链通信都不通
      */
     public static boolean isInitDone = false;
     public static String productKey = null, deviceName = null, deviceSecret = null, productSecret = null, password = null, username = null,clientId = null;
+    private InitManager initManager;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -87,8 +90,8 @@ public class MyApp extends Application {
                 .readTimeout(20, TimeUnit.SECONDS)
                 .writeTimeout(20, TimeUnit.SECONDS)
                 .addInterceptor(
-                        new HttpLoggingInterceptor(logger).setLevel(HttpLoggingInterceptor.Level.BODY)));
-//                .addInterceptor(new ParamsInterceptor()));
+                        new HttpLoggingInterceptor(logger).setLevel(HttpLoggingInterceptor.Level.BODY)))
+                .addInterceptor(new ParamsInterceptor());
 
         if (BuildConfig.DEBUG) {
             builder.sslSocketFactory(SSLSocketClient.getSSLSocketFactory());
@@ -110,18 +113,9 @@ public class MyApp extends Application {
     public static void initNetInfo() {
         RetrofitUrlManager.getInstance().putDomain(Constants.DOMAIN_ALI_KEY, ConfigManager.getInstance().getHost());
         RetrofitUrlManager.getInstance().putDomain(Constants.DOMAIN_ALI2_KEY, ConfigManager.getInstance().getHost2());
-
     }
 
-    private void initAli() {
-        MqttConfigure.itlsLogLevel = Id2ItlsSdk.DEBUGLEVEL_NODEBUG;
-        HLog.setLogLevel(Log.ERROR);
-        PersistentNet.getInstance().openLog(true);
-        ALog.setLevel(ALog.LEVEL_DEBUG);
-        // 设置心跳时间，默认65秒
-        MqttConfigure.setKeepAliveInterval(65);
-
-        mAppContext = getApplicationContext();
+    public void regist() {
         // 从 raw 读取指定测试文件
         String testData = getFromRaw();
         ALog.i(TAG, "sdk version = " + LinkKit.getInstance().getSDKVersion());
@@ -142,7 +136,7 @@ public class MyApp extends Application {
  * 注意：动态注册成功，设备上线之后，不能再次执行动态注册，云端会返回已主动注册。
  */
         if (TextUtils.isEmpty(deviceSecret) && !TextUtils.isEmpty(productSecret)) {
-            InitManager.registerDevice(this, productKey, deviceName, productSecret, new IConnectSendListener() {
+            initManager.registerDevice(this, productKey, deviceName, productSecret, new IConnectSendListener() {
                 @Override
                 public void onResponse(ARequest aRequest, AResponse aResponse) {
                     Log.d(TAG, "registerDevice onResponse() called with: aRequest = [" + aRequest + "], aResponse = [" + (aResponse == null ? "null" : aResponse.data) + "]");
@@ -189,6 +183,19 @@ public class MyApp extends Application {
         }
     }
 
+    private void initAli() {
+        initManager = InitManager.getInstance();
+        MqttConfigure.itlsLogLevel = Id2ItlsSdk.DEBUGLEVEL_NODEBUG;
+        HLog.setLogLevel(Log.ERROR);
+        PersistentNet.getInstance().openLog(true);
+        ALog.setLevel(ALog.LEVEL_DEBUG);
+        // 设置心跳时间，默认65秒
+        MqttConfigure.setKeepAliveInterval(65);
+
+        mAppContext = getApplicationContext();
+        regist();
+    }
+
     /**
      * 初始化建联
      * 如果初始化建联失败，需要用户重试去完成初始化，并确保初始化成功。如应用启动的时候无网络，导致失败，可以在网络可以的时候再次执行初始化，成功之后不需要再次执行。
@@ -204,11 +211,11 @@ public class MyApp extends Application {
      * MqttConfigure.mqttClientId = clientId;
      *
      */
-    private void connect() {
+    public void connect() {
         Log.d(TAG, "connect() called");
         // SDK初始化
 
-        InitManager.init(this, productKey, deviceName, deviceSecret, productSecret, new IDemoCallback() {
+        initManager.init(this, productKey, deviceName, deviceSecret, productSecret, new IDemoCallback() {
 
             @Override
             public void onError(AError aError) {
@@ -362,5 +369,9 @@ public class MyApp extends Application {
 
     public static Context getAppContext() {
         return mAppContext;
+    }
+
+    public void unregistConnectAli() {
+        initManager.unregistInit();
     }
 }

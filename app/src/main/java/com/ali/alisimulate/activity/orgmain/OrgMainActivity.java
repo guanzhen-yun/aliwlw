@@ -1,7 +1,7 @@
 package com.ali.alisimulate.activity.orgmain;
 
 import android.content.Intent;
-import android.os.Handler;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +16,19 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ali.alisimulate.Constants;
+import com.ali.alisimulate.MyApp;
 import com.ali.alisimulate.R;
-import com.ali.alisimulate.activity.AddDeviceActivity;
+import com.ali.alisimulate.activity.adddevice.AddDeviceActivity;
 import com.ali.alisimulate.activity.DeviceDetailActivity;
 import com.ali.alisimulate.adapter.PopDeviceListAdapter;
 import com.ali.alisimulate.dialog.BottomTwoButtonDialog;
 import com.ali.alisimulate.dialog.SecondWCodeDialog;
+import com.ali.alisimulate.entity.DeviceDetailEntity;
+import com.ali.alisimulate.entity.LoginSuccess;
+import com.ali.alisimulate.entity.UserInfoEntity;
+import com.ali.alisimulate.util.SharedPreferencesUtils;
+import com.google.gson.Gson;
 import com.ziroom.base.BaseActivity;
 import com.ziroom.base.ViewInject;
 
@@ -29,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 @ViewInject(layoutId = R.layout.activity_orgmain)
 public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements OrgMainContract.IView {
@@ -71,52 +78,94 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
 
     @Override
     public void initDatas() {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                mPresenter.getDevice("a1DyFgDz1iX");
-            }
-        });
+        mPresenter.getUserInfo();
+        mPresenter.getDevice("a1yz4fe0qG1");
     }
 
     @Override
     public void initViews() {
-        rlBody.setOnClickListener(new View.OnClickListener() {
+        String strLoginInfo = SharedPreferencesUtils.getStr(this, Constants.KEY_LOGIN_INFO);
+        LoginSuccess loginInfo = new Gson().fromJson(strLoginInfo, LoginSuccess.class);
+        if (loginInfo != null) {
+            tvUsername.setText(loginInfo.userDetail.username);
+        }
+
+        if("1".equals(SharedPreferencesUtils.getStr(this, Constants.KEY_CONNECT_STATUS))) {
+            rbNet.setChecked(true);
+            rbUnnet.setChecked(false);
+        } else {
+            rbNet.setChecked(false);
+            rbUnnet.setChecked(true);
+        }
+
+        rgNet.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if (i == R.id.rb_net) {
+                    MyApp.getApp().connect();
+                } else if (i == R.id.rb_unnet) {
+                    MyApp.getApp().unregistConnectAli();
+                }
+            }
+        });
+    }
+
+    public void adddevice(View view) {
+        Bundle bundle = new Bundle();
+        bundle.putString("Companyname", tvCompanyname.getText().toString());
+        Intent intent = new Intent(OrgMainActivity.this, AddDeviceActivity.class);
+        intent.putExtras(bundle);
+        startActivityForResult(intent, 100);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == 100) {
+            //刷新设备列表
+            mPresenter.getDevice("a1yz4fe0qG1");
+        }
+    }
+
+    @Override
+    public OrgMainPresenter getPresenter() {
+        return new OrgMainPresenter(this);
+    }
+
+    @Override
+    public void getDeviceResult(DeviceDetailEntity entity) {
+        if (entity == null) {
+            llNone.setVisibility(View.VISIBLE);
+            rlBody.setVisibility(View.GONE);
+        } else {
+            llNone.setVisibility(View.GONE);
+            rlBody.setVisibility(View.VISIBLE);
+            tvDevicename.setText(entity.deviceName);
+            tvDevicekey.setText("设备名称: " + entity.deviceId);
+            tvAlias.setText(entity.productCompany + " " + entity.brandName + " " + entity.deviceName);
+            tvStatus.setText(entity.bindingStatus);
+        }
+    }
+
+    @Override
+    public void getUserInfoSuccess(UserInfoEntity entity) {
+        if (entity != null) {
+            tvCompanyname.setText(entity.CompanyName);
+        }
+    }
+
+    @Override
+    public void logoutSuccess() {
+        finish();
+    }
+
+    @OnClick({R.id.rl_body, R.id.rl_device, R.id.iv_loginout, R.id.iv_code})
+    public void onViewClicked(View v) {
+        switch (v.getId()) {
+            case R.id.rl_body:
                 startActivity(new Intent(OrgMainActivity.this, DeviceDetailActivity.class));
-            }
-        });
-        ivLoginout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                BottomTwoButtonDialog dialog = new BottomTwoButtonDialog(OrgMainActivity.this);
-                dialog.setOnClickDialogListener(new BottomTwoButtonDialog.OnClickDialogListener() {
-                    @Override
-                    public void onClickLeft() {
-                        dialog.dismiss();
-                    }
-
-                    @Override
-                    public void onClickRight() {
-                        //TODO 退出
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
-            }
-        });
-        ivCode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SecondWCodeDialog dialog = new SecondWCodeDialog(OrgMainActivity.this);
-                dialog.show();
-            }
-        });
-
-        rlDevice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                break;
+            case R.id.rl_device:
                 LayoutInflater mLayoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
                 ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
                         R.layout.pop_device, null, true);
@@ -140,29 +189,27 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                         pw.dismiss();
                     }
                 });
-            }
-        });
-    }
+                break;
+            case R.id.iv_loginout:
+                BottomTwoButtonDialog dialog = new BottomTwoButtonDialog(OrgMainActivity.this);
+                dialog.setOnClickDialogListener(new BottomTwoButtonDialog.OnClickDialogListener() {
+                    @Override
+                    public void onClickLeft() {
+                        dialog.dismiss();
+                    }
 
-    public void adddevice(View view) {
-        startActivityForResult(new Intent(OrgMainActivity.this, AddDeviceActivity.class), 100);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == 100) {
-            //刷新设备列表
+                    @Override
+                    public void onClickRight() {
+                        mPresenter.logout();
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+                break;
+            case R.id.iv_code:
+                SecondWCodeDialog secondWCodeDialog = new SecondWCodeDialog(OrgMainActivity.this);
+                secondWCodeDialog.show();
+                break;
         }
-    }
-
-    @Override
-    public OrgMainPresenter getPresenter() {
-        return new OrgMainPresenter(this);
-    }
-
-    @Override
-    public void getDeviceResult() {
-
     }
 }

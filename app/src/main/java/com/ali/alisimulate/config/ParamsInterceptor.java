@@ -3,6 +3,9 @@ package com.ali.alisimulate.config;
 import android.os.Build;
 import android.text.TextUtils;
 
+import com.ali.alisimulate.MyApp;
+import com.ali.alisimulate.util.UserUtils;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,25 +48,25 @@ public class ParamsInterceptor implements Interceptor {
         }
         Map<String, String> addParams = new HashMap<>();
         //公共Header--目前只有一个token
-        String token = "token";
+        String token = UserUtils.getToken(MyApp.getApp());
         if (!TextUtils.isEmpty(token)) {
-            headerBuilder.add("x-auth-token", token);
-            addParams.put("token", token);
-            addParams.put("user_token", token);
+            headerBuilder.add("Authorization", "Bearer " + token);
+//            addParams.put("token", token);
+//            addParams.put("user_token", token);
         }
 
         requestBuilder.headers(headerBuilder.build());
         //公共参数
-        addParams.put("platformType", "4");
-        addParams.put("appName", "zgzf");
-        addParams.put("app_name", "zgzf");
-        addParams.put("s_os", "Android");
-        addParams.put("operaVersion", Build.VERSION.RELEASE);
-        addParams.put("platform_type", "4");
-        addParams.put("device_from", "4");
+//        addParams.put("platformType", "4");
+//        addParams.put("appName", "zgzf");
+//        addParams.put("app_name", "zgzf");
+//        addParams.put("s_os", "Android");
+//        addParams.put("operaVersion", Build.VERSION.RELEASE);
+//        addParams.put("platform_type", "4");
+//        addParams.put("device_from", "4");
         //防止以前业务逻辑传递city不一样。
         if ("GET".equals(method)) {
-            return injectParamsIntoUrl(request.url().newBuilder(), request.newBuilder(), addParams);
+            return injectParamsIntoUrl(request.url().newBuilder(), request.newBuilder(), addParams, headerBuilder.build());
         }
         if (canInjectIntoBody(request)) {
             String postBodyString = bodyToString(params) + bodyToString(addParams);
@@ -136,7 +139,7 @@ public class ParamsInterceptor implements Interceptor {
         return params;
     }
 
-    private Request injectParamsIntoUrl(HttpUrl.Builder httpUrlBuilder, Request.Builder requestBuilder, Map<String, String> paramsMap) {
+    private Request injectParamsIntoUrl(HttpUrl.Builder httpUrlBuilder, Request.Builder requestBuilder, Map<String, String> paramsMap, Headers build) {
         if (!paramsMap.isEmpty()) {
             for (Object o : paramsMap.entrySet()) {
                 Map.Entry entry = (Map.Entry) o;
@@ -145,10 +148,13 @@ public class ParamsInterceptor implements Interceptor {
                 }
                 httpUrlBuilder.addQueryParameter((String) entry.getKey(), (String) entry.getValue());
             }
+            requestBuilder.headers(build);
             requestBuilder.url(httpUrlBuilder.build());
             return requestBuilder.build();
         }
-        return null;
+        requestBuilder.headers(build);
+        requestBuilder.url(httpUrlBuilder.build());
+        return requestBuilder.build();
     }
 
     /**

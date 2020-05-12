@@ -1,4 +1,4 @@
-package com.ali.alisimulate.activity.testapi;
+package com.ali.alisimulate.activity.regist;
 
 import com.ali.alisimulate.entity.RegistModel;
 import com.ali.alisimulate.service.AppService;
@@ -14,10 +14,10 @@ import io.reactivex.disposables.Disposable;
 /**
  * Author:关震
  * Date:2020/5/11 12:22
- * Description:TestPresenter
+ * Description:RegistPresenter
  **/
-public class TestPresenter extends BaseMvpPresenter<TestContract.IView> implements TestContract.IPresenter {
-    public TestPresenter(TestContract.IView view) {
+public class RegistPresenter extends BaseMvpPresenter<RegistContract.IView> implements RegistContract.IPresenter {
+    public RegistPresenter(RegistContract.IView view) {
         super(view);
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.ali.alisimulate.Constants;
 import com.ali.alisimulate.MyApp;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.alink.dm.api.DeviceInfo;
@@ -32,6 +33,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InitManager {
+    public static InitManager initManager;
+
+    public static InitManager getInstance() {
+        if (initManager == null) {
+            initManager = new InitManager();
+        }
+        return initManager;
+    }
+
     private static final String TAG = "InitManager";
 
     /**
@@ -39,13 +49,14 @@ public class InitManager {
      * 动态注册条件检测：
      * 1.云端开启该设备动态注册功能；
      * 2.首先在云端创建 pk，dn；
-     * @param context 上下文
-     * @param productKey 产品类型
-     * @param deviceName 设备名称 需要现在云端创建
+     *
+     * @param context       上下文
+     * @param productKey    产品类型
+     * @param deviceName    设备名称 需要现在云端创建
      * @param productSecret 产品密钥
-     * @param listener 密钥请求回调
+     * @param listener      密钥请求回调
      */
-    public static void registerDevice(Context context, String productKey, String deviceName, String productSecret, IConnectSendListener listener) {
+    public void registerDevice(Context context, String productKey, String deviceName, String productSecret, IConnectSendListener listener) {
         DeviceInfo myDeviceInfo = new DeviceInfo();
         myDeviceInfo.productKey = productKey;
         myDeviceInfo.deviceName = deviceName;
@@ -62,14 +73,15 @@ public class InitManager {
 
     /**
      * Android 设备端 SDK 初始化示例代码
-     * @param context 上下文
-     * @param productKey 产品类型
-     * @param deviceName 设备名称
-     * @param deviceSecret 设备密钥
+     *
+     * @param context       上下文
+     * @param productKey    产品类型
+     * @param deviceName    设备名称
+     * @param deviceSecret  设备密钥
      * @param productSecret 产品密钥
-     * @param callback 初始化建联结果回调
+     * @param callback      初始化建联结果回调
      */
-    public static void init(Context context, String productKey, String deviceName, String deviceSecret, String productSecret, final IDemoCallback callback) {
+    public void init(Context context, String productKey, String deviceName, String deviceSecret, String productSecret, final IDemoCallback callback) {
         // 构造三元组信息对象
         DeviceInfo deviceInfo = new DeviceInfo();
         // 产品类型
@@ -118,7 +130,7 @@ public class InitManager {
 //        clientConfig.channelHost = productKey + ".iot-as-mqtt.cn-shanghai.aliyuncs.com:1883";//线上
         // 设置 mqtt 请求域名，默认"{pk}.iot-as-mqtt.cn-shanghai.aliyuncs.com:1883" ,如果无具体的业务需求，请不要设置。
         // 文件配置测试 itls
-        if ("itls_secret".equals(deviceSecret)){
+        if ("itls_secret".equals(deviceSecret)) {
             clientConfig.channelHost = productKey + ".itls.cn-shanghai.aliyuncs.com:1883";//线上
             clientConfig.productSecret = productSecret;
             clientConfig.secureMode = 8;
@@ -165,14 +177,14 @@ public class InitManager {
         });
     }
 
-    public static String getAErrorString(AError error) {
+    public String getAErrorString(AError error) {
         if (error == null) {
             return null;
         }
         return JSONObject.toJSONString(error);
     }
 
-    private void unregistInit() {
+    public void unregistInit() {
         // 取消注册 notifyListener，notifyListener对象需和注册的时候是同一个对象
         LinkKit.getInstance().unRegisterOnPushListener(notifyListener);
         LinkKit.getInstance().deinit();
@@ -181,7 +193,7 @@ public class InitManager {
     /**
      * 下行监听器，云端 MQTT 下行数据都会通过这里回调
      */
-    private static IConnectNotifyListener notifyListener = new IConnectNotifyListener() {
+    private IConnectNotifyListener notifyListener = new IConnectNotifyListener() {
         /**
          * onNotify 会触发的前提是 shouldHandle 没有指定不处理这个topic
          * @param connectId 连接类型，这里判断是否长链 connectId == ConnectSDK.getInstance().getPersistentConnectId()
@@ -262,7 +274,7 @@ public class InitManager {
                 //TODO 根据批量广播做业务逻辑处理
 
             } else if (ConnectSDK.getInstance().getPersistentConnectId().equals(connectId) && !TextUtils.isEmpty(topic) &&
-                    topic.startsWith("/broadcast/" + MyApp.productKey )) {
+                    topic.startsWith("/broadcast/" + MyApp.productKey)) {
                 //
                 /**
                  * topic 需要用户自己订阅才能收到，topic 格式：/broadcast/${pk}/${自定义action}，需要和云端发送topic一致
@@ -302,6 +314,11 @@ public class InitManager {
         @Override
         public void onConnectStateChange(String connectId, ConnectState connectState) {
             Log.d(TAG, "onConnectStateChange() called with: connectId = [" + connectId + "], connectState = [" + connectState + "]");
+            if (connectState == ConnectState.CONNECTED) {
+                SharedPreferencesUtils.save(MyApp.getApp(), Constants.KEY_CONNECT_STATUS, "1");
+            } else {
+                SharedPreferencesUtils.save(MyApp.getApp(), Constants.KEY_CONNECT_STATUS, "0");
+            }
         }
     };
 }

@@ -10,15 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.R;
-import com.ali.alisimulate.entity.LeftTitle;
+import com.ali.alisimulate.entity.BranchEntity;
 
 import java.util.List;
 
 public class LeftTitleAdapter extends RecyclerView.Adapter {
-    private final List<LeftTitle> mData;
+    private final List<BranchEntity> mData;
     private OnCheckedListener onCheckedListener;
 
-    public LeftTitleAdapter(List<LeftTitle> data) {
+    public LeftTitleAdapter(List<BranchEntity> data) {
         mData = data;
     }
 
@@ -33,10 +33,10 @@ public class LeftTitleAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         DesignViewHolder viewHolder = (DesignViewHolder) holder;
-        LeftTitle name = mData.get(position);
-        viewHolder.tv_title.setText(name.getTitle());
-        viewHolder.view_green.setVisibility(name.isSelect() ? View.VISIBLE : View.INVISIBLE);
-        if(name.isSelect()) {
+        BranchEntity name = mData.get(position);
+        viewHolder.tv_title.setText(name.name);
+        viewHolder.view_green.setVisibility(name.isSelect ? View.VISIBLE : View.INVISIBLE);
+        if(name.isSelect) {
             viewHolder.tv_title.setTextColor(Color.parseColor("#00ff00"));
         } else {
             viewHolder.tv_title.setTextColor(Color.parseColor("#000000"));

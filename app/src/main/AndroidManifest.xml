@@ -4,6 +4,7 @@
     package="com.ali.alisimulate">
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <application
         android:name=".MyApp"
         android:allowBackup="true"
@@ -25,9 +26,9 @@
         <activity android:name=".activity.login.LoginActivity" />
         <activity android:name=".activity.ProductActivity" />
         <activity android:name=".activity.orgmain.OrgMainActivity" />
-        <activity android:name=".activity.AddDeviceActivity" />
+        <activity android:name=".activity.adddevice.AddDeviceActivity" />
         <activity android:name=".activity.DeviceDetailActivity" />
-        <activity android:name=".activity.testapi.TestActivity" />
+        <activity android:name=".activity.regist.RegistActivity" />
     </application>
 
 </manifest>

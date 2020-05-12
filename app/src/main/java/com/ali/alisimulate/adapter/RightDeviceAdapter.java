@@ -1,5 +1,6 @@
 package com.ali.alisimulate.adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,16 +11,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.R;
-import com.ali.alisimulate.entity.RightDevice;
+import com.ali.alisimulate.entity.BranchTypeEntity;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
 public class RightDeviceAdapter extends RecyclerView.Adapter {
-    private final List<RightDevice> mData;
+    private final List<BranchTypeEntity> mData;
+    private final Context mContext;
     private OnCheckedListener onCheckedListener;
 
-    public RightDeviceAdapter(List<RightDevice> data) {
+    public RightDeviceAdapter(Context context, List<BranchTypeEntity> data) {
         mData = data;
+        mContext = context;
     }
 
     @NonNull
@@ -33,14 +37,15 @@ public class RightDeviceAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         DesignViewHolder viewHolder = (DesignViewHolder) holder;
-        RightDevice name = mData.get(position);
-        viewHolder.tv_device.setText(name.getDeviceName());
-        if(name.isSelect()) {
+        BranchTypeEntity name = mData.get(position);
+        viewHolder.tv_device.setText(name.name);
+        if(name.isSelect) {
             viewHolder.iv.setBackgroundResource(R.mipmap.ic_launcher);
         } else {
             viewHolder.iv.setBackgroundResource(R.mipmap.ic_launcher);
         }
-        viewHolder.iv_pic.setBackgroundResource(R.mipmap.ic_launcher);
+
+        Glide.with(mContext).load(name.imageUrl).into(viewHolder.iv_pic);
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,6 +55,7 @@ public class RightDeviceAdapter extends RecyclerView.Adapter {
                 }
             }
         });
+
     }
 
     public interface OnCheckedListener {
