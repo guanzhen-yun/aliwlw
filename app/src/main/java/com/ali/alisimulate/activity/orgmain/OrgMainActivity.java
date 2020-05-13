@@ -28,6 +28,7 @@ import com.ali.alisimulate.dialog.SecondWCodeDialog;
 import com.ali.alisimulate.entity.LoginSuccess;
 import com.ali.alisimulate.entity.OrgDevice;
 import com.ali.alisimulate.entity.UserInfoEntity;
+import com.ali.alisimulate.util.LoadMoreOnScrollListener;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.google.gson.Gson;
 import com.ziroom.base.BaseActivity;
@@ -61,14 +62,14 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     @BindView(R.id.iv_addDevice)
     ImageView ivAddDevice;
 
-    private List<OrgDevice> orgDevices = new ArrayList<>();
+    private List<OrgDevice.DeviceList> orgDevices = new ArrayList<>();
     private DeviceListAdapter adapter;
-
+    private int page = 0;
     @Override
     public void initDatas() {
         mPresenter.getUserInfo();
 //        mPresenter.getDevice("a1yz4fe0qG1");
-        mPresenter.getDeviceList(0, 10, "");//获取全部数据
+        getDeviceList(true);//获取全部数据
     }
 
     @Override
@@ -78,9 +79,27 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         if (loginInfo != null) {
             tvUsername.setText(loginInfo.userDetail.username);
         }
-        rvDevice.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rvDevice.setLayoutManager(linearLayoutManager);
         adapter = new DeviceListAdapter(this, orgDevices);
         rvDevice.setAdapter(adapter);
+        rvDevice.addOnScrollListener(new LoadMoreOnScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int currentPage) {
+                if (currentPage > page) {
+                    getDeviceList(false);
+                }
+            }
+        });
+    }
+
+    private void getDeviceList(boolean isFirst) {
+        if(isFirst) {
+            page = 0;
+        } else {
+            page++;
+        }
+        mPresenter.getDeviceList(page + 1, 10, "");
     }
 
     public void adddevice(View view) {
@@ -96,7 +115,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == 100) {
             //刷新设备列表
-            mPresenter.getDeviceList(0, 10, "");
+            getDeviceList(true);
         }
     }
 
@@ -118,24 +137,25 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     }
 
     @Override
-    public void getDeviceListSuccess(List<OrgDevice> orgDevices) {
-        if (orgDevices == null || orgDevices.size() == 0) {
+    public void getDeviceListSuccess(OrgDevice orgDevice) {
+        if (orgDevices == null && page == 0) {
             llNone.setVisibility(View.VISIBLE);
             rvDevice.setVisibility(View.GONE);
+            tvDevice.setText("无");
         } else {
             llNone.setVisibility(View.GONE);
             rvDevice.setVisibility(View.VISIBLE);
-            orgDevices.addAll(orgDevices);
+            if(page == 0) {
+                orgDevices.clear();
+            }
+            orgDevices.addAll(orgDevice.data);
             adapter.notifyDataSetChanged();
         }
     }
 
-    @OnClick({R.id.rl_body, R.id.rl_device, R.id.iv_loginout, R.id.iv_code})
+    @OnClick({R.id.rl_device, R.id.iv_loginout})
     public void onViewClicked(View v) {
         switch (v.getId()) {
-            case R.id.rl_body:
-                startActivity(new Intent(OrgMainActivity.this, DeviceDetailActivity.class));
-                break;
             case R.id.rl_device:
                 LayoutInflater mLayoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
                 ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
@@ -176,10 +196,6 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                     }
                 });
                 dialog.show();
-                break;
-            case R.id.iv_code:
-                SecondWCodeDialog secondWCodeDialog = new SecondWCodeDialog(OrgMainActivity.this);
-                secondWCodeDialog.show();
                 break;
         }
     }

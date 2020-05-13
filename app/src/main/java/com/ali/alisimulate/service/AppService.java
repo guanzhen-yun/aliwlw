@@ -12,7 +12,9 @@ import com.ali.alisimulate.entity.RegistModel;
 import com.ali.alisimulate.entity.UserInfoEntity;
 import com.ziroom.net.bean.Result;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import retrofit2.http.Body;
@@ -21,6 +23,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 /**
  * Description:AppService
@@ -56,5 +59,5 @@ public interface AppService {
 
     @Headers({Constants.DOMAIN_ALI_HEADR})
     @GET("/api/device/page_by_productkey")
-    Observable<Result<List<OrgDevice>>> getDeviceList (@Query("pageIndex") int pageIndex,@Query("pageSize") int pageSize, @Query("productKey") String productKey);
+    Observable<Result<OrgDevice>> getDeviceList (@QueryMap HashMap<String, Object> map);
 }

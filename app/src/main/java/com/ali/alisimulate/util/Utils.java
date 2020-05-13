@@ -661,30 +661,5 @@ public class Utils {
     private static final String KEY_FLYME_ICON_FALG = "persist.sys.use.flyme.icon";
     private static final String KEY_FLYME_SETUP_FALG = "ro.meizu.setupwizard.flyme";
     private static final String KEY_FLYME_PUBLISH_FALG = "ro.flyme.published";
-    //当前标识符
-    private static String KEY_CURRENT_FALG = KEY_MIUI_INTERNAL_STORAGE;
-
-    /*获取osVersion*/
-    public static String getSystemProperty() {
-        String line;
-        BufferedReader input = null;
-
-        try {
-            Process p = Runtime.getRuntime().exec("getprop " + KEY_CURRENT_FALG);
-            input = new BufferedReader(new InputStreamReader(p.getInputStream()), 1024);
-            line = input.readLine();
-            input.close();
-        } catch (IOException ex) {
-            return null;
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                }
-            }
-        }
-        return line;
-    }
 
 }

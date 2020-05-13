@@ -10,7 +10,7 @@ import java.util.List;
 public class RegistDeviceRequest {
 public String deviceComment;
 //    public String deviceName;
-    public List<String> fittingIds;
+//    public List<String> fittingIds;
     public String macAddress;
     public String productCompany;
     public String productKey;

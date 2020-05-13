@@ -15,7 +15,9 @@ import com.ziroom.net.OnResponseListener;
 import com.ziroom.net.bean.Result;
 import com.ziroom.net.exception.ApiException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.disposables.Disposable;
 
@@ -71,14 +73,21 @@ public class OrgMainPresenter extends BaseMvpPresenter<OrgMainContract.IView> im
 
     @Override
     public void getDeviceList(int pageIndex, int pageSize, String productKey) {
-        ApiUtil.getResponse(ApiUtil.getService(AppService.class).getDeviceList(pageIndex, pageSize, productKey), new OnResponseListener<List<OrgDevice>>() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("pageIndex", pageIndex);
+        map.put("pageSize", pageSize);
+        if(!TextUtils.isEmpty(productKey)) {
+            map.put("productKey", productKey);
+        }
+
+        ApiUtil.getResponse(ApiUtil.getService(AppService.class).getDeviceList(map), new OnResponseListener<OrgDevice>() {
             @Override
             public void onSubscribe(Disposable d) {
                 addDisposable(d);
             }
 
             @Override
-            public void onNext(List<OrgDevice> entity) {
+            public void onNext(OrgDevice entity) {
                 mView.getDeviceListSuccess(entity);
             }
 

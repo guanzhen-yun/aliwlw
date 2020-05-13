@@ -13,7 +13,7 @@ public interface OrgMainContract {
 
         void logoutSuccess();
 
-        void getDeviceListSuccess(List<OrgDevice> orgDevices);
+        void getDeviceListSuccess(OrgDevice orgDevice);
     }
 
     interface IPresenter extends ILifeCircle {

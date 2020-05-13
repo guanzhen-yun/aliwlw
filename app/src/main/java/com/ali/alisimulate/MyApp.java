@@ -193,7 +193,7 @@ public class MyApp extends Application {
         MqttConfigure.setKeepAliveInterval(65);
 
         mAppContext = getApplicationContext();
-        regist();
+//        regist();
     }
 
     /**

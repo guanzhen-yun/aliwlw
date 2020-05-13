@@ -17,6 +17,7 @@ import com.ali.alisimulate.entity.LoginModel;
 import com.ali.alisimulate.entity.LoginSuccess;
 import com.ali.alisimulate.entity.RegistDeviceRequest;
 import com.ali.alisimulate.entity.RegistDeviceResult;
+import com.ali.alisimulate.util.AppUtils;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.ali.alisimulate.util.Utils;
 import com.google.gson.Gson;
@@ -90,13 +91,10 @@ public class AddDeviceActivity extends BaseActivity<AddDevicePresenter> implemen
         }
         registDeviceRequest.productCompany = Companyname;
         registDeviceRequest.producter = loginSuccess.userDetail.username;
-        if (!TextUtils.isEmpty(Utils.getSystemProperty())) {
-            registDeviceRequest.romVersion = Utils.getSystemProperty();
-        }
-        registDeviceRequest.productKey = "a1yz4fe0qG1";
-        List<String> list = new ArrayList<>();
-        list.add(branchTypeEntity.id);
-        registDeviceRequest.fittingIds = list;
+            registDeviceRequest.romVersion = String.valueOf(AppUtils.getVersionCode(AddDeviceActivity.this));
+        registDeviceRequest.productLine = "产品线1";
+        registDeviceRequest.productKey = branchTypeEntity.id;
+//        registDeviceRequest.fittingIds = list;
         registDeviceRequest.deviceComment = branchTypeEntity.name;
         mPresenter.registDevice(registDeviceRequest);
         dialog.setContent("正在创建");
