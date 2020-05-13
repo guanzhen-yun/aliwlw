@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="15dp"
+    android:background="@drawable/bg_device"
+    >
+
+    <RadioGroup
+        android:id="@+id/rg_net"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="15dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_net"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="联网" />
+
+        <RadioButton
+            android:id="@+id/rb_unnet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="断网" />
+    </RadioGroup>
+
+    <ImageView
+        android:id="@+id/iv_code"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_below="@id/rg_net"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="15dp"
+        android:scaleType="fitXY"
+         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_code"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="10dp"
+        android:text="查看大图"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/tv_devicename"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:text="WaterPurifier" />
+
+    <TextView
+        android:id="@+id/tv_devicekey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_devicename"
+        android:layout_marginLeft="15dp"
+        android:text="设备名称: 5aomtqlPeMF28TOtulTM" />
+
+    <TextView
+        android:id="@+id/tv_alias"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_devicekey"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="15dp"
+        android:text="小米 净水机 WaterPurifier" />
+
+    <TextView
+        android:id="@+id/tv_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_toRightOf="@id/tv_devicename"
+        android:text="已绑定"
+        android:textColor="#666666" />
+
+</RelativeLayout>

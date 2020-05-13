@@ -4,12 +4,10 @@ import android.text.TextUtils;
 
 import com.ali.alisimulate.Constants;
 import com.ali.alisimulate.MyApp;
-import com.ali.alisimulate.entity.DeviceDetailEntity;
-import com.ali.alisimulate.entity.LoginSuccess;
+import com.ali.alisimulate.entity.OrgDevice;
 import com.ali.alisimulate.entity.UserInfoEntity;
 import com.ali.alisimulate.service.AppService;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
-import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.util.UserUtils;
 import com.ziroom.mvp.base.BaseMvpPresenter;
 import com.ziroom.net.ApiUtil;
@@ -17,30 +15,13 @@ import com.ziroom.net.OnResponseListener;
 import com.ziroom.net.bean.Result;
 import com.ziroom.net.exception.ApiException;
 
+import java.util.List;
+
 import io.reactivex.disposables.Disposable;
 
 public class OrgMainPresenter extends BaseMvpPresenter<OrgMainContract.IView> implements OrgMainContract.IPresenter {
     public OrgMainPresenter(OrgMainContract.IView view) {
         super(view);
-    }
-
-    @Override
-    public void getDevice(String productKey) {
-        ApiUtil.getResponse(ApiUtil.getService(AppService.class).getDevices(productKey), new OnResponseListener<String>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                addDisposable(d);
-            }
-
-            @Override
-            public void onNext(String entity) {
-                getDeviceDetail(entity);
-            }
-
-            @Override
-            public void onError(ApiException e) {
-            }
-        });
     }
 
     @Override
@@ -89,23 +70,24 @@ public class OrgMainPresenter extends BaseMvpPresenter<OrgMainContract.IView> im
     }
 
     @Override
-    public void getDeviceDetail(String deviceId) {
-        ApiUtil.getResponse(ApiUtil.getService(AppService.class).getDevicesDetail(deviceId), new OnResponseListener<DeviceDetailEntity>() {
+    public void getDeviceList(int pageIndex, int pageSize, String productKey) {
+        ApiUtil.getResponse(ApiUtil.getService(AppService.class).getDeviceList(pageIndex, pageSize, productKey), new OnResponseListener<List<OrgDevice>>() {
             @Override
             public void onSubscribe(Disposable d) {
                 addDisposable(d);
             }
 
             @Override
-            public void onNext(DeviceDetailEntity entity) {
-                mView.getDeviceResult(entity);
+            public void onNext(List<OrgDevice> entity) {
+                mView.getDeviceListSuccess(entity);
             }
 
             @Override
             public void onError(ApiException e) {
-                mView.getDeviceResult(null);
+                mView.getDeviceListSuccess(null);
             }
         });
     }
+
 
 }

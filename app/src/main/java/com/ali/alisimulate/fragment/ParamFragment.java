@@ -21,6 +21,7 @@ import com.ali.alisimulate.view.DropDownPop;
 import com.ali.alisimulate.view.TopViewCycle;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
+import com.aliyun.alink.linksdk.tmp.devicemodel.Event;
 import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
 import com.aliyun.alink.linksdk.tmp.listener.IPublishResourceListener;
 import com.aliyun.alink.linksdk.tmp.utils.TmpConstant;
@@ -48,6 +49,8 @@ public class ParamFragment extends Fragment {
         rv_list = v.findViewById(R.id.rv_list);
         rv_list.setLayoutManager(new LinearLayoutManager(getActivity()));
         ParamAdapter adapter = new ParamAdapter();
+
+        List<Event> events = LinkKit.getInstance().getDeviceThing().getEvents();
 
         // 获取所有属性
         List<Property> properties = LinkKit.getInstance().getDeviceThing().getProperties();

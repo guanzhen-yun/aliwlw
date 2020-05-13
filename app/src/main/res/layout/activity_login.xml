@@ -7,72 +7,99 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <ImageView
             android:id="@+id/iv_back"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:background="@mipmap/ic_launcher"
-            android:layout_marginLeft="15dp"
-            android:layout_centerVertical="true"
-            />
-
-        <TextView
-            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="登录"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:background="@mipmap/icon_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
             android:padding="15dp"
-            />
+            android:text="登录"
+            android:textColor="#323232"
+            android:textSize="18sp" />
     </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#eeeeee"
-        />
+        android:background="#eeeeee" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="110dp"
         android:text="健康生活"
-        android:textColor="#0000ff"
-        android:textSize="20sp" />
+        android:textColor="#10AB6C"
+        android:textSize="34sp"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/et_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="20dp"
-        android:background="#100000ff"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="52dp"
         android:hint="请输入用户名"
+        android:textColorHint="#ADADAD"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:paddingBottom="12dp"
+        android:maxLength="20"
+        android:paddingTop="12dp"
+        android:paddingLeft="14dp"
+        android:background="@drawable/bg_green_bj"
         android:maxLines="1"
-        android:padding="10dp" />
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="请输入2-20个字符的用户名"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="3dp"
+        android:id="@+id/tv_tip"
+        android:textSize="12sp"
+        android:textColor="#C00707"
+        android:visibility="gone"
+        />
 
     <EditText
         android:id="@+id/et_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:background="#100000ff"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_green_bj"
         android:hint="请输入密码"
+        android:maxLength="20"
+        android:textColorHint="#ADADAD"
+        android:textColor="#000000"
+        android:textSize="16sp"
         android:maxLines="1"
-        android:padding="10dp" />
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp"
+        android:paddingLeft="14dp" />
 
     <TextView
         android:id="@+id/tv_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="15dp"
-        android:background="#00ee30"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="46dp"
+        android:layout_marginRight="24dp"
+        android:background="@drawable/bg_login_buton_notenable"
         android:gravity="center"
-        android:padding="15dp"
-        android:onClick="toorg"
+        android:padding="13dp"
         android:text="登录"
         android:textColor="#ffffff"
         android:textSize="15sp" />

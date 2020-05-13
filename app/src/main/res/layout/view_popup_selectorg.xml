@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_body"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#4d000000">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bg_frombottom">
+
+        <RelativeLayout
+            android:id="@+id/rl_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="center"
+                android:src="@mipmap/icon_back_small" />
+
+            <ImageView
+                android:id="@+id/iv_close"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:scaleType="center"
+                android:src="@mipmap/icon_close" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_branch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/rl_top"
+            android:layout_marginLeft="26dp">
+
+            <TextView
+                android:id="@+id/tv_branch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#585858"
+                android:textSize="16sp"
+                android:text="请选择" />
+
+            <View
+                android:id="@+id/view_branch"
+                android:layout_width="24dp"
+                android:layout_height="3dp"
+                android:layout_below="@id/tv_branch"
+                android:layout_marginTop="3dp"
+                android:layout_centerHorizontal="true"
+                android:background="#10AB6C" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_branchtype"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rl_top"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="26dp"
+            android:layout_toRightOf="@id/rl_branch">
+
+            <TextView
+                android:id="@+id/tv_branchtype"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#585858"
+                android:textSize="16sp"
+                android:text="请选择" />
+
+            <View
+                android:id="@+id/view_branchtype"
+                android:layout_width="24dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_below="@id/tv_branchtype"
+                android:layout_centerHorizontal="true"
+                android:background="#10AB6C" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_device"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rl_top"
+            android:layout_marginLeft="26dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/rl_branchtype">
+
+            <TextView
+                android:id="@+id/tv_device"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#585858"
+                android:textSize="16sp"
+                android:text="请选择" />
+
+            <View
+                android:id="@+id/view_device"
+                android:layout_width="24dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_below="@id/tv_device"
+                android:layout_centerHorizontal="true"
+                android:background="#10AB6C" />
+        </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rl_branch"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="26dp"
+            />
+    </RelativeLayout>
+</RelativeLayout>

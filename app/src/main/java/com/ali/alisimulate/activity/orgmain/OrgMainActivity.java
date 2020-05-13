@@ -21,11 +21,12 @@ import com.ali.alisimulate.MyApp;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.activity.adddevice.AddDeviceActivity;
 import com.ali.alisimulate.activity.DeviceDetailActivity;
+import com.ali.alisimulate.adapter.DeviceListAdapter;
 import com.ali.alisimulate.adapter.PopDeviceListAdapter;
 import com.ali.alisimulate.dialog.BottomTwoButtonDialog;
 import com.ali.alisimulate.dialog.SecondWCodeDialog;
-import com.ali.alisimulate.entity.DeviceDetailEntity;
 import com.ali.alisimulate.entity.LoginSuccess;
+import com.ali.alisimulate.entity.OrgDevice;
 import com.ali.alisimulate.entity.UserInfoEntity;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.google.gson.Gson;
@@ -53,33 +54,21 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     TextView tvDevice;
     @BindView(R.id.rl_device)
     RelativeLayout rlDevice;
+    @BindView(R.id.rv_device)
+    RecyclerView rvDevice;
     @BindView(R.id.ll_none)
     LinearLayout llNone;
-    @BindView(R.id.iv_code)
-    ImageView ivCode;
-    @BindView(R.id.rb_net)
-    RadioButton rbNet;
-    @BindView(R.id.rb_unnet)
-    RadioButton rbUnnet;
-    @BindView(R.id.rg_net)
-    RadioGroup rgNet;
-    @BindView(R.id.tv_devicename)
-    TextView tvDevicename;
-    @BindView(R.id.tv_devicekey)
-    TextView tvDevicekey;
-    @BindView(R.id.tv_alias)
-    TextView tvAlias;
-    @BindView(R.id.tv_status)
-    TextView tvStatus;
-    @BindView(R.id.rl_body)
-    RelativeLayout rlBody;
     @BindView(R.id.iv_addDevice)
     ImageView ivAddDevice;
+
+    private List<OrgDevice> orgDevices = new ArrayList<>();
+    private DeviceListAdapter adapter;
 
     @Override
     public void initDatas() {
         mPresenter.getUserInfo();
-        mPresenter.getDevice("a1yz4fe0qG1");
+//        mPresenter.getDevice("a1yz4fe0qG1");
+        mPresenter.getDeviceList(0, 10, "");//获取全部数据
     }
 
     @Override
@@ -89,25 +78,9 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         if (loginInfo != null) {
             tvUsername.setText(loginInfo.userDetail.username);
         }
-
-        if("1".equals(SharedPreferencesUtils.getStr(this, Constants.KEY_CONNECT_STATUS))) {
-            rbNet.setChecked(true);
-            rbUnnet.setChecked(false);
-        } else {
-            rbNet.setChecked(false);
-            rbUnnet.setChecked(true);
-        }
-
-        rgNet.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                if (i == R.id.rb_net) {
-                    MyApp.getApp().connect();
-                } else if (i == R.id.rb_unnet) {
-                    MyApp.getApp().unregistConnectAli();
-                }
-            }
-        });
+        rvDevice.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new DeviceListAdapter(this, orgDevices);
+        rvDevice.setAdapter(adapter);
     }
 
     public void adddevice(View view) {
@@ -123,28 +96,13 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == 100) {
             //刷新设备列表
-            mPresenter.getDevice("a1yz4fe0qG1");
+            mPresenter.getDeviceList(0, 10, "");
         }
     }
 
     @Override
     public OrgMainPresenter getPresenter() {
         return new OrgMainPresenter(this);
-    }
-
-    @Override
-    public void getDeviceResult(DeviceDetailEntity entity) {
-        if (entity == null) {
-            llNone.setVisibility(View.VISIBLE);
-            rlBody.setVisibility(View.GONE);
-        } else {
-            llNone.setVisibility(View.GONE);
-            rlBody.setVisibility(View.VISIBLE);
-            tvDevicename.setText(entity.deviceName);
-            tvDevicekey.setText("设备名称: " + entity.deviceId);
-            tvAlias.setText(entity.productCompany + " " + entity.brandName + " " + entity.deviceName);
-            tvStatus.setText(entity.bindingStatus);
-        }
     }
 
     @Override
@@ -157,6 +115,19 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     @Override
     public void logoutSuccess() {
         finish();
+    }
+
+    @Override
+    public void getDeviceListSuccess(List<OrgDevice> orgDevices) {
+        if (orgDevices == null || orgDevices.size() == 0) {
+            llNone.setVisibility(View.VISIBLE);
+            rvDevice.setVisibility(View.GONE);
+        } else {
+            llNone.setVisibility(View.GONE);
+            rvDevice.setVisibility(View.VISIBLE);
+            orgDevices.addAll(orgDevices);
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @OnClick({R.id.rl_body, R.id.rl_device, R.id.iv_loginout, R.id.iv_code})
