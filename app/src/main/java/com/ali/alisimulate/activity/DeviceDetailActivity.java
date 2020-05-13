@@ -2,6 +2,7 @@ package com.ali.alisimulate.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -15,6 +16,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.fragment.ControlFragment;
 import com.ali.alisimulate.fragment.ParamFragment;
+import com.ali.alisimulate.util.SoftKeyBoardListener;
 import com.ali.alisimulate.util.ToastUtils;
 import com.google.android.material.tabs.TabLayout;
 
@@ -48,6 +50,22 @@ public class DeviceDetailActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 ToastUtils.showToast("关闭设备");
+            }
+        });
+        setSoftListener();
+    }
+
+    private void setSoftListener() {
+        SoftKeyBoardListener softKeyBoardListener = new SoftKeyBoardListener(this);
+        softKeyBoardListener.setOnSoftKeyBoardChangeListener(new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
+            @Override
+            public void keyBoardShow(int height) {
+                iv_close.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void keyBoardHide(int height) {
+                iv_close.setVisibility(View.VISIBLE);
             }
         });
     }

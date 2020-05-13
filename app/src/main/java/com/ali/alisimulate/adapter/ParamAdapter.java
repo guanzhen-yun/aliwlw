@@ -1,5 +1,9 @@
 package com.ali.alisimulate.adapter;
 
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +13,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,10 +21,13 @@ import com.ali.alisimulate.R;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
+import com.aliyun.alink.linksdk.tmp.devicemodel.specs.EnumSpec;
+import com.aliyun.alink.linksdk.tmp.devicemodel.specs.MetaSpec;
 import com.aliyun.alink.linksdk.tmp.utils.TmpConstant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
@@ -35,52 +43,147 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
     public void onBind(RecyclerView.ViewHolder viewHolder, int realPosition, Property data) {
         if (viewHolder instanceof ParamsHolder) {
             ((ParamsHolder) viewHolder).tv_name.setText(data.getName());
-            if (TmpConstant.TYPE_VALUE_ENUM.equals(data.getDataType().getType())) {
-                ((ParamsHolder) viewHolder).et_prop.setEnabled(false);
-                ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(data.getIdentifier());
-               if(propertyValue != null) {
-                   Integer value = ((ValueWrapper.EnumValueWrapper) propertyValue).getValue();
-                   ((ParamsHolder) viewHolder).et_prop.setText(value);
-               }
-            } else if (TmpConstant.TYPE_VALUE_FLOAT.equals(data.getDataType().getType())) {
-
-            }else if (TmpConstant.TYPE_VALUE_DOUBLE.equals(data.getDataType().getType())) {
-
-            }else if (TmpConstant.TYPE_VALUE_INTEGER.equals(data.getDataType().getType())) {
-
+            if(realPosition == getItemCount()-2) {
+                ((ParamsHolder) viewHolder).view_bottom.setVisibility(View.VISIBLE);
+            } else {
+                ((ParamsHolder) viewHolder).view_bottom.setVisibility(View.GONE);
             }
+            if (TmpConstant.TYPE_VALUE_ENUM.equals(data.getDataType().getType())) {
+                ((ParamsHolder) viewHolder).et_prop.setVisibility(View.GONE);
+                ((ParamsHolder) viewHolder).tv_prop.setVisibility(View.VISIBLE);
 
-            ((ParamsHolder) viewHolder).rl_form.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (TmpConstant.TYPE_VALUE_ENUM.equals(data.getDataType().getType())) {
-                        LayoutInflater mLayoutInflater = (LayoutInflater) view.getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-                        ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
-                                R.layout.pop_device, null, true);
-                        PopupWindow pw = new PopupWindow(menuView, RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                RelativeLayout.LayoutParams.WRAP_CONTENT);
-                        pw.setOutsideTouchable(true);
-                        pw.showAsDropDown(((ParamsHolder) viewHolder).rl_form);
-                        RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
-                        rv_device.setLayoutManager(new LinearLayoutManager(view.getContext()));
-                        List<String> list = new ArrayList<>();
-                        list.add("1档");
-                        list.add("2档");
-                        list.add("3档");
-                        list.add("4档");
-                        PopDeviceListAdapter adapter = new PopDeviceListAdapter(list);
-                        rv_device.setAdapter(adapter);
-                        adapter.setOnCheckedListener(new PopDeviceListAdapter.OnCheckedListener() {
-                            @Override
-                            public void onCheck(int pos) {
-                                ((ParamsHolder) viewHolder).tv_name.setText(list.get(pos));
-                                pw.dismiss();
-                            }
-                        });
+                EnumSpec specs = (EnumSpec) data.getDataType().getSpecs();
+
+                Set<String> strings = specs.keySet();
+
+                List<String> list = new ArrayList<>();
+
+                List<String> listKey = new ArrayList<>();
+
+                for (String string : strings) {
+                    list.add(specs.get(string));
+                    listKey.add(string);
+                }
+                ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(data.getIdentifier());
+                if (propertyValue != null) {
+                    Integer value = ((ValueWrapper.EnumValueWrapper) propertyValue).getValue();
+                    ((ParamsHolder) viewHolder).tv_prop.setText(value + "(" + specs.get(String.valueOf(value)) + ")");
+                }
+                ((ParamsHolder) viewHolder).iv_select.setVisibility(View.VISIBLE);
+                ((ParamsHolder) viewHolder).tv_unit.setVisibility(View.GONE);
+
+                ((ParamsHolder) viewHolder).rl_form.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (TmpConstant.TYPE_VALUE_ENUM.equals(data.getDataType().getType())) {
+                            LayoutInflater mLayoutInflater = (LayoutInflater) view.getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                            ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
+                                    R.layout.pop_device, null, true);
+                            PopupWindow pw = new PopupWindow(menuView, RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+                            pw.setOutsideTouchable(true);
+                            pw.showAsDropDown(((ParamsHolder) viewHolder).rl_form);
+                            RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
+                            rv_device.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+                            PopDeviceListAdapter adapter = new PopDeviceListAdapter(list);
+                            rv_device.setAdapter(adapter);
+                            adapter.setOnCheckedListener(new PopDeviceListAdapter.OnCheckedListener() {
+                                @Override
+                                public void onCheck(int pos) {
+                                    ((ParamsHolder) viewHolder).tv_prop.setText(listKey.get(pos) + "(" + list.get(pos) + ")");
+                                    if (onCheckedListener != null) {
+                                        onCheckedListener.onSelect(realPosition, listKey.get(pos));
+                                    }
+                                    pw.dismiss();
+                                }
+                            });
+                        }
+                    }
+                });
+                ((ParamsHolder) viewHolder).tv_tip.setVisibility(View.GONE);
+            } else if (TmpConstant.TYPE_VALUE_FLOAT.equals(data.getDataType().getType())) {
+                ((ParamsHolder) viewHolder).iv_select.setVisibility(View.GONE);
+                ((ParamsHolder) viewHolder).tv_unit.setVisibility(View.VISIBLE);
+                ((ParamsHolder) viewHolder).tv_tip.setVisibility(View.VISIBLE);
+            } else if (TmpConstant.TYPE_VALUE_DOUBLE.equals(data.getDataType().getType())) {
+                ((ParamsHolder) viewHolder).iv_select.setVisibility(View.GONE);
+                ((ParamsHolder) viewHolder).tv_unit.setVisibility(View.VISIBLE);
+                ((ParamsHolder) viewHolder).tv_tip.setVisibility(View.VISIBLE);
+            } else if (TmpConstant.TYPE_VALUE_INTEGER.equals(data.getDataType().getType())) {
+                ((ParamsHolder) viewHolder).et_prop.setVisibility(View.VISIBLE);
+                ((ParamsHolder) viewHolder).tv_prop.setVisibility(View.GONE);
+                ((ParamsHolder) viewHolder).iv_select.setVisibility(View.GONE);
+                ((ParamsHolder) viewHolder).tv_unit.setVisibility(View.VISIBLE);
+                ((ParamsHolder) viewHolder).tv_tip.setVisibility(View.VISIBLE);
+                MetaSpec specs = (MetaSpec) data.getDataType().getSpecs();
+                ((ParamsHolder) viewHolder).tv_tip.setText("int32型, 范围: " + specs.getMin() + "～" + specs.getMax() + ",步长" + specs.getStep());
+                ((ParamsHolder) viewHolder).tv_unit.setText(specs.getUnit());
+                ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(data.getIdentifier());
+                if (propertyValue != null) {
+                    Integer value = ((ValueWrapper.IntValueWrapper) propertyValue).getValue();
+                    if (value != null) {
+                        ((ParamsHolder) viewHolder).et_prop.setText(String.valueOf(value));
                     }
                 }
-            });
+                if (((ParamsHolder) viewHolder).et_prop.getTag() instanceof TextWatcher) {
+                    ((ParamsHolder) viewHolder).et_prop.removeTextChangedListener((TextWatcher) (((ParamsHolder) viewHolder).et_prop.getTag()));
+                }
+                ((ParamsHolder) viewHolder).et_prop.setInputType(InputType.TYPE_CLASS_NUMBER);
+                final TextWatcher watcher = new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (((ParamsHolder) viewHolder).et_prop.hasFocus()) {
+                            String et = ((ParamsHolder) viewHolder).et_prop.getText().toString();
+                            if(!TextUtils.isEmpty(et) && Integer.parseInt(et) > Integer.parseInt(specs.getMax())) {
+                                if(et.length() > 1) {
+                                    ((ParamsHolder) viewHolder).et_prop.setText(et.substring(0, et.length()-1));
+                                    ((ParamsHolder) viewHolder).et_prop.setSelection(et.length()-1);
+                                } else {
+                                    ((ParamsHolder) viewHolder).et_prop.setText("");
+                                    ((ParamsHolder) viewHolder).et_prop.setSelection(0);
+                                }
+                            }
+                            if(!TextUtils.isEmpty(et) && Integer.parseInt(et) <= Integer.parseInt(specs.getMax()) && onCheckedListener != null) {
+                                onCheckedListener.onChange(realPosition, et);
+                            }
+                        }
+                    }
+                };
+
+                ((ParamsHolder) viewHolder).et_prop.setTag(watcher);
+                ((ParamsHolder) viewHolder).et_prop.addTextChangedListener(watcher);
+                ((ParamsHolder) viewHolder).et_prop.setOnFocusChangeListener((v, hasFocus) -> {
+                    if (hasFocus) {
+                        ((ParamsHolder) viewHolder).et_prop.addTextChangedListener(watcher);
+                    } else {
+                        ((ParamsHolder) viewHolder).et_prop.removeTextChangedListener(watcher);
+                    }
+                });
+            }
         }
+    }
+
+    private OnCheckedListener onCheckedListener;
+
+    public void setOnCheckedListener(OnCheckedListener onCheckedListener) {
+        this.onCheckedListener = onCheckedListener;
+    }
+
+    public interface OnCheckedListener {
+        void onSelect(int position, String selectId);
+
+        void onChange(int realPosition, String et);
     }
 
     class ParamsHolder extends BaseRecyclerAdapter.Holder {
@@ -90,15 +193,19 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
         private TextView tv_unit;
         private TextView tv_tip;
         private ImageView iv_select;
+        private TextView tv_prop;
+        private View view_bottom;
 
         public ParamsHolder(View itemView) {
             super(itemView);
+            tv_prop = itemView.findViewById(R.id.tv_prop);
             tv_name = itemView.findViewById(R.id.tv_name);
             rl_form = itemView.findViewById(R.id.rl_form);
             et_prop = itemView.findViewById(R.id.et_prop);
             tv_unit = itemView.findViewById(R.id.tv_unit);
             tv_tip = itemView.findViewById(R.id.tv_tip);
             iv_select = itemView.findViewById(R.id.iv_select);
+            view_bottom = itemView.findViewById(R.id.view_bottom);
         }
     }
 }
