@@ -1,5 +1,6 @@
 package com.ali.alisimulate.fragment.param;
 
+import com.ali.alisimulate.entity.DeviceDetail;
 import com.ali.alisimulate.entity.RegistModel;
 import com.ziroom.mvp.ILifeCircle;
 import com.ziroom.mvp.IMvpView;
@@ -11,12 +12,12 @@ import com.ziroom.mvp.IMvpView;
  **/
 public interface ParamContract {
     interface IView extends IMvpView {
-        void getDeviceInfoSuccess();
+        void getDeviceInfoSuccess(DeviceDetail deviceDetail);
         void getPjInfoSuccess();
     }
 
     interface IPresenter extends ILifeCircle {
-        void getDeviceInfo();
+        void getDeviceInfo(String deviceId);
         void getPjInfo();
     }
 }

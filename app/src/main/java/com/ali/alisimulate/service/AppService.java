@@ -3,6 +3,7 @@ package com.ali.alisimulate.service;
 import com.ali.alisimulate.Constants;
 import com.ali.alisimulate.entity.BranchEntity;
 import com.ali.alisimulate.entity.BranchTypeEntity;
+import com.ali.alisimulate.entity.DeviceDetail;
 import com.ali.alisimulate.entity.LoginModel;
 import com.ali.alisimulate.entity.LoginSuccess;
 import com.ali.alisimulate.entity.OrgDevice;
@@ -60,4 +61,9 @@ public interface AppService {
     @Headers({Constants.DOMAIN_ALI_HEADR})
     @GET("/api/device/page_by_productkey")
     Observable<Result<OrgDevice>> getDeviceList (@QueryMap HashMap<String, Object> map);
+
+    @Headers({Constants.DOMAIN_ALI_HEADR})
+    @GET("/api/device/detail")
+    Observable<Result<DeviceDetail>> getDeviceDetail (@Query("deviceId") String deviceId);
+
 }

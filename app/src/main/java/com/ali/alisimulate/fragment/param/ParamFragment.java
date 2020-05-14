@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.adapter.ParamAdapter;
+import com.ali.alisimulate.entity.DeviceDetail;
 import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.view.DropDownPop;
 import com.ali.alisimulate.view.TopViewCycle;
@@ -119,8 +120,11 @@ public class ParamFragment extends BaseFragment<BaseMvpPresenter> implements Par
     }
 
     @Override
-    public void getDeviceInfoSuccess() {
+    public void getDeviceInfoSuccess(DeviceDetail deviceDetail) {
+        List<DeviceDetail.FittingDetail> fittingDetails = deviceDetail.fittingDetails;
+        for (DeviceDetail.FittingDetail fittingDetail : fittingDetails) {
 
+        }
     }
 
     @Override
