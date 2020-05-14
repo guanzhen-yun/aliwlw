@@ -12,8 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.Constants;
+import com.ali.alisimulate.MainActivity;
 import com.ali.alisimulate.MyApp;
 import com.ali.alisimulate.R;
+import com.ali.alisimulate.activity.DeviceDetailActivity;
 import com.ali.alisimulate.activity.adddevice.AddDeviceActivity;
 import com.ali.alisimulate.adapter.DeviceListAdapter;
 import com.ali.alisimulate.dialog.BottomTwoButtonDialog;
@@ -25,7 +27,9 @@ import com.ali.alisimulate.entity.SelectOrgEntity;
 import com.ali.alisimulate.entity.UserInfoEntity;
 import com.ali.alisimulate.util.LoadMoreOnScrollListener;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
+import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.view.DropDownOrgSelect;
+import com.aliyun.alink.linkkit.api.LinkKit;
 import com.google.gson.Gson;
 import com.ziroom.base.BaseActivity;
 import com.ziroom.base.ViewInject;
@@ -195,11 +199,15 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         adapter.setOnSelectListener(new DeviceListAdapter.OnSelectListener() {
             @Override
             public void onSelect(int position) {
-                OrgDevice.DeviceList device = orgDevices.get(position);
-                String deviceName = device.deviceName;
-                String productKey = device.productKey;
-                String deviceSecret = device.deviceSecret;
-                MyApp.getApp().regist(deviceName, productKey, deviceSecret);
+//                if (!MyApp.getApp().mapInit.get(orgDevices.get(position)))  ke{
+//                    ToastUtils.showToast("初始化尚未成功，请稍后点击");
+//                    return;
+//                }
+                if (LinkKit.getInstance().getDeviceThing() == null) {
+                    ToastUtils.showToast("物模型功能未启用");
+                    return;
+                }
+                startActivity(new Intent(OrgMainActivity.this, DeviceDetailActivity.class));
             }
         });
     }

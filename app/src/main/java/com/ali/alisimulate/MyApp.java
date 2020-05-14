@@ -42,6 +42,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -63,6 +64,7 @@ public class MyApp extends Application {
     public static boolean isInitDone = false;
     public String productKey = null, deviceName = null, deviceSecret = null, productSecret = null, password = null, username = null,clientId = null;
     private InitManager initManager;
+    public HashMap<String, Boolean> mapInit = new HashMap<>();
 
     @Override
     public void onCreate() {
@@ -234,6 +236,7 @@ public class MyApp extends Application {
                 Log.d(TAG, "onInitDone() called with: data = [" + data + "]");
                 showToast("初始化成功");
                 isInitDone = true;
+                mapInit.put(deviceName, true);
             }
         });
 

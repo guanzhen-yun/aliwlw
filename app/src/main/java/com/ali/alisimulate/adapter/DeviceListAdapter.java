@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.Constants;
+import com.ali.alisimulate.MyApp;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.entity.OrgDevice;
 import com.ali.alisimulate.util.DisplayUtil;
@@ -49,7 +50,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         DesignViewHolder viewHolder = (DesignViewHolder) holder;
         OrgDevice.DeviceList name = mData.get(position);
-        if("1".equals(SharedPreferencesUtils.getStr(context, Constants.KEY_CONNECT_STATUS))) {
+        if ("1".equals(SharedPreferencesUtils.getStr(context, Constants.KEY_CONNECT_STATUS))) {
             viewHolder.rb_net.setChecked(true);
         } else {
             viewHolder.rb_unnet.setChecked(true);
@@ -59,24 +60,29 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
                 if (checkedId == viewHolder.rb_net.getId()) {
-
+                    String deviceName = name.deviceName;
+                    String productKey = name.productKey;
+                    String deviceSecret = name.deviceSecret;
+                    MyApp.getApp().regist(deviceName, productKey, deviceSecret);
                 } else {
-
+                    //TODO
                 }
             }
         });
-        Bitmap bitmap = ZXingUtils.createQRImage(name.deviceName, DisplayUtil.dip2px(context, 24),  DisplayUtil.dip2px(context, 24));
+        Bitmap bitmap = ZXingUtils.createQRImage(name.deviceName, DisplayUtil.dip2px(context, 24), DisplayUtil.dip2px(context, 24));
         viewHolder.iv_code.setImageBitmap(bitmap);
         viewHolder.tv_devicename.setText(name.deviceComment);
         viewHolder.tv_devicekey.setText("设备名称: " + name.deviceName);
 
-        viewHolder.tv_alias.setText(name.productName + " " + getModelStr(name.deviceModel) + " " + name.deviceComment);
+        viewHolder.tv_alias.setText(name.brandName + " " + getModelStr(name.deviceModel) + " " + name.deviceComment);
         viewHolder.tv_status.setText(name.bindingStatus);
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (onSelectListener != null) {
+                    onSelectListener.onSelect(position);
+                }
             }
         });
     }

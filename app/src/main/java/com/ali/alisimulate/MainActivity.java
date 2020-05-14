@@ -49,10 +49,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean checkReady() {
-        if (MyApp.userDevInfoError) {
-            ToastUtils.showToast("设备三元组信息res/raw/deviceinfo格式错误");
-            return false;
-        }
+//        if (MyApp.userDevInfoError) {
+//            ToastUtils.showToast("设备三元组信息res/raw/deviceinfo格式错误");
+//            return false;
+//        }
         if (!MyApp.isInitDone) {
             ToastUtils.showToast("初始化尚未成功，请稍后点击");
             return false;
