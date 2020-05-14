@@ -317,9 +317,9 @@ public class InitManager {
         public void onConnectStateChange(String connectId, ConnectState connectState) {
             Log.d(TAG, "onConnectStateChange() called with: connectId = [" + connectId + "], connectState = [" + connectState + "]");
             if (connectState == ConnectState.CONNECTED) {
-                SharedPreferencesUtils.save(MyApp.getApp(), Constants.KEY_CONNECT_STATUS, "1");
+//                SharedPreferencesUtils.save(MyApp.getApp(), Constants.KEY_CONNECT_STATUS, "1");
             } else {
-                SharedPreferencesUtils.save(MyApp.getApp(), Constants.KEY_CONNECT_STATUS, "0");
+//                SharedPreferencesUtils.save(MyApp.getApp(), Constants.KEY_CONNECT_STATUS, "0");
             }
         }
     };

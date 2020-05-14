@@ -17,6 +17,7 @@ import com.ali.alisimulate.config.SSLSocketClient;
 import com.ali.alisimulate.entity.DeviceInfoData;
 import com.ali.alisimulate.util.IDemoCallback;
 import com.ali.alisimulate.util.InitManager;
+import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.aliyun.alink.dm.api.BaseInfo;
@@ -229,6 +230,7 @@ public class MyApp extends Application {
                 // 初始化失败，初始化失败之后需要用户负责重新初始化
                 // 如一开始网络不通导致初始化失败，后续网络回复之后需要重新初始化
                 showToast("初始化失败");
+                SharedPreferencesUtils.save(MyApp.getApp(),  Constants.KEY_CONNECT_STATUS, "");
             }
 
             @Override
@@ -237,6 +239,7 @@ public class MyApp extends Application {
                 showToast("初始化成功");
                 isInitDone = true;
                 mapInit.put(deviceName, true);
+                SharedPreferencesUtils.save(MyApp.getApp(),  Constants.KEY_CONNECT_STATUS, deviceName);
             }
         });
 

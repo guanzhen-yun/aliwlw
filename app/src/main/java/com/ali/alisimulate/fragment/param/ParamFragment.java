@@ -1,21 +1,13 @@
-package com.ali.alisimulate.fragment;
+package com.ali.alisimulate.fragment.param;
 
-import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.adapter.ParamAdapter;
-import com.ali.alisimulate.util.SoftKeyBoardListener;
 import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.view.DropDownPop;
 import com.ali.alisimulate.view.TopViewCycle;
@@ -26,28 +18,27 @@ import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
 import com.aliyun.alink.linksdk.tmp.listener.IPublishResourceListener;
 import com.aliyun.alink.linksdk.tmp.utils.TmpConstant;
 import com.aliyun.alink.linksdk.tools.AError;
+import com.ziroom.base.BaseFragment;
+import com.ziroom.base.ViewInject;
+import com.ziroom.mvp.base.BaseMvpPresenter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ParamFragment extends Fragment {
-    private RecyclerView rv_list;
+import butterknife.BindView;
 
-    @Nullable
+@ViewInject(layoutId = R.layout.fragment_param)
+public class ParamFragment extends BaseFragment<BaseMvpPresenter> implements ParamContract.IView {
+    @BindView(R.id.rv_list)
+    RecyclerView mRvList;
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_param, container, false);
-        initView(v);
-        return v;
-    }
-
-    private void initView(View v) {
+    public void initViews(View mView) {
         DropDownPop dropDownPop = new DropDownPop();
         dropDownPop.init(getActivity());
-        rv_list = v.findViewById(R.id.rv_list);
-        rv_list.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRvList.setLayoutManager(new LinearLayoutManager(getActivity()));
         ParamAdapter adapter = new ParamAdapter();
 
         List<Event> events = LinkKit.getInstance().getDeviceThing().getEvents();
@@ -56,13 +47,13 @@ public class ParamFragment extends Fragment {
         List<Property> properties = LinkKit.getInstance().getDeviceThing().getProperties();
         List<Property> paramList = new ArrayList<>();
         for (Property property : properties) {
-            if(TmpConstant.TYPE_VALUE_ENUM.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_INTEGER.equals(property.getDataType().getType())) {
+            if (TmpConstant.TYPE_VALUE_ENUM.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_INTEGER.equals(property.getDataType().getType())) {
                 paramList.add(property);
             }
         }
 
         adapter.addDatas(paramList);
-        rv_list.setAdapter(adapter);
+        mRvList.setAdapter(adapter);
 
         adapter.setOnCheckedListener(new ParamAdapter.OnCheckedListener() {
             @Override
@@ -121,9 +112,19 @@ public class ParamFragment extends Fragment {
             @Override
             public void onClick(int position) {
                 ToastUtils.showToast(position + "");
-                dropDownPop.showPop(rv_list);
+                dropDownPop.showPop(mRvList);
             }
         });
         adapter.setHeadView(topViewCycle);
+    }
+
+    @Override
+    public void getDeviceInfoSuccess() {
+
+    }
+
+    @Override
+    public void getPjInfoSuccess() {
+
     }
 }

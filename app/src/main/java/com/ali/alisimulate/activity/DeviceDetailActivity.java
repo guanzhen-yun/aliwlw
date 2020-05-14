@@ -1,8 +1,6 @@
 package com.ali.alisimulate.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -15,7 +13,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.fragment.ControlFragment;
-import com.ali.alisimulate.fragment.ParamFragment;
+import com.ali.alisimulate.fragment.param.ParamFragment;
 import com.ali.alisimulate.util.SoftKeyBoardListener;
 import com.ali.alisimulate.util.ToastUtils;
 import com.google.android.material.tabs.TabLayout;
