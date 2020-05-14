@@ -4,6 +4,8 @@ import android.text.TextUtils;
 
 import com.ali.alisimulate.Constants;
 import com.ali.alisimulate.MyApp;
+import com.ali.alisimulate.entity.BranchEntity;
+import com.ali.alisimulate.entity.BranchTypeEntity;
 import com.ali.alisimulate.entity.OrgDevice;
 import com.ali.alisimulate.entity.UserInfoEntity;
 import com.ali.alisimulate.service.AppService;
@@ -94,6 +96,44 @@ public class OrgMainPresenter extends BaseMvpPresenter<OrgMainContract.IView> im
             @Override
             public void onError(ApiException e) {
                 mView.getDeviceListSuccess(null);
+            }
+        });
+    }
+
+    @Override
+    public void getBranchList() {
+        ApiUtil.getResponse(ApiUtil.getService(AppService.class).getBranchList(), new OnResponseListener<List<BranchEntity>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                addDisposable(d);
+            }
+
+            @Override
+            public void onNext(List<BranchEntity> entity) {
+                mView.getBranchListResult(entity);
+            }
+
+            @Override
+            public void onError(ApiException e) {
+            }
+        });
+    }
+
+    @Override
+    public void getBranchTypeList(String id) {
+        ApiUtil.getResponse(ApiUtil.getService(AppService.class).getBranchTypeList(id), new OnResponseListener<List<BranchTypeEntity>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                addDisposable(d);
+            }
+
+            @Override
+            public void onNext(List<BranchTypeEntity> entity) {
+                mView.getBranchTypeListResult(entity);
+            }
+
+            @Override
+            public void onError(ApiException e) {
             }
         });
     }
