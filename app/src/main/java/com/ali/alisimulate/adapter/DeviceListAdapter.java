@@ -50,7 +50,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         DesignViewHolder viewHolder = (DesignViewHolder) holder;
         OrgDevice.DeviceList name = mData.get(position);
-        if ("1".equals(SharedPreferencesUtils.getStr(context, Constants.KEY_CONNECT_STATUS))) {
+        if ("1".equals(SharedPreferencesUtils.getStr(context, name.deviceName + Constants.KEY_CONNECT_STATUS))) {
             viewHolder.rb_net.setChecked(true);
         } else {
             viewHolder.rb_unnet.setChecked(true);
