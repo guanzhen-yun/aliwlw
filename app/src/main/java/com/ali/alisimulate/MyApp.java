@@ -61,7 +61,7 @@ public class MyApp extends Application {
      * 未初始化完成，所有和云端的长链通信都不通
      */
     public static boolean isInitDone = false;
-    public static String productKey = null, deviceName = null, deviceSecret = null, productSecret = null, password = null, username = null,clientId = null;
+    public String productKey = null, deviceName = null, deviceSecret = null, productSecret = null, password = null, username = null,clientId = null;
     private InitManager initManager;
 
     @Override
@@ -115,18 +115,21 @@ public class MyApp extends Application {
         RetrofitUrlManager.getInstance().putDomain(Constants.DOMAIN_ALI2_KEY, ConfigManager.getInstance().getHost2());
     }
 
-    public void regist() {
+    public void regist(String mDeviceName, String mproductKey, String mdeviceSecret) {
+        deviceName = mDeviceName;
+        deviceSecret = mdeviceSecret;
+        productKey = mproductKey;
         // 从 raw 读取指定测试文件
-        String testData = getFromRaw();
+//        String testData = getFromRaw();
         ALog.i(TAG, "sdk version = " + LinkKit.getInstance().getSDKVersion());
         // 解析数据
-        getDeviceInfoFrom(testData);
-        if (userDevInfoError) {
-            showToast("三元组文件格式不正确，请重新检查格式");
-        }
-        if (TextUtils.isEmpty(deviceSecret)) {//从sp文件中获取这个值 这个值最好保存在其他文件中
-            tryGetFromSP();
-        }
+//        getDeviceInfoFrom(testData);
+//        if (userDevInfoError) {
+//            showToast("三元组文件格式不正确，请重新检查格式");
+//        }
+//        if (TextUtils.isEmpty(deviceSecret)) {//从sp文件中获取这个值 这个值最好保存在其他文件中
+//            tryGetFromSP();
+//        }
 /**
  * 动态注册
  * 只有pk dn ps 的时候 需要先动态注册获取ds，然后使用pk+dn+ds进行初始化建联，如果一开始有ds则无需执行动态注册

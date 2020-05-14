@@ -72,6 +72,13 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
 
         viewHolder.tv_alias.setText(name.productName + " " + getModelStr(name.deviceModel) + " " + name.deviceComment);
         viewHolder.tv_status.setText(name.bindingStatus);
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
 
     private String getModelStr(String model) {
@@ -89,6 +96,10 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         return mData.size();
+    }
+
+    public void setOnSelectListener(OnSelectListener onSelectListener) {
+        this.onSelectListener = onSelectListener;
     }
 
     public class DesignViewHolder extends RecyclerView.ViewHolder {
@@ -112,5 +123,11 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
             tv_devicename = itemView.findViewById(R.id.tv_devicename);
             iv_code = itemView.findViewById(R.id.iv_code);
         }
+    }
+
+    private OnSelectListener onSelectListener;
+
+    public interface OnSelectListener {
+        public void onSelect(int position);
     }
 }

@@ -26,5 +26,7 @@ public class OrgDevice {
         public String productKey;
         public String productName;
         public String romVersion;
+        public String brandName;
+        public String deviceSecret;
     }
 }

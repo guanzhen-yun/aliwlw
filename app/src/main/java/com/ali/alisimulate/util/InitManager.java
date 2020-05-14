@@ -91,7 +91,9 @@ public class InitManager {
         // 设备密钥
         deviceInfo.deviceSecret = deviceSecret;
         // 产品密钥
-        deviceInfo.productSecret = productSecret;
+        if(!TextUtils.isEmpty(deviceInfo.productSecret)) {
+            deviceInfo.productSecret = productSecret;
+        }
         //  全局默认域名
         IoTApiClientConfig userData = new IoTApiClientConfig();
         // 设备的一些初始化属性，可以根据云端的注册的属性来设置。
@@ -234,7 +236,7 @@ public class InitManager {
                     }
                 });
             } else if (ConnectSDK.getInstance().getPersistentConnectId().equals(connectId) && !TextUtils.isEmpty(topic) &&
-                    topic.startsWith("/sys/" + MyApp.productKey + "/" + MyApp.deviceName + "/rrpc/request/")) {
+                    topic.startsWith("/sys/" + MyApp.getApp().productKey + "/" + MyApp.getApp().deviceName + "/rrpc/request/")) {
                 ToastUtils.showToast("收到云端系统RRPC下行：topic=" + topic + ",data=" + data);
 //                    ALog.d(TAG, "receice Message=" + new String((byte[]) aMessage.data));
                 // 服务端返回数据示例  {"method":"thing.service.test_service","id":"123374967","params":{"vv":60},"version":"1.0.0"}
@@ -261,7 +263,7 @@ public class InitManager {
                     }
                 });
             } else if (ConnectSDK.getInstance().getPersistentConnectId().equals(connectId) && !TextUtils.isEmpty(topic) &&
-                    topic.startsWith("/sys/" + MyApp.productKey + "/" + MyApp.deviceName + "/broadcast/request/")) {
+                    topic.startsWith("/sys/" + MyApp.getApp().productKey + "/" + MyApp.getApp().deviceName + "/broadcast/request/")) {
                 /**
                  * topic 格式：/sys/${pk}/${dn}/broadcast/request/+
                  * 无需订阅，云端免订阅，默认无需业务进行ack，但是也支持用户云端和设备端约定业务ack
@@ -274,7 +276,7 @@ public class InitManager {
                 //TODO 根据批量广播做业务逻辑处理
 
             } else if (ConnectSDK.getInstance().getPersistentConnectId().equals(connectId) && !TextUtils.isEmpty(topic) &&
-                    topic.startsWith("/broadcast/" + MyApp.productKey)) {
+                    topic.startsWith("/broadcast/" + MyApp.getApp().productKey)) {
                 //
                 /**
                  * topic 需要用户自己订阅才能收到，topic 格式：/broadcast/${pk}/${自定义action}，需要和云端发送topic一致

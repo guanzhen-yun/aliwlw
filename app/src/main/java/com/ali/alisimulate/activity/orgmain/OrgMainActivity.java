@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.Constants;
+import com.ali.alisimulate.MyApp;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.activity.adddevice.AddDeviceActivity;
 import com.ali.alisimulate.adapter.DeviceListAdapter;
@@ -188,6 +189,17 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                 if (currentPage > page) {
                     getDeviceList(false);
                 }
+            }
+        });
+
+        adapter.setOnSelectListener(new DeviceListAdapter.OnSelectListener() {
+            @Override
+            public void onSelect(int position) {
+                OrgDevice.DeviceList device = orgDevices.get(position);
+                String deviceName = device.deviceName;
+                String productKey = device.productKey;
+                String deviceSecret = device.deviceSecret;
+                MyApp.getApp().regist(deviceName, productKey, deviceSecret);
             }
         });
     }
