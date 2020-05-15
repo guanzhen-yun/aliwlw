@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.R;
+import com.ali.alisimulate.activity.DeviceDetailActivity;
 import com.ali.alisimulate.adapter.ParamAdapter;
 import com.ali.alisimulate.entity.DeviceDetail;
 import com.ali.alisimulate.util.ToastUtils;
@@ -48,6 +49,10 @@ public class ParamFragment extends BaseFragment<BaseMvpPresenter> implements Par
         List<Property> properties = LinkKit.getInstance().getDeviceThing().getProperties();
         List<Property> paramList = new ArrayList<>();
         for (Property property : properties) {
+            List<String> controlList = ((DeviceDetailActivity) getActivity()).getControlList();
+            if(controlList != null && controlList.contains(property.getIdentifier())) {
+                continue;
+            }
             if (TmpConstant.TYPE_VALUE_ENUM.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_INTEGER.equals(property.getDataType().getType())) {
                 paramList.add(property);
             }

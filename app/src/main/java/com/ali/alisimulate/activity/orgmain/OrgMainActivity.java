@@ -200,6 +200,10 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         adapter.setOnSelectListener(new DeviceListAdapter.OnSelectListener() {
             @Override
             public void onSelect(int position) {
+                OrgDevice.DeviceList deviceList = orgDevices.get(position);
+                if("配件".equals(adapter.getModelStr(deviceList.deviceModel))) {
+                    return;
+                }
                 if (!MyApp.getApp().mapInit.containsKey(orgDevices.get(position).deviceName) || !MyApp.getApp().mapInit.get(orgDevices.get(position).deviceName)){
                     ToastUtils.showToast("初始化尚未成功，请稍后点击");
                     return;
@@ -208,12 +212,12 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                     ToastUtils.showToast("物模型功能未启用");
                     return;
                 }
-                OrgDevice.DeviceList deviceList = orgDevices.get(position);
 
                 Bundle bundle = new Bundle();
                 bundle.putString("productKey", deviceList.productKey);
                 bundle.putString("deviceName", deviceList.deviceName);
                 bundle.putString("deviceSecret", deviceList.deviceSecret);
+                bundle.putString("title", adapter.getModelStr(deviceList.deviceModel));
                 Intent intent = new Intent(OrgMainActivity.this, DeviceDetailActivity.class);
                 intent.putExtras(bundle);
                 startActivity(intent);

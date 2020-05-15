@@ -99,6 +99,14 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
         viewHolder.tv_alias.setText(name.brandName + " " + getModelStr(name.deviceModel) + " " + name.deviceComment);
         viewHolder.tv_status.setText(name.bindingStatus);
 
+        if("1".equals(name.deviceModel)) {
+            viewHolder.rg_net.setVisibility(View.INVISIBLE);
+            viewHolder.tv_status.setVisibility(View.INVISIBLE);
+        } else {
+            viewHolder.rg_net.setVisibility(View.VISIBLE);
+            viewHolder.tv_status.setVisibility(View.VISIBLE);
+        }
+
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -130,7 +138,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private String getModelStr(String model) {
+    public String getModelStr(String model) {
         switch (model) {
             case "1":
                 return "配件";

@@ -50,23 +50,32 @@ public class DeviceDetailActivity extends BaseActivity {
     private String productKey;
     private String deviceName;
     private String deviceSecret;
+    private String title;
+    private ControlFragment controlFragment;
 
     @Override
     public void fetchIntents() {
         productKey = getIntent().getStringExtra("productKey");
         deviceName = getIntent().getStringExtra("deviceName");
         deviceSecret  = getIntent().getStringExtra("deviceSecret");
+        title  = getIntent().getStringExtra("title");
     }
 
     @Override
     public void initViews() {
-        fragmentList.add(new ControlFragment());
+        mTvTitle.setText(title);
+        controlFragment = ControlFragment.getInstance(title);
+        fragmentList.add(controlFragment);
         fragmentList.add(new ParamFragment());
         TabLayout tab_layout = findViewById(R.id.tblayout);
         ViewPager viewPager = findViewById(R.id.viewPager);
         MyAdapter fragmentAdater = new MyAdapter(getSupportFragmentManager());
         viewPager.setAdapter(fragmentAdater);
         tab_layout.setupWithViewPager(viewPager);
+    }
+
+    public List<String> getControlList() {
+        return controlFragment.getControlList();
     }
 
     @OnClick({R.id.iv_back})
