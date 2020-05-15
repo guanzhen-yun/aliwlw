@@ -10,6 +10,7 @@ import com.ali.alisimulate.entity.OrgDevice;
 import com.ali.alisimulate.entity.UserInfoEntity;
 import com.ali.alisimulate.service.AppService;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
+import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.util.UserUtils;
 import com.ziroom.mvp.base.BaseMvpPresenter;
 import com.ziroom.net.ApiUtil;
@@ -95,7 +96,13 @@ public class OrgMainPresenter extends BaseMvpPresenter<OrgMainContract.IView> im
 
             @Override
             public void onError(ApiException e) {
-                mView.getDeviceListSuccess(null);
+                if(e.getCode() == 401) {
+                    ToastUtils.showToast("登录失效");
+                    SharedPreferencesUtils.save(MyApp.getApp(), Constants.KEY_LOGIN_INFO, null);
+                    mView.logoutSuccess();
+                } else {
+                    mView.getDeviceListSuccess(null);
+                }
             }
         });
     }

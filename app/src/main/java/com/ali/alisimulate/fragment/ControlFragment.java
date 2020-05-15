@@ -1,14 +1,9 @@
 package com.ali.alisimulate.fragment;
 
-import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,31 +15,34 @@ import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
 import com.aliyun.alink.linksdk.tmp.listener.IPublishResourceListener;
 import com.aliyun.alink.linksdk.tmp.utils.TmpConstant;
 import com.aliyun.alink.linksdk.tools.AError;
+import com.ziroom.base.BaseFragment;
+import com.ziroom.base.ViewInject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ControlFragment extends Fragment {
-    private RecyclerView rv_control;
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_control, container, false);
-        initView(v);
-        return v;
-    }
+import butterknife.BindView;
+import butterknife.OnClick;
 
-    private void initView(View v) {
-        rv_control = v.findViewById(R.id.rv_control);
-        rv_control.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+@ViewInject(layoutId = R.layout.fragment_control)
+public class ControlFragment extends BaseFragment {
+
+    @BindView(R.id.rv_control)
+    RecyclerView mRvControl;
+    @BindView(R.id.iv_close)
+    ImageView mIvClose;
+
+    @Override
+    public void initViews(View mView) {
+        mRvControl.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
         // 获取所有属性
         List<Property> properties = LinkKit.getInstance().getDeviceThing().getProperties();
         List<Property> controlList = new ArrayList<>();
         for (Property property : properties) {
-            if(TmpConstant.TYPE_VALUE_BOOLEAN.equals(property.getDataType().getType())) {
+            if (TmpConstant.TYPE_VALUE_BOOLEAN.equals(property.getDataType().getType())) {
                 controlList.add(property);
             }
         }
@@ -78,6 +76,11 @@ public class ControlFragment extends Fragment {
 
             }
         });
-        rv_control.setAdapter(adapter);
+        mRvControl.setAdapter(adapter);
+    }
+
+    @OnClick(R.id.iv_close)
+    public void onViewClicked() {
+        //跳轉定時開關機
     }
 }

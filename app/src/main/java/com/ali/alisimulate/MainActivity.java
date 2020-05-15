@@ -22,18 +22,28 @@ import com.yzq.zxinglibrary.common.Constant;
 
 public class MainActivity extends AppCompatActivity {
 
+    private TextView tv_login;
+    private TextView tv_regist;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TextView tv_login = findViewById(R.id.tv_login);
-        TextView tv_regist = findViewById(R.id.tv_regist);
+        tv_login = findViewById(R.id.tv_login);
+        tv_regist = findViewById(R.id.tv_regist);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 100);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         if(!TextUtils.isEmpty(UserUtils.getToken(this))) {
             tv_login.setVisibility(View.GONE);
             tv_regist.setVisibility(View.GONE);
+        } else {
+            tv_login.setVisibility(View.VISIBLE);
         }
     }
 

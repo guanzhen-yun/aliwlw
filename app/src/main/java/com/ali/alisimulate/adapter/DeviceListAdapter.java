@@ -1,8 +1,9 @@
 package com.ali.alisimulate.adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ali.alisimulate.Constants;
 import com.ali.alisimulate.MyApp;
 import com.ali.alisimulate.R;
+import com.ali.alisimulate.dialog.SecondWCodeDialog;
 import com.ali.alisimulate.entity.OrgDevice;
 import com.ali.alisimulate.util.DisplayUtil;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
@@ -32,6 +34,7 @@ import java.util.List;
 public class DeviceListAdapter extends RecyclerView.Adapter {
     private List<OrgDevice.DeviceList> mData;
     private Context context;
+    private Handler handler = new Handler();
 
     public DeviceListAdapter(Context context, List<OrgDevice.DeviceList> data) {
         mData = data;
@@ -42,8 +45,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_devicelist, parent, false);
-        DesignViewHolder viewHolder = new DesignViewHolder(inflate);
-        return viewHolder;
+        return new DesignViewHolder(inflate);
     }
 
     @Override
@@ -63,8 +65,28 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
                     String deviceName = name.deviceName;
                     String productKey = name.productKey;
                     String deviceSecret = name.deviceSecret;
-                    MyApp.getApp().regist(deviceName, productKey, deviceSecret);
+                    if(TextUtils.isEmpty(SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CONNECT_STATUS))) {
+                        MyApp.getApp().regist(deviceName, productKey, deviceSecret);
+                    } else {
+                        if(!TextUtils.isEmpty(deviceName) && !deviceName.equals(SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CONNECT_STATUS))) {
+                            String predevice = SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CONNECT_STATUS);
+                            setPreUninit(predevice);
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    MyApp.getApp().unregistConnectAli();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            MyApp.getApp().regist(deviceName, productKey, deviceSecret);
+                                        }
+                                    }, 500);
+                                }
+                            }).start();
+                        }
+                    }
                 } else {
+                    MyApp.getApp().unregistConnectAli();
                     SharedPreferencesUtils.save(MyApp.getApp(),  Constants.KEY_CONNECT_STATUS, "");
                 }
             }
@@ -85,6 +107,27 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
                 }
             }
         });
+
+        viewHolder.iv_code.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SecondWCodeDialog dialog = new SecondWCodeDialog(context);
+                dialog.setDeviceName(name.deviceName);
+                dialog.setDeviceDesc(name.brandName + " " + getModelStr(name.deviceModel) + " " + name.deviceComment);
+                dialog.show();
+            }
+        });
+    }
+
+    private void setPreUninit(String predevice) {
+        SharedPreferencesUtils.save(MyApp.getApp(),  Constants.KEY_CONNECT_STATUS, "");
+        for (int i = 0; i < mData.size(); i++) {
+            OrgDevice.DeviceList deviceList = mData.get(i);
+            if(deviceList.deviceName.equals(predevice)) {
+                notifyItemChanged(i);
+                break;
+            }
+        }
     }
 
     private String getModelStr(String model) {

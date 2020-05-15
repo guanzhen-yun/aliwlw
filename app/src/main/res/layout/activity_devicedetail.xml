@@ -64,12 +64,4 @@
 
     </androidx.viewpager.widget.ViewPager>
 
-    <ImageView
-        android:background="@mipmap/ic_launcher"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/iv_close"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="25dp"
-        android:layout_width="60dp"
-        android:layout_height="60dp"/>
 </RelativeLayout>

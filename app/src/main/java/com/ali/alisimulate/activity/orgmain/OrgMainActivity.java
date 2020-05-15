@@ -97,6 +97,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
 
     @Override
     public void initViews() {
+        SharedPreferencesUtils.save(MyApp.getApp(),  Constants.KEY_CONNECT_STATUS, "");
         dropDownOrgSelect = new DropDownOrgSelect();
         dropDownOrgSelect.init(this);
         dropDownOrgSelect.setOnSelectListener(new DropDownOrgSelect.onSelectListener() {
@@ -207,7 +208,15 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                     ToastUtils.showToast("物模型功能未启用");
                     return;
                 }
-                startActivity(new Intent(OrgMainActivity.this, DeviceDetailActivity.class));
+                OrgDevice.DeviceList deviceList = orgDevices.get(position);
+
+                Bundle bundle = new Bundle();
+                bundle.putString("productKey", deviceList.productKey);
+                bundle.putString("deviceName", deviceList.deviceName);
+                bundle.putString("deviceSecret", deviceList.deviceSecret);
+                Intent intent = new Intent(OrgMainActivity.this, DeviceDetailActivity.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
     }
