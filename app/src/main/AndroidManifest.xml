@@ -28,6 +28,8 @@
         <activity android:name=".activity.adddevice.AddDeviceActivity" />
         <activity android:name=".activity.DeviceDetailActivity" />
         <activity android:name=".activity.regist.RegistActivity" />
+        <activity android:name=".activity.DingShiActivity" />
+        <activity android:name=".activity.DingshiControlActivity" />
     </application>
 
 </manifest>

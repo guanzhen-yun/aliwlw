@@ -1,5 +1,6 @@
 package com.ali.alisimulate.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,15 +10,23 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.R;
+import com.ali.alisimulate.activity.DingShiActivity;
 import com.ali.alisimulate.adapter.ControlAdapter;
+import com.ali.alisimulate.entity.ReceiveMsg;
+import com.ali.alisimulate.entity.RefreshEvent;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
 import com.aliyun.alink.linksdk.tmp.listener.IPublishResourceListener;
 import com.aliyun.alink.linksdk.tmp.utils.TmpConstant;
 import com.aliyun.alink.linksdk.tools.AError;
+import com.google.gson.Gson;
 import com.ziroom.base.BaseFragment;
 import com.ziroom.base.ViewInject;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,88 +76,127 @@ public class ControlFragment extends BaseFragment {
         List<Property> properties = LinkKit.getInstance().getDeviceThing().getProperties();
 
         for (Property property : properties) {
-            if(list_deviceIndenty.contains(property.getIdentifier())) {
+            if (list_deviceIndenty.contains(property.getIdentifier())) {
                 map_control.put(property.getIdentifier(), property);
             }
         }
 
-        if(map_control.size() == 0) {
+        if (map_control.size() == 0) {
             return;
         }
 
-            if("空气净化器".equals(deviceTitle)) {
-                if(map_control.containsKey("WorkMode")) {
-                    List<Property> list = new ArrayList<>();
-                    list.add(map_control.get("WorkMode"));
-                    controlList.add(list);
-                }
-                if(map_control.containsKey("WindSpeed")) {
-                    List<Property> list = new ArrayList<>();
-                    list.add(map_control.get("WindSpeed"));
-                    controlList.add(list);
-                }
-                if(map_control.containsKey("SleepMode")) {
-                    List<Property> list = new ArrayList<>();
-                    list.add(map_control.get("SleepMode"));
-                    controlList.add(list);
-                }
-                if(map_control.containsKey("LocalTimer")) {
-                    List<Property> list = new ArrayList<>();
-                    list.add(map_control.get("LocalTimer"));
-                    controlList.add(list);
-                }
-                if(map_control.containsKey("ChildLockSwitch")) {
-                    List<Property> list = new ArrayList<>();
-                    list.add(map_control.get("ChildLockSwitch"));
-                    controlList.add(list);
-                }
-                if(map_control.containsKey("Humidified")) {
-                    List<Property> list = new ArrayList<>();
-                    list.add(map_control.get("Humidified"));
-                    controlList.add(list);
-                }
-                if(map_control.containsKey("longSwitch")) {
-                    List<Property> list = new ArrayList<>();
-                    list.add(map_control.get("longSwitch"));
-                    controlList.add(list);
-                }
-            } else if("净水器".equals(deviceTitle)) {
-                if(map_control.containsKey("WashingSwitch")) {
-                    List<Property> list = new ArrayList<>();
+        if ("空气净化器".equals(deviceTitle)) {
+            if (map_control.containsKey("WorkMode")) {
+                List<Property> list = new ArrayList<>();
+                list.add(map_control.get("WorkMode"));
+                controlList.add(list);
+            }
+            if (map_control.containsKey("WindSpeed")) {
+                List<Property> list = new ArrayList<>();
+                list.add(map_control.get("WindSpeed"));
+                controlList.add(list);
+            }
+            if (map_control.containsKey("SleepMode")) {
+                List<Property> list = new ArrayList<>();
+                list.add(map_control.get("SleepMode"));
+                controlList.add(list);
+            }
+            if (map_control.containsKey("LocalTimer")) {
+                List<Property> list = new ArrayList<>();
+                list.add(map_control.get("LocalTimer"));
+                controlList.add(list);
+            }
+            if (map_control.containsKey("ChildLockSwitch")) {
+                List<Property> list = new ArrayList<>();
+                list.add(map_control.get("ChildLockSwitch"));
+                controlList.add(list);
+            }
+            if (map_control.containsKey("Humidified")) {
+                List<Property> list = new ArrayList<>();
+                list.add(map_control.get("Humidified"));
+                controlList.add(list);
+            }
+            if (map_control.containsKey("longSwitch")) {
+                List<Property> list = new ArrayList<>();
+                list.add(map_control.get("longSwitch"));
+                controlList.add(list);
+            }
+        } else if ("净水器".equals(deviceTitle)) {
+            if (map_control.containsKey("WashingSwitch")) {
+                List<Property> list = new ArrayList<>();
+                list.add(map_control.get("WashingSwitch"));
+                if (map_control.containsKey("WashingState")) {
                     list.add(map_control.get("WashingSwitch"));
-                    if(map_control.containsKey("WashingState")) {
-                        list.add(map_control.get("WashingSwitch"));
-                    }
-                    if(map_control.containsKey("WashingPercent")) {
-                        list.add(map_control.get("WashingPercent"));
-                    }
-                    controlList.add(list);
                 }
+                if (map_control.containsKey("WashingPercent")) {
+                    list.add(map_control.get("WashingPercent"));
+                }
+                controlList.add(list);
+            }
 
-                if(map_control.containsKey("pureSwitch")) {
-                    List<Property> list = new ArrayList<>();
-                    list.add(map_control.get("pureSwitch"));
-                    if(map_control.containsKey("PureState")) {
-                        list.add(map_control.get("PureState"));
-                    }
-                    if(map_control.containsKey("PurePercent")) {
-                        list.add(map_control.get("PurePercent"));
-                    }
-                    controlList.add(list);
+            if (map_control.containsKey("pureSwitch")) {
+                List<Property> list = new ArrayList<>();
+                list.add(map_control.get("pureSwitch"));
+                if (map_control.containsKey("PureState")) {
+                    list.add(map_control.get("PureState"));
                 }
+                if (map_control.containsKey("PurePercent")) {
+                    list.add(map_control.get("PurePercent"));
+                }
+                controlList.add(list);
+            }
 
-                if(map_control.containsKey("ChildLockSwitch")) {
-                    List<Property> list = new ArrayList<>();
-                    list.add(map_control.get("ChildLockSwitch"));
-                    controlList.add(list);
-                }
-                if(map_control.containsKey("LocalTimer")) {
-                    List<Property> list = new ArrayList<>();
-                    list.add(map_control.get("LocalTimer"));
-                    controlList.add(list);
+            if (map_control.containsKey("ChildLockSwitch")) {
+                List<Property> list = new ArrayList<>();
+                list.add(map_control.get("ChildLockSwitch"));
+                controlList.add(list);
+            }
+            if (map_control.containsKey("LocalTimer")) {
+                List<Property> list = new ArrayList<>();
+                list.add(map_control.get("LocalTimer"));
+                controlList.add(list);
+            }
+        }
+        adapter.notifyDataSetChanged();
+
+        if (map_control.containsKey("PowerSwitch")) {
+            mIvClose.setVisibility(View.VISIBLE);
+            Property powerSwitch = map_control.get("PowerSwitch");
+            if (TmpConstant.TYPE_VALUE_BOOLEAN.equals(powerSwitch.getDataType().getType())) {
+                ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(powerSwitch.getIdentifier());
+                if(propertyValue != null) {
+                    Integer value = ((ValueWrapper.BooleanValueWrapper) propertyValue).getValue();
+                    if (value != null && value == 1) {
+                        mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
+                    } else {
+                        mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
+                    }
+                } else {
+                    mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
                 }
             }
-        adapter.notifyDataSetChanged();
+        } else {
+            mIvClose.setVisibility(View.GONE);
+        }
+
+        mIvClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(mContext, DingShiActivity.class));
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
     }
 
     private void inputDatas() {
@@ -174,7 +222,30 @@ public class ControlFragment extends BaseFragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetStickyEvent(RefreshEvent message) {
+        if (message != null && message.aMessage != null) {
+            String data = new String((byte[]) message.aMessage.data);
+            String s = data.split("data=")[1];
+            ReceiveMsg receiveMsg = new Gson().fromJson(s, ReceiveMsg.class);
+            Map<String, Object> params = receiveMsg.params;
+            for (int i = 0; i < controlList.size(); i++) {
+                Property property = controlList.get(i).get(0);
+                if (params.containsKey(property.getIdentifier())) {
+                    adapter.setDataByPos(i, params.get(property.getIdentifier()));
+                }
+            }
+        }
+    }
+
+    @Override
     public void initViews(View mView) {
+        EventBus.getDefault().register(this);
         mRvControl.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
         adapter = new ControlAdapter(getActivity(), controlList);

@@ -74,6 +74,15 @@ public class ControlAdapter extends RecyclerView.Adapter {
                 viewHolder.tv_choose.setText("请选择");
             }
 
+            if(mDatas != null && mDatas instanceof Integer && mPosition == position) {
+                int dd = (int) mDatas;
+                viewHolder.tv_choose.setText(dd + "(" + specs.get(String.valueOf(dd)) + ")");
+                if (onCheckListener != null) {
+                    onCheckListener.onSelect(position, listKey.get(dd));
+                }
+                mDatas = null;
+            }
+
             viewHolder.tv_choose.setVisibility(View.VISIBLE);
             viewHolder.sw.setVisibility(View.GONE);
             viewHolder.tv_status.setVisibility(View.GONE);
@@ -119,6 +128,21 @@ public class ControlAdapter extends RecyclerView.Adapter {
             } else {
                 viewHolder.sw.setChecked(false);
                 viewHolder.tv_status.setText("未开启");
+            }
+
+            if(mDatas != null && mDatas instanceof Integer && mPosition == position) {
+                int dd = (int) mDatas;
+                if(dd == 1) {
+                    viewHolder.sw.setChecked(true);
+                    viewHolder.tv_status.setText("已开启");
+                } else {
+                    viewHolder.sw.setChecked(false);
+                    viewHolder.tv_status.setText("未开启");
+                }
+                if (onCheckListener != null) {
+                    onCheckListener.onCheck(position, dd == 1);
+                }
+                mDatas = null;
             }
 
             viewHolder.sw.setVisibility(View.VISIBLE);
@@ -169,5 +193,14 @@ public class ControlAdapter extends RecyclerView.Adapter {
 
         void onSelect(int position, String level);
     }
+
+    public void setDataByPos(int position, Object data) {
+        mDatas = data;
+        mPosition = position;
+        notifyItemChanged(position);
+    }
+
+    private Object mDatas;
+    private int mPosition;
 }
 

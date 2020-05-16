@@ -72,6 +72,15 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
                 ((ParamsHolder) viewHolder).iv_select.setVisibility(View.VISIBLE);
                 ((ParamsHolder) viewHolder).tv_unit.setVisibility(View.GONE);
 
+                if(mData != null && mData instanceof Integer && mPosition == realPosition) {
+                    int dd = (int) mData;
+                    ((ParamsHolder) viewHolder).tv_prop.setText(listKey.get(dd) + "(" + list.get(dd) + ")");
+                    if (onCheckedListener != null) {
+                        onCheckedListener.onSelect(realPosition, listKey.get(dd));
+                    }
+                    mData = null;
+                }
+
                 ((ParamsHolder) viewHolder).rl_form.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -128,6 +137,14 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
                 }
                 if (((ParamsHolder) viewHolder).et_prop.getTag() instanceof TextWatcher) {
                     ((ParamsHolder) viewHolder).et_prop.removeTextChangedListener((TextWatcher) (((ParamsHolder) viewHolder).et_prop.getTag()));
+                }
+                if(mData != null && mData instanceof Integer && mPosition == realPosition) {
+                    int dd = (int) mData;
+                    ((ParamsHolder) viewHolder).et_prop.setText(String.valueOf(dd));
+                    if (onCheckedListener != null) {
+                        onCheckedListener.onChange(realPosition, dd + "");
+                    }
+                    mData = null;
                 }
                 ((ParamsHolder) viewHolder).et_prop.setInputType(InputType.TYPE_CLASS_NUMBER);
                 final TextWatcher watcher = new TextWatcher() {
@@ -208,4 +225,13 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
             view_bottom = itemView.findViewById(R.id.view_bottom);
         }
     }
+
+    public void setDataByPos(int position, Object data) {
+        mData = data;
+        mPosition = position;
+        notifyItemChanged(position);
+    }
+
+    private Object mData;
+    private int mPosition;
 }
