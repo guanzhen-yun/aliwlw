@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -14,11 +15,16 @@ import com.ali.alisimulate.activity.DeviceDetailActivity;
 import com.ali.alisimulate.activity.login.LoginActivity;
 import com.ali.alisimulate.activity.orgmain.OrgMainActivity;
 import com.ali.alisimulate.activity.regist.RegistActivity;
+import com.ali.alisimulate.entity.KeyValue;
 import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.util.UserUtils;
+import com.ali.alisimulate.view.MyWeelPop;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        List<KeyValue> list_channel = new ArrayList<>();
+        MyWeelPop mWindowChannel = new MyWeelPop(this, list_channel, "选择频道");
+        mWindowChannel.setAnimationStyle(R.style.AnimationUP);
+        mWindowChannel.showAtLocation(tv_login,
+                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
         tv_login = findViewById(R.id.tv_login);
         tv_regist = findViewById(R.id.tv_regist);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

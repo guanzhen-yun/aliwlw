@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/rl_wheel_pop"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <com.ali.alisimulate.view.wheelview.WheelView
+            android:id="@+id/wv_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:wheelGravity="center"
+            app:isLoop="false"
+            app:textSizeCenter="16sp"
+            app:textSizeOuter="14sp"
+            app:textColorCenter="#333333"
+            app:textColorOuter="999999"
+            app:lineSpaceingDimens="10dp"
+            app:itemVisibleNum="4"
+            app:lineColor="#efefef"
+            />
+</RelativeLayout>
