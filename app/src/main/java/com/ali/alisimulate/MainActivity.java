@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,7 +19,6 @@ import com.ali.alisimulate.activity.regist.RegistActivity;
 import com.ali.alisimulate.entity.KeyValue;
 import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.util.UserUtils;
-import com.ali.alisimulate.view.MyWeelPop;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
@@ -30,16 +30,13 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tv_login;
     private TextView tv_regist;
+    private LinearLayout ll_body;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        List<KeyValue> list_channel = new ArrayList<>();
-        MyWeelPop mWindowChannel = new MyWeelPop(this, list_channel, "选择频道");
-        mWindowChannel.setAnimationStyle(R.style.AnimationUP);
-        mWindowChannel.showAtLocation(tv_login,
-                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        ll_body = findViewById(R.id.ll_body);
         tv_login = findViewById(R.id.tv_login);
         tv_regist = findViewById(R.id.tv_regist);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

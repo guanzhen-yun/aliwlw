@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
+
     <TextView
         android:id="@+id/tv_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
-        tools:text="Jimmy Huang"
         android:textColor="#000000"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        tools:text="Jimmy Huang" />
 
     <TextView
         android:id="@+id/tv_companyname"
@@ -20,9 +21,10 @@
         android:layout_below="@id/tv_username"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
-        tools:text="净源技术服务公司"
         android:textColor="#000000"
-        android:textSize="13sp" />
+        android:textSize="13sp"
+        tools:text="净源技术服务公司" />
+
     <ImageView
         android:id="@+id/iv_loginout"
         android:layout_width="30dp"
@@ -44,6 +46,17 @@
         android:background="#100000ff">
 
         <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="center"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/icon_delete"
+            android:visibility="gone"
+            android:layout_toLeftOf="@+id/iv_arrow"
+            android:layout_centerVertical="true"
+            />
+
+        <ImageView
             android:id="@+id/iv_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -56,55 +69,54 @@
             android:id="@+id/tv_device"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:hint="请选择"
             android:padding="10dp"
-            tools:text="小米/净水机/WaterPurifier"
-            android:textColor="#000000" />
+            android:textColor="#000000"
+            android:textColorHint="#ADADAD" />
     </RelativeLayout>
 
     <LinearLayout
-        android:visibility="gone"
         android:id="@+id/ll_none"
-        android:layout_below="@id/rl_device"
-        android:orientation="vertical"
-        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/rl_device"
+        android:layout_marginTop="50dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@mipmap/icon_none"
             android:layout_gravity="center_horizontal"
-            />
+            android:background="@mipmap/icon_none" />
 
         <TextView
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="暂无设备!"
-            />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:text="暂无设备!" />
 
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_device"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/rv_device"
         android:layout_below="@id/rl_device"
+        android:layout_marginTop="1dp"
         tools:itemCount="3"
-        tools:listitem="@layout/item_devicelist"
-        />
+        tools:listitem="@layout/item_devicelist" />
 
     <ImageView
-        android:layout_alignParentBottom="true"
+        android:id="@+id/iv_addDevice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/iv_addDevice"
-        android:background="@mipmap/icon_add"
-        android:layout_marginBottom="30dp"
-        android:layout_marginRight="15dp"
         android:layout_alignParentRight="true"
-        android:onClick="adddevice"
-        />
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="30dp"
+        android:background="@mipmap/icon_add"
+        android:onClick="adddevice" />
 
 </RelativeLayout>

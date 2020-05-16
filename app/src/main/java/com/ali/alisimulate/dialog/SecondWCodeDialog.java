@@ -1,10 +1,8 @@
 package com.ali.alisimulate.dialog;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;

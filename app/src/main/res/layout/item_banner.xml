@@ -1,75 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_body"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    >
+    android:layout_height="82dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        >
-        <TextView
-            android:id="@+id/tv_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="滤芯1"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="14dp"
-            android:textColor="#333333"
-            android:textSize="23sp"
-            />
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="14dp"
+        android:text="滤芯1"
+        android:textColor="#333333"
+        android:textSize="23sp" />
 
-        <TextView
-            android:id="@+id/tv_ky"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/tv_name"
-            android:layout_marginLeft="20dp"
-            android:layout_centerVertical="true"
-            android:text="预计可用"
-            />
+    <TextView
+        android:id="@+id/tv_sm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="14dp"
+        android:layout_toRightOf="@id/tv_name"
+        android:text="寿命状态" />
 
-        <TextView
-            android:id="@+id/tv_kyday"
-            android:layout_toRightOf="@id/tv_ky"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="40天"
-            android:textColor="#00ff00"
-            />
+    <TextView
+        android:id="@+id/tv_smzt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="14dp"
+        android:layout_toRightOf="@id/tv_sm"
+        android:text="正常"
+        android:textColor="#10AB6C" />
 
-        <TextView
-            android:id="@+id/tv_sy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="剩余"
-            android:layout_marginLeft="25dp"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/tv_kyday"
-            />
+    <TextView
+        android:id="@+id/tv_ky"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_sm"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="6dp"
+        android:layout_toRightOf="@id/tv_name"
+        android:text="预计可用" />
 
-        <TextView
-            android:id="@+id/tv_syp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="20%"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/tv_sy"
-            />
-        <TextView
-            android:id="@+id/tv_look"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="15dp"
-            android:layout_centerVertical="true"
-            android:background="@drawable/bg_look"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:text="查看" />
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/tv_kyday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_sm"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="6dp"
+        android:layout_toRightOf="@id/tv_ky"
+        android:text="40天"
+        android:textColor="#10AB6C" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/tv_sy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_sm"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="6dp"
+        android:layout_toRightOf="@id/tv_kyday"
+        android:text="剩余" />
+
+    <TextView
+        android:id="@+id/tv_syp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_sm"
+        android:layout_marginTop="6dp"
+        android:layout_toRightOf="@id/tv_sy"
+        android:text="20%"
+        android:textColor="#10AB6C" />
+
+    <TextView
+        android:id="@+id/tv_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="23dp"
+        android:layout_marginRight="15dp"
+        android:layout_toLeftOf="@+id/iv_arr"
+        android:background="@drawable/bg_look"
+        android:paddingLeft="15dp"
+        android:paddingTop="4dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="4dp"
+        android:text="更换" />
+
+    <ImageView
+        android:id="@+id/iv_arr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="12dp"
+        android:src="@mipmap/icon_right" />
+</RelativeLayout>

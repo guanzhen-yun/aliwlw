@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.viewpager.widget.PagerAdapter;
@@ -318,6 +319,7 @@ public class TopViewCycle extends FrameLayout {
          * 单击事件
          */
         void onClick(int position);
+        void onClickButton(int position);
     }
 
     public static class ImageInfo {
@@ -395,12 +397,18 @@ public class TopViewCycle extends FrameLayout {
         public Object instantiateItem(ViewGroup container, int position) {
             View view = View.inflate(mContext, R.layout.item_banner, null);
             position = position % mCount;
-            TextView tv_test = view.findViewById(R.id.tv_name);
-            tv_test.setText(data.get(position));
-            TextView tv_look = view.findViewById(R.id.tv_look);
+            TextView tv_name = view.findViewById(R.id.tv_name);
+            RelativeLayout rl_body = view.findViewById(R.id.rl_body);
+            tv_name.setText(data.get(position));
+            TextView tv_change = view.findViewById(R.id.tv_change);
             // 设置图片点击监听
             int finalPosition = position;
-            tv_look.setOnClickListener(v -> {
+            tv_change.setOnClickListener(v -> {
+                if (mOnPageClickListener != null) {
+                    mOnPageClickListener.onClickButton(finalPosition);
+                }
+            });
+            rl_body.setOnClickListener(v -> {
                 if (mOnPageClickListener != null) {
                     mOnPageClickListener.onClick(finalPosition);
                 }

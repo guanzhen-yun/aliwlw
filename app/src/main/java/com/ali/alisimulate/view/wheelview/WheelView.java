@@ -198,10 +198,10 @@ public class WheelView extends View {
         if (widthMode == MeasureSpec.EXACTLY) {
             measuredWidth = widthSize;
         }
-//        firstLineY = (int) (itemHeightOuter * (itemsVisible - 1) / 2);
-        firstLineY = 0;
-        secondLineY = (int)itemHeightCenter;
-//        secondLineY = (int) (itemHeightOuter * (itemsVisible - 1) / 2 + itemHeightCenter);
+        firstLineY = (int) (itemHeightOuter * (itemsVisible - 1) / 2);
+//        firstLineY = 0;
+//        secondLineY = (int)itemHeightCenter;
+        secondLineY = (int) (itemHeightOuter * (itemsVisible - 1) / 2 + itemHeightCenter);
         if (initPosition == -1) {
             initPosition = isLoop ? (items.size() + 1) / 2 : 0;
         }
@@ -285,7 +285,7 @@ public class WheelView extends View {
     }
 
     public final void setItems(List<KeyValue> items, int initPosition) {
-        setInitPosition(initPosition);
+        setInitPosition(items.size() - itemsVisible /2 + initPosition);
         setItems(items);
     }
 

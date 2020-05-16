@@ -1,5 +1,6 @@
 package com.ali.alisimulate.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -30,6 +31,12 @@ public class DingShiActivity extends BaseActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("title", "定时开机");
+                    Intent intent = new Intent(DingShiActivity.this, DingshiControlActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                } else {
 
                 }
             }
@@ -39,6 +46,12 @@ public class DingShiActivity extends BaseActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("title", "定时关机");
+                    Intent intent = new Intent(DingShiActivity.this, DingshiControlActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                } else {
 
                 }
             }

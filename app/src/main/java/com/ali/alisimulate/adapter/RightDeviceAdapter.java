@@ -40,9 +40,9 @@ public class RightDeviceAdapter extends RecyclerView.Adapter {
         BranchTypeEntity name = mData.get(position);
         viewHolder.tv_device.setText(name.name);
         if(name.isSelect) {
-            viewHolder.iv.setBackgroundResource(R.mipmap.ic_launcher);
+            viewHolder.iv.setBackgroundResource(R.mipmap.icon_sel);
         } else {
-            viewHolder.iv.setBackgroundResource(R.mipmap.ic_launcher);
+            viewHolder.iv.setBackgroundResource(R.mipmap.icon_unsel);
         }
 
         Glide.with(mContext).load(name.imageUrl).into(viewHolder.iv_pic);

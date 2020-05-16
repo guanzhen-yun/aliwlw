@@ -14,6 +14,7 @@ import com.ali.alisimulate.entity.ReceiveMsg;
 import com.ali.alisimulate.entity.RefreshEvent;
 import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.view.DropDownPop;
+import com.ali.alisimulate.view.DropDownScanPop;
 import com.ali.alisimulate.view.TopViewCycle;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
@@ -51,6 +52,8 @@ public class ParamFragment extends BaseFragment<BaseMvpPresenter> implements Par
         EventBus.getDefault().register(this);
         DropDownPop dropDownPop = new DropDownPop();
         dropDownPop.init(getActivity());
+        DropDownScanPop dropDownScanPop = new DropDownScanPop();
+        dropDownScanPop.init(getActivity());
         mRvList.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new ParamAdapter();
 
@@ -120,16 +123,20 @@ public class ParamFragment extends BaseFragment<BaseMvpPresenter> implements Par
 
         TopViewCycle topViewCycle = new TopViewCycle(getActivity());
         ArrayList<String> list1 = new ArrayList<>();
-        list1.add("顶部");
-        list1.add("顶部");
-        list1.add("顶部");
-        list1.add("顶部");
+        list1.add("滤芯1");
+        list1.add("滤芯2");
+        list1.add("滤芯3");
+        list1.add("滤芯4");
         topViewCycle.loadData(list1);
         topViewCycle.setOnPageClickListener(new TopViewCycle.OnPageClickListener() {
             @Override
             public void onClick(int position) {
-                ToastUtils.showToast(position + "");
                 dropDownPop.showPop(mRvList);
+            }
+
+            @Override
+            public void onClickButton(int position) {
+                dropDownScanPop.showPop(mRvList);
             }
         });
         adapter.setHeadView(topViewCycle);
