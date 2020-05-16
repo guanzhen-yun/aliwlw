@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.ali.alisimulate.Constants;
 import com.ali.alisimulate.R;
+import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.ziroom.base.BaseActivity;
 import com.ziroom.base.ViewInject;
 
@@ -37,7 +39,8 @@ public class DingShiActivity extends BaseActivity {
                     intent.putExtras(bundle);
                     startActivity(intent);
                 } else {
-
+                    SharedPreferencesUtils.save(DingShiActivity.this, Constants.KEY_OPEN_TIME, "");
+                    SharedPreferencesUtils.save(DingShiActivity.this, Constants.KEY_OPEN_WEEK, "");
                 }
             }
         });
@@ -52,7 +55,8 @@ public class DingShiActivity extends BaseActivity {
                     intent.putExtras(bundle);
                     startActivity(intent);
                 } else {
-
+                    SharedPreferencesUtils.save(DingShiActivity.this, Constants.KEY_CLOSE_WEEK, "");
+                    SharedPreferencesUtils.save(DingShiActivity.this, Constants.KEY_CLOSE_TIME, "");
                 }
             }
         });

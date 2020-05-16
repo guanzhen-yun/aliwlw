@@ -46,11 +46,24 @@ public class WeekAdapter extends RecyclerView.Adapter {
             viewHolder.tv_week.setTextColor(Color.parseColor("#585858"));
             viewHolder.tv_week.setBackgroundColor(Color.parseColor("#EEF8F4"));
         }
+
+        viewHolder.tv_week.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(onSelectListener != null) {
+                    onSelectListener.onSelect(position, !name.isSelect);
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return mData.size();
+    }
+
+    public void setOnSelectListener(OnSelectListener onSelectListener) {
+        this.onSelectListener = onSelectListener;
     }
 
     public class WeekHolder extends RecyclerView.ViewHolder {
@@ -61,4 +74,10 @@ public class WeekAdapter extends RecyclerView.Adapter {
             tv_week = itemView.findViewById(R.id.tv_week);
         }
     }
+
+    public interface OnSelectListener {
+        void onSelect(int position, boolean isSelect);
+    }
+
+    private OnSelectListener onSelectListener;
 }

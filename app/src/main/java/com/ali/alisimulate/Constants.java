@@ -17,4 +17,9 @@ public class Constants {
     public static final String KEY_LOGIN_INFO = "loginInfo";
     public static final String KEY_CONNECT_STATUS = "connect_status";
 
+    public static final String KEY_OPEN_TIME = "open_time";
+    public static final String KEY_OPEN_WEEK = "open_week";
+
+    public static final String KEY_CLOSE_TIME = "close_time";
+    public static final String KEY_CLOSE_WEEK = "close_week";
 }

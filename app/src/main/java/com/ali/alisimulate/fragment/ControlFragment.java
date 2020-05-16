@@ -1,7 +1,9 @@
 package com.ali.alisimulate.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,11 +11,13 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ali.alisimulate.Constants;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.activity.DingShiActivity;
 import com.ali.alisimulate.adapter.ControlAdapter;
 import com.ali.alisimulate.entity.ReceiveMsg;
 import com.ali.alisimulate.entity.RefreshEvent;
+import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
@@ -28,10 +32,15 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -51,6 +60,7 @@ public class ControlFragment extends BaseFragment {
     private List<List<Property>> controlList = new ArrayList<>();
     private ControlAdapter adapter;
     private Map<String, Property> map_control = new HashMap<>();
+    private boolean mIsOpen;
 
     public List<String> getControlList() {
         return list_deviceIndenty;
@@ -164,14 +174,17 @@ public class ControlFragment extends BaseFragment {
             Property powerSwitch = map_control.get("PowerSwitch");
             if (TmpConstant.TYPE_VALUE_BOOLEAN.equals(powerSwitch.getDataType().getType())) {
                 ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(powerSwitch.getIdentifier());
-                if(propertyValue != null) {
+                if (propertyValue != null) {
                     Integer value = ((ValueWrapper.BooleanValueWrapper) propertyValue).getValue();
                     if (value != null && value == 1) {
+                        mIsOpen = true;
                         mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
                     } else {
+                        mIsOpen = false;
                         mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
                     }
                 } else {
+                    mIsOpen = false;
                     mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
                 }
             }
@@ -187,16 +200,162 @@ public class ControlFragment extends BaseFragment {
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private CountDownTimer countDownTimer = null;
 
+    private String getDateStr() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return formatter.format(new Date());
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onResume() {
+        super.onResume();
+        if (map_control.containsKey("PowerSwitch")) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            int week = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+            String w = "";
+            switch (week) {
+                case 0:
+                    w = "周日";
+                    break;
+                case 1:
+                    w = "周一";
+                    break;
+                case 2:
+                    w = "周二";
+                    break;
+                case 3:
+                    w = "周三";
+                    break;
+                case 4:
+                    w = "周四";
+                    break;
+                case 5:
+                    w = "周五";
+                    break;
+                case 6:
+                    w = "周六";
+                    break;
+            }
 
+            String time = getDateStr();
+
+            String year = time.split("-")[0];
+            String month = time.split("-")[1];
+            String day = time.split("-")[2].split(" ")[0];
+
+            long openT = 0;
+            long closeT = 0;
+
+            String weeks = SharedPreferencesUtils.getStr(mContext, Constants.KEY_OPEN_WEEK);
+            if (weeks.contains(w)) {
+                String str = SharedPreferencesUtils.getStr(mContext, Constants.KEY_OPEN_TIME);
+                String hour = str.split(",")[0];
+                String minute = str.split(",")[1];
+
+                String openTime = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + 00;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINESE);
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
+                Date date = null;
+                try {
+                    date = sdf.parse(openTime);
+                } catch (Exception e) {
+                }
+                openT = date.getTime();
+            }
+
+            String weekC = SharedPreferencesUtils.getStr(mContext, Constants.KEY_CLOSE_WEEK);
+            if (weekC.contains(w)) {
+                String str = SharedPreferencesUtils.getStr(mContext, Constants.KEY_CLOSE_TIME);
+                String hour = str.split(",")[0];
+                String minute = str.split(",")[1];
+
+                String openTime = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + 00;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINESE);
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
+                Date date = null;
+                try {
+                    date = sdf.parse(openTime);
+                } catch (Exception e) {
+                }
+                closeT = date.getTime();
+            }
+
+            long currentTime = System.currentTimeMillis();
+            long totalTime = 0;
+            if (mIsOpen && closeT > 0) {//关机的倒计时
+                totalTime = closeT - currentTime;
+            } else if (!mIsOpen && openT > 0) {
+                totalTime = openT - currentTime;
+            }
+
+            if (totalTime > 0) {
+                countDownTimer = new CountDownTimer(totalTime, 1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {//剩余的时间
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        if (mIsOpen) {
+                            mIsOpen = false;
+                            //关机
+                            // 设备上报
+                            Map<String, ValueWrapper> reportData = new HashMap<>();
+                            // identifier 是云端定义的属性的唯一标识，valueWrapper是属性的值
+                            reportData.put("PowerSwitch", new ValueWrapper.BooleanValueWrapper(0));  // 参考示例，更多使用可参考demo
+                            LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
+                                @Override
+                                public void onSuccess(String resID, Object o) {
+                                    // 属性上报成功 resID 设备属性对应的唯一标识
+                                    Log.e("ProductActivity", "属性上报成功");
+                                }
+
+                                @Override
+                                public void onError(String resId, AError aError) {
+                                    // 属性上报失败
+                                    Log.e("ProductActivity", "属性上报失败");
+                                }
+                            });
+                            mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
+                        } else {
+                            mIsOpen = true;
+                            //开机
+                            // 设备上报
+                            Map<String, ValueWrapper> reportData = new HashMap<>();
+                            // identifier 是云端定义的属性的唯一标识，valueWrapper是属性的值
+                            reportData.put("PowerSwitch", new ValueWrapper.BooleanValueWrapper(1));  // 参考示例，更多使用可参考demo
+                            LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
+                                @Override
+                                public void onSuccess(String resID, Object o) {
+                                    // 属性上报成功 resID 设备属性对应的唯一标识
+                                    Log.e("ProductActivity", "属性上报成功");
+                                }
+
+                                @Override
+                                public void onError(String resId, AError aError) {
+                                    // 属性上报失败
+                                    Log.e("ProductActivity", "属性上报失败");
+                                }
+                            });
+                            mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
+                        }
+                    }
+                };
+                countDownTimer.start();
+            }
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(countDownTimer != null) {
+            countDownTimer.cancel();
+            countDownTimer = null;
+        }
     }
 
     private void inputDatas() {

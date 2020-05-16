@@ -136,6 +136,150 @@ public class DropDownPop {
                                 }
                             });
                         }
+                    } else if(mEntity.no == 2 && mMapLx.containsKey("FilterStatus_2")) {
+                        Property filterStatus_1 = mMapLx.get("FilterStatus_2");
+                        if(filterStatus_1.getDataType().getSpecs() != null) {
+                            EnumSpec specs = (EnumSpec) filterStatus_1.getDataType().getSpecs();
+                            Set<String> strings = specs.keySet();
+
+                            List<String> list = new ArrayList<>();
+
+                            List<String> listKey = new ArrayList<>();
+
+                            for (String string : strings) {
+                                list.add(specs.get(string));
+                                listKey.add(string);
+                            }
+                            LayoutInflater mLayoutInflater = (LayoutInflater) view.getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                            ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
+                                    R.layout.pop_device, null, true);
+                            PopupWindow pw = new PopupWindow(menuView, RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+                            pw.setOutsideTouchable(true);
+                            pw.showAsDropDown(rl_sm);
+                            RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
+                            rv_device.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+                            PopDeviceListAdapter adapter = new PopDeviceListAdapter(list);
+                            rv_device.setAdapter(adapter);
+                            adapter.setOnCheckedListener(new PopDeviceListAdapter.OnCheckedListener() {
+                                @Override
+                                public void onCheck(int pos) {
+                                    tv_sm.setText(listKey.get(pos) + "(" + list.get(pos) + ")");
+                                    mSelectStatus = listKey.get(pos);
+                                    mSelectStatusName = list.get(pos);
+                                    pw.dismiss();
+                                }
+                            });
+                        }
+                    }else if(mEntity.no == 3 && mMapLx.containsKey("FilterStatus_3")) {
+                        Property filterStatus_1 = mMapLx.get("FilterStatus_3");
+                        if(filterStatus_1.getDataType().getSpecs() != null) {
+                            EnumSpec specs = (EnumSpec) filterStatus_1.getDataType().getSpecs();
+                            Set<String> strings = specs.keySet();
+
+                            List<String> list = new ArrayList<>();
+
+                            List<String> listKey = new ArrayList<>();
+
+                            for (String string : strings) {
+                                list.add(specs.get(string));
+                                listKey.add(string);
+                            }
+                            LayoutInflater mLayoutInflater = (LayoutInflater) view.getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                            ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
+                                    R.layout.pop_device, null, true);
+                            PopupWindow pw = new PopupWindow(menuView, RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+                            pw.setOutsideTouchable(true);
+                            pw.showAsDropDown(rl_sm);
+                            RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
+                            rv_device.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+                            PopDeviceListAdapter adapter = new PopDeviceListAdapter(list);
+                            rv_device.setAdapter(adapter);
+                            adapter.setOnCheckedListener(new PopDeviceListAdapter.OnCheckedListener() {
+                                @Override
+                                public void onCheck(int pos) {
+                                    tv_sm.setText(listKey.get(pos) + "(" + list.get(pos) + ")");
+                                    mSelectStatus = listKey.get(pos);
+                                    mSelectStatusName = list.get(pos);
+                                    pw.dismiss();
+                                }
+                            });
+                        }
+                    }else if(mEntity.no == 4 && mMapLx.containsKey("FilterStatus_4")) {
+                        Property filterStatus_1 = mMapLx.get("FilterStatus_4");
+                        if(filterStatus_1.getDataType().getSpecs() != null) {
+                            EnumSpec specs = (EnumSpec) filterStatus_1.getDataType().getSpecs();
+                            Set<String> strings = specs.keySet();
+
+                            List<String> list = new ArrayList<>();
+
+                            List<String> listKey = new ArrayList<>();
+
+                            for (String string : strings) {
+                                list.add(specs.get(string));
+                                listKey.add(string);
+                            }
+                            LayoutInflater mLayoutInflater = (LayoutInflater) view.getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                            ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
+                                    R.layout.pop_device, null, true);
+                            PopupWindow pw = new PopupWindow(menuView, RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+                            pw.setOutsideTouchable(true);
+                            pw.showAsDropDown(rl_sm);
+                            RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
+                            rv_device.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+                            PopDeviceListAdapter adapter = new PopDeviceListAdapter(list);
+                            rv_device.setAdapter(adapter);
+                            adapter.setOnCheckedListener(new PopDeviceListAdapter.OnCheckedListener() {
+                                @Override
+                                public void onCheck(int pos) {
+                                    tv_sm.setText(listKey.get(pos) + "(" + list.get(pos) + ")");
+                                    mSelectStatus = listKey.get(pos);
+                                    mSelectStatusName = list.get(pos);
+                                    pw.dismiss();
+                                }
+                            });
+                        }
+                    }else if(mEntity.no == 5 && mMapLx.containsKey("FilterStatus_5")) {
+                        Property filterStatus_1 = mMapLx.get("FilterStatus_5");
+                        if(filterStatus_1.getDataType().getSpecs() != null) {
+                            EnumSpec specs = (EnumSpec) filterStatus_1.getDataType().getSpecs();
+                            Set<String> strings = specs.keySet();
+
+                            List<String> list = new ArrayList<>();
+
+                            List<String> listKey = new ArrayList<>();
+
+                            for (String string : strings) {
+                                list.add(specs.get(string));
+                                listKey.add(string);
+                            }
+                            LayoutInflater mLayoutInflater = (LayoutInflater) view.getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                            ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
+                                    R.layout.pop_device, null, true);
+                            PopupWindow pw = new PopupWindow(menuView, RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+                            pw.setOutsideTouchable(true);
+                            pw.showAsDropDown(rl_sm);
+                            RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
+                            rv_device.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+                            PopDeviceListAdapter adapter = new PopDeviceListAdapter(list);
+                            rv_device.setAdapter(adapter);
+                            adapter.setOnCheckedListener(new PopDeviceListAdapter.OnCheckedListener() {
+                                @Override
+                                public void onCheck(int pos) {
+                                    tv_sm.setText(listKey.get(pos) + "(" + list.get(pos) + ")");
+                                    mSelectStatus = listKey.get(pos);
+                                    mSelectStatusName = list.get(pos);
+                                    pw.dismiss();
+                                }
+                            });
+                        }
                     }
                 }
             });
