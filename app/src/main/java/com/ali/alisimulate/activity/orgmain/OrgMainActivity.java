@@ -217,6 +217,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                 bundle.putString("productKey", deviceList.productKey);
                 bundle.putString("deviceName", deviceList.deviceName);
                 bundle.putString("deviceSecret", deviceList.deviceSecret);
+                bundle.putString("deviceId", deviceList.deviceId);
                 bundle.putString("title", adapter.getModelStr(deviceList.deviceModel));
                 Intent intent = new Intent(OrgMainActivity.this, DeviceDetailActivity.class);
                 intent.putExtras(bundle);

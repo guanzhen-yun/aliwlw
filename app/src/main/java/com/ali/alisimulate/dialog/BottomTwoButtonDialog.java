@@ -5,13 +5,16 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.util.DisplayUtil;
+import com.bumptech.glide.Glide;
 
 public class BottomTwoButtonDialog extends Dialog {
     private String mContent;//内容
@@ -21,6 +24,7 @@ public class BottomTwoButtonDialog extends Dialog {
     private boolean mIsSingle;//是否单个按钮
     private String mLeftButton;//左边按钮
     private String mRightButton;//右边按钮
+    private ImageView iv_load;
 
     private OnClickDialogListener mOnClickDialogListener;
     private OnSingleClickDialogListener mOnSingleClickDialogListener;
@@ -39,6 +43,7 @@ public class BottomTwoButtonDialog extends Dialog {
 
     private void setView() {
         tv_content = findViewById(R.id.tv_content);
+        iv_load = findViewById(R.id.iv_load);
         TextView tv_title = findViewById(R.id.tv_title);
         if (!TextUtils.isEmpty(mTitle)) {
             tv_title.setText(mTitle);
@@ -58,8 +63,8 @@ public class BottomTwoButtonDialog extends Dialog {
         }
         int left = (mLeftMargin == 0 ? DisplayUtil.dip2px(getContext(), 24) : DisplayUtil.dip2px(getContext(), mLeftMargin));
         int top = (mTopMargin == 0 ? DisplayUtil.dip2px(getContext(), 20) : DisplayUtil.dip2px(getContext(), mTopMargin));
-        LinearLayout.LayoutParams layoutParam = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams layoutParam = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParam.setMargins(left, top, left, 0);
         tv_content.setLayoutParams(layoutParam);
 
@@ -90,6 +95,15 @@ public class BottomTwoButtonDialog extends Dialog {
         this.mContent = content;
         if(tv_content != null) {
             tv_content.setText(mContent);
+        }
+    }
+
+    public void loading(boolean load) {
+        if(load) {
+            iv_load.setVisibility(View.VISIBLE);
+            Glide.with(getContext()).load(R.mipmap.icon_loading).into(iv_load);
+        } else {
+            iv_load.setVisibility(View.GONE);
         }
     }
 

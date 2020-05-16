@@ -1,5 +1,7 @@
 package com.ali.alisimulate.fragment.param;
 
+import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -9,10 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.activity.DeviceDetailActivity;
 import com.ali.alisimulate.adapter.ParamAdapter;
-import com.ali.alisimulate.entity.DeviceDetail;
+import com.ali.alisimulate.entity.FittingDetailEntity;
+import com.ali.alisimulate.entity.LvXinEntity;
 import com.ali.alisimulate.entity.ReceiveMsg;
 import com.ali.alisimulate.entity.RefreshEvent;
-import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.view.DropDownPop;
 import com.ali.alisimulate.view.DropDownScanPop;
 import com.ali.alisimulate.view.TopViewCycle;
@@ -27,7 +29,6 @@ import com.aliyun.alink.linksdk.tools.AError;
 import com.google.gson.Gson;
 import com.ziroom.base.BaseFragment;
 import com.ziroom.base.ViewInject;
-import com.ziroom.mvp.base.BaseMvpPresenter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -41,24 +42,42 @@ import java.util.Map;
 import butterknife.BindView;
 
 @ViewInject(layoutId = R.layout.fragment_param)
-public class ParamFragment extends BaseFragment<BaseMvpPresenter> implements ParamContract.IView {
+public class ParamFragment extends BaseFragment<ParamPresenter> implements ParamContract.IView {
     @BindView(R.id.rv_list)
     RecyclerView mRvList;
     private List<Property> paramList;
     private ParamAdapter adapter;
 
+    private String deviceId;
+
+    private Map<String, Property> mapLx = new HashMap<>();
+    private DropDownPop dropDownPop;
+    private DropDownScanPop dropDownScanPop;
+
+    public static ParamFragment getInstance(String deviceId) {
+        ParamFragment fragment = new ParamFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("deviceId", deviceId);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    @Override
+    public void fetchIntents(Bundle bundle) {
+        deviceId = bundle.getString("deviceId");
+    }
+
     @Override
     public void initViews(View mView) {
         EventBus.getDefault().register(this);
-        DropDownPop dropDownPop = new DropDownPop();
+        dropDownPop = new DropDownPop();
         dropDownPop.init(getActivity());
-        DropDownScanPop dropDownScanPop = new DropDownScanPop();
+        dropDownScanPop = new DropDownScanPop();
         dropDownScanPop.init(getActivity());
         mRvList.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new ParamAdapter();
 
         List<Event> events = LinkKit.getInstance().getDeviceThing().getEvents();
-
         // 获取所有属性
         List<Property> properties = LinkKit.getInstance().getDeviceThing().getProperties();
         paramList = new ArrayList<>();
@@ -67,7 +86,11 @@ public class ParamFragment extends BaseFragment<BaseMvpPresenter> implements Par
             if (controlList != null && controlList.contains(property.getIdentifier())) {
                 continue;
             }
-            if (TmpConstant.TYPE_VALUE_ENUM.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_INTEGER.equals(property.getDataType().getType())) {
+            if (property.getIdentifier().contains("Filter")) {
+                mapLx.put(property.getIdentifier(), property);
+                continue;
+            }
+            if (TmpConstant.TYPE_VALUE_ENUM.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_INTEGER.equals(property.getDataType().getType())|| TmpConstant.TYPE_VALUE_DOUBLE.equals(property.getDataType().getType())) {
                 paramList.add(property);
             }
         }
@@ -120,34 +143,208 @@ public class ParamFragment extends BaseFragment<BaseMvpPresenter> implements Par
                 });
             }
         });
+        setLvXin();
+    }
 
-        TopViewCycle topViewCycle = new TopViewCycle(getActivity());
-        ArrayList<String> list1 = new ArrayList<>();
-        list1.add("滤芯1");
-        list1.add("滤芯2");
-        list1.add("滤芯3");
-        list1.add("滤芯4");
-        topViewCycle.loadData(list1);
-        topViewCycle.setOnPageClickListener(new TopViewCycle.OnPageClickListener() {
-            @Override
-            public void onClick(int position) {
-                dropDownPop.showPop(mRvList);
+    private void setLvXin() {
+        if (mapLx.size() > 0) {
+            ArrayList<LvXinEntity> listLx = new ArrayList<>();
+            LvXinEntity entity = null;
+            if (mapLx.containsKey("FilterID_1")) {
+                entity = new LvXinEntity();
+                entity.no = 1;
+                entity.lvxinName = "滤芯1";
+                ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterID_1");
+                if (propertyValue != null) {
+                    String value = ((ValueWrapper.StringValueWrapper) propertyValue).getValue();
+                    entity.lvxinDeviceName = value;
+                }
+                if (mapLx.containsKey("FilterLifeTimePercent_1")) {
+                    ValueWrapper percent1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimePercent_1");
+                    if (percent1 != null) {
+                        int value = ((ValueWrapper.IntValueWrapper) percent1).getValue();
+                        entity.lifePercent = value +"";
+                    }
+                }
+                if (mapLx.containsKey("FilterLifeTimeDays_1")) {
+                    ValueWrapper days_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimeDays_1");
+                    if (days_1 != null) {
+                        double value = ((ValueWrapper.DoubleValueWrapper) days_1).getValue();
+                        entity.lifeDay = value +"";
+                    }
+                }
+                if (mapLx.containsKey("FilterStatus_1")) {
+                    ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_1");
+                    if (status_1 != null) {
+                        int value = ((ValueWrapper.EnumValueWrapper) status_1).getValue();
+                        EnumSpec filterStatus_1 = (EnumSpec) mapLx.get("FilterStatus_1").getDataType().getSpecs();
+                        entity.lifeStatus = filterStatus_1.get(value);
+                    }
+                }
+                listLx.add(entity);
+            }
+            if (mapLx.containsKey("FilterID_2")) {
+                entity = new LvXinEntity();
+                entity.no = 2;
+                entity.lvxinName = "滤芯2";
+                ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterID_2");
+                if (propertyValue != null) {
+                    String value = ((ValueWrapper.StringValueWrapper) propertyValue).getValue();
+                    entity.lvxinDeviceName = value;
+                }
+                if (mapLx.containsKey("FilterLifeTimePercent_2")) {
+                    ValueWrapper percent1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimePercent_2");
+                    if (percent1 != null) {
+                        int value = ((ValueWrapper.IntValueWrapper) percent1).getValue();
+                        entity.lifePercent = value +"";
+                    }
+                }
+                if (mapLx.containsKey("FilterLifeTimeDays_2")) {
+                    ValueWrapper days_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimeDays_2");
+                    if (days_1 != null) {
+                        double value = ((ValueWrapper.DoubleValueWrapper) days_1).getValue();
+                        entity.lifeDay = value +"";
+                    }
+                }
+                if (mapLx.containsKey("FilterStatus_2")) {
+                    ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_2");
+                    if (status_1 != null) {
+                        int value = ((ValueWrapper.EnumValueWrapper) status_1).getValue();
+                        EnumSpec filterStatus_1 = (EnumSpec) mapLx.get("FilterStatus_2").getDataType().getSpecs();
+                        entity.lifeStatus = filterStatus_1.get(value);
+                    }
+                }
+                listLx.add(entity);
+            }
+            if (mapLx.containsKey("FilterID_3")) {
+                entity = new LvXinEntity();
+                entity.no = 3;
+                entity.lvxinName = "滤芯3";
+                ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterID_3");
+                if (propertyValue != null) {
+                    String value = ((ValueWrapper.StringValueWrapper) propertyValue).getValue();
+                    entity.lvxinDeviceName = value;
+                }
+                if (mapLx.containsKey("FilterLifeTimePercent_3")) {
+                    ValueWrapper percent1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimePercent_3");
+                    if (percent1 != null) {
+                        int value = ((ValueWrapper.IntValueWrapper) percent1).getValue();
+                        entity.lifePercent = value +"";
+                    }
+                }
+                if (mapLx.containsKey("FilterLifeTimeDays_3")) {
+                    ValueWrapper days_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimeDays_3");
+                    if (days_1 != null) {
+                        double value = ((ValueWrapper.DoubleValueWrapper) days_1).getValue();
+                        entity.lifeDay = value +"";
+                    }
+                }
+                if (mapLx.containsKey("FilterStatus_3")) {
+                    ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_3");
+                    if (status_1 != null) {
+                        int value = ((ValueWrapper.EnumValueWrapper) status_1).getValue();
+                        EnumSpec filterStatus_1 = (EnumSpec) mapLx.get("FilterStatus_3").getDataType().getSpecs();
+                        entity.lifeStatus = filterStatus_1.get(value);
+                    }
+                }
+                listLx.add(entity);
+            }
+            if (mapLx.containsKey("FilterID_4")) {
+                entity = new LvXinEntity();
+                entity.no = 4;
+                entity.lvxinName = "滤芯4";
+                ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterID_4");
+                if (propertyValue != null) {
+                    String value = ((ValueWrapper.StringValueWrapper) propertyValue).getValue();
+                    entity.lvxinDeviceName = value;
+                }
+                if (mapLx.containsKey("FilterLifeTimePercent_4")) {
+                    ValueWrapper percent1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimePercent_4");
+                    if (percent1 != null) {
+                        int value = ((ValueWrapper.IntValueWrapper) percent1).getValue();
+                        entity.lifePercent = value +"";
+                    }
+                }
+                if (mapLx.containsKey("FilterLifeTimeDays_4")) {
+                    ValueWrapper days_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimeDays_4");
+                    if (days_1 != null) {
+                        double value = ((ValueWrapper.DoubleValueWrapper) days_1).getValue();
+                        entity.lifeDay = value +"";
+                    }
+                }
+                if (mapLx.containsKey("FilterStatus_4")) {
+                    ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_4");
+                    if (status_1 != null) {
+                        int value = ((ValueWrapper.EnumValueWrapper) status_1).getValue();
+                        EnumSpec filterStatus_1 = (EnumSpec) mapLx.get("FilterStatus_4").getDataType().getSpecs();
+                        entity.lifeStatus = filterStatus_1.get(value);
+                    }
+                }
+                listLx.add(entity);
+            }
+            if (mapLx.containsKey("FilterID_5")) {
+                entity = new LvXinEntity();
+                entity.no = 5;
+                entity.lvxinName = "滤芯5";
+                ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterID_5");
+                if (propertyValue != null) {
+                    String value = ((ValueWrapper.StringValueWrapper) propertyValue).getValue();
+                    entity.lvxinDeviceName = value;
+                }
+                if (mapLx.containsKey("FilterLifeTimePercent_5")) {
+                    ValueWrapper percent1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimePercent_5");
+                    if (percent1 != null) {
+                        int value = ((ValueWrapper.IntValueWrapper) percent1).getValue();
+                        entity.lifePercent = value +"";
+                    }
+                }
+                if (mapLx.containsKey("FilterLifeTimeDays_5")) {
+                    ValueWrapper days_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimeDays_5");
+                    if (days_1 != null) {
+                        double value = ((ValueWrapper.DoubleValueWrapper) days_1).getValue();
+                        entity.lifeDay = value +"";
+                    }
+                }
+                if (mapLx.containsKey("FilterStatus_5")) {
+                    ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_5");
+                    if (status_1 != null) {
+                        int value = ((ValueWrapper.EnumValueWrapper) status_1).getValue();
+                        EnumSpec filterStatus_1 = (EnumSpec) mapLx.get("FilterStatus_5").getDataType().getSpecs();
+                        entity.lifeStatus = filterStatus_1.get(value);
+                    }
+                }
+                listLx.add(entity);
             }
 
-            @Override
-            public void onClickButton(int position) {
-                dropDownScanPop.showPop(mRvList);
+            if(listLx.size() > 0) {
+                TopViewCycle topViewCycle = new TopViewCycle(getActivity());
+
+                topViewCycle.loadData(listLx);
+                topViewCycle.setOnPageClickListener(new TopViewCycle.OnPageClickListener() {
+                    @Override
+                    public void onClick(int position) {
+                        LvXinEntity entity1 = listLx.get(position);
+                        if(TextUtils.isEmpty(entity1.lvxinDeviceName)) {
+                            dropDownPop.setFitInfo(null, entity1, mapLx);
+                            dropDownPop.showPop(mRvList);
+                        } else {
+                            mPresenter.getPjInfo(entity1);
+                        }
+                    }
+
+                    @Override
+                    public void onClickButton(int position) {
+                        dropDownScanPop.showPop(mRvList);
+                    }
+                });
+                adapter.setHeadView(topViewCycle);
             }
-        });
-        adapter.setHeadView(topViewCycle);
+        }
     }
 
     @Override
-    public void getDeviceInfoSuccess(DeviceDetail deviceDetail) {
-        List<DeviceDetail.FittingDetail> fittingDetails = deviceDetail.fittingDetails;
-        for (DeviceDetail.FittingDetail fittingDetail : fittingDetails) {
-
-        }
+    public ParamPresenter getPresenter() {
+        return new ParamPresenter(this);
     }
 
     @Override
@@ -157,8 +354,9 @@ public class ParamFragment extends BaseFragment<BaseMvpPresenter> implements Par
     }
 
     @Override
-    public void getPjInfoSuccess() {
-
+    public void getPjInfoSuccess(FittingDetailEntity fittingDetailEntity, LvXinEntity entity) {
+        dropDownPop.setFitInfo(fittingDetailEntity, entity, mapLx);
+        dropDownPop.showPop(mRvList);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -170,7 +368,7 @@ public class ParamFragment extends BaseFragment<BaseMvpPresenter> implements Par
             Map<String, Object> params = receiveMsg.params;
             for (int i = 0; i < paramList.size(); i++) {
                 Property property = paramList.get(i);
-                if(params.containsKey(property.getIdentifier())) {
+                if (params.containsKey(property.getIdentifier())) {
                     adapter.setDataByPos(i, params.get(property.getIdentifier()));
                 }
             }

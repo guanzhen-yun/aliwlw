@@ -3,7 +3,7 @@ package com.ali.alisimulate.service;
 import com.ali.alisimulate.Constants;
 import com.ali.alisimulate.entity.BranchEntity;
 import com.ali.alisimulate.entity.BranchTypeEntity;
-import com.ali.alisimulate.entity.DeviceDetail;
+import com.ali.alisimulate.entity.FittingDetailEntity;
 import com.ali.alisimulate.entity.LoginModel;
 import com.ali.alisimulate.entity.LoginSuccess;
 import com.ali.alisimulate.entity.OrgDevice;
@@ -15,7 +15,6 @@ import com.ziroom.net.bean.Result;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.reactivex.Observable;
 import retrofit2.http.Body;
@@ -62,8 +61,8 @@ public interface AppService {
     @GET("/api/device/page_by_productkey")
     Observable<Result<OrgDevice>> getDeviceList (@QueryMap HashMap<String, Object> map);
 
-    @Headers({Constants.DOMAIN_ALI_HEADR})
-    @GET("/api/device/detail")
-    Observable<Result<DeviceDetail>> getDeviceDetail (@Query("deviceId") String deviceId);
 
+    @Headers({Constants.DOMAIN_ALI_HEADR})
+    @GET("/api/device/fixing_detail")
+    Observable<Result<FittingDetailEntity>> getFitingInfo (@Query("device_name") String device_name);
 }

@@ -98,6 +98,7 @@ public class AddDeviceActivity extends BaseActivity<AddDevicePresenter> implemen
         registDeviceRequest.deviceComment = branchTypeEntity.name;
         mPresenter.registDevice(registDeviceRequest);
         dialog.setContent("正在创建");
+        dialog.loading(true);
         isCanReturn = 1;
     }
 
@@ -149,9 +150,11 @@ public class AddDeviceActivity extends BaseActivity<AddDevicePresenter> implemen
         if(registDeviceResult != null) {
             mResult = registDeviceResult;
             dialog.setContent("创建成功！");
+            dialog.loading(false);
             isCanReturn = 2;
         } else {
             isCanReturn = 3;
+            dialog.loading(false);
             dialog.setContent("创建失败");
         }
     }

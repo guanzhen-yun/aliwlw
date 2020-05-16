@@ -119,6 +119,85 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
                 ((ParamsHolder) viewHolder).iv_select.setVisibility(View.GONE);
                 ((ParamsHolder) viewHolder).tv_unit.setVisibility(View.VISIBLE);
                 ((ParamsHolder) viewHolder).tv_tip.setVisibility(View.VISIBLE);
+                ((ParamsHolder) viewHolder).et_prop.setVisibility(View.VISIBLE);
+                ((ParamsHolder) viewHolder).tv_prop.setVisibility(View.GONE);
+                if(data.getDataType().getSpecs() != null) {
+                    MetaSpec specs = (MetaSpec) data.getDataType().getSpecs();
+                    ((ParamsHolder) viewHolder).tv_unit.setVisibility(View.VISIBLE);
+                    ((ParamsHolder) viewHolder).tv_tip.setText("double型, 范围: " + specs.getMin() + "～" + specs.getMax() + ",步长" + specs.getStep());
+                    ((ParamsHolder) viewHolder).tv_unit.setText(specs.getUnit());
+                } else {
+                    ((ParamsHolder) viewHolder).tv_tip.setText("double型");
+                    ((ParamsHolder) viewHolder).tv_unit.setVisibility(View.GONE);
+                }
+
+                ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(data.getIdentifier());
+                if (propertyValue != null) {
+                    Double value = ((ValueWrapper.DoubleValueWrapper) propertyValue).getValue();
+                    if (value != null) {
+                        ((ParamsHolder) viewHolder).et_prop.setText(String.valueOf(value));
+                    }
+                }
+                if (((ParamsHolder) viewHolder).et_prop.getTag() instanceof TextWatcher) {
+                    ((ParamsHolder) viewHolder).et_prop.removeTextChangedListener((TextWatcher) (((ParamsHolder) viewHolder).et_prop.getTag()));
+                }
+                if(mData != null && mData instanceof Integer && mPosition == realPosition) {
+                    int dd = (int) mData;
+                    ((ParamsHolder) viewHolder).et_prop.setText(String.valueOf(dd));
+                    if (onCheckedListener != null) {
+                        onCheckedListener.onChange(realPosition, dd + "");
+                    }
+                    mData = null;
+                }
+                ((ParamsHolder) viewHolder).et_prop.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                final TextWatcher watcher = new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (((ParamsHolder) viewHolder).et_prop.hasFocus()) {
+                            String et = ((ParamsHolder) viewHolder).et_prop.getText().toString();
+                            if(data.getDataType().getSpecs() != null) {
+                                MetaSpec specs = (MetaSpec) data.getDataType().getSpecs();
+                                if(!TextUtils.isEmpty(et) && Double.parseDouble(et) > Double.parseDouble(specs.getMax())) {
+                                    if(et.length() > 1) {
+                                        ((ParamsHolder) viewHolder).et_prop.setText(et.substring(0, et.length()-1));
+                                        ((ParamsHolder) viewHolder).et_prop.setSelection(et.length()-1);
+                                    } else {
+                                        ((ParamsHolder) viewHolder).et_prop.setText("");
+                                        ((ParamsHolder) viewHolder).et_prop.setSelection(0);
+                                    }
+                                }
+                                if(!TextUtils.isEmpty(et) && Double.parseDouble(et) <= Double.parseDouble(specs.getMax()) && onCheckedListener != null) {
+                                    onCheckedListener.onChange(realPosition, et);
+                                }
+                            } else {
+                                if(!TextUtils.isEmpty(et) && onCheckedListener != null) {
+                                    onCheckedListener.onChange(realPosition, et);
+                                }
+                            }
+                        }
+                    }
+                };
+
+                ((ParamsHolder) viewHolder).et_prop.setTag(watcher);
+                ((ParamsHolder) viewHolder).et_prop.addTextChangedListener(watcher);
+                ((ParamsHolder) viewHolder).et_prop.setOnFocusChangeListener((v, hasFocus) -> {
+                    if (hasFocus) {
+                        ((ParamsHolder) viewHolder).et_prop.addTextChangedListener(watcher);
+                    } else {
+                        ((ParamsHolder) viewHolder).et_prop.removeTextChangedListener(watcher);
+                    }
+                });
+
             } else if (TmpConstant.TYPE_VALUE_INTEGER.equals(data.getDataType().getType())) {
                 ((ParamsHolder) viewHolder).et_prop.setVisibility(View.VISIBLE);
                 ((ParamsHolder) viewHolder).tv_prop.setVisibility(View.GONE);

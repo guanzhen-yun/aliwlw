@@ -15,6 +15,8 @@
             android:paddingLeft="15dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:textColor="#585858"
+            android:textSize="15sp"
             android:text="故障上报" />
 
         <RelativeLayout
@@ -35,6 +37,7 @@
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
                 android:textSize="13sp"
+                android:hint="请输入"
                 android:paddingLeft="10dp"
                 android:textColor="#000000"
                />
@@ -47,9 +50,10 @@
                 android:layout_marginRight="15dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:textSize="13sp"
+                android:textSize="14sp"
+                android:hint="请选择"
                 android:paddingLeft="10dp"
-                android:textColor="#000000"
+                android:textColor="#323232"
                 />
 
             <ImageView
@@ -70,6 +74,8 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="15dp"
+                android:textColor="#6E6E6E"
+                android:textSize="15sp"
                 android:text="μg/m³"
                 />
         </RelativeLayout>
@@ -83,7 +89,7 @@
         android:layout_marginLeft="109dp"
         android:layout_marginTop="3dp"
         android:text="int32型，范围：0～500，步长1"
-        android:textColor="#ff0000"
+        android:textColor="#ADADAD"
         android:textSize="12sp" />
 
     <View

@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rl_body"
     android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="82dp">
 
     <TextView
@@ -10,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
         android:layout_marginTop="14dp"
-        android:text="滤芯1"
+        tools:text="滤芯1"
         android:textColor="#333333"
         android:textSize="23sp" />
 
@@ -30,7 +31,7 @@
         android:layout_marginLeft="15dp"
         android:layout_marginTop="14dp"
         android:layout_toRightOf="@id/tv_sm"
-        android:text="正常"
+        tools:text="正常"
         android:textColor="#10AB6C" />
 
     <TextView
@@ -52,7 +53,7 @@
         android:layout_marginLeft="15dp"
         android:layout_marginTop="6dp"
         android:layout_toRightOf="@id/tv_ky"
-        android:text="40天"
+        tools:text="40天"
         android:textColor="#10AB6C" />
 
     <TextView
@@ -72,7 +73,7 @@
         android:layout_below="@id/tv_sm"
         android:layout_marginTop="6dp"
         android:layout_toRightOf="@id/tv_sy"
-        android:text="20%"
+        tools:text="20%"
         android:textColor="#10AB6C" />
 
     <TextView
@@ -80,7 +81,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="23dp"
-        android:layout_marginRight="15dp"
+        android:layout_marginRight="7dp"
         android:layout_toLeftOf="@+id/iv_arr"
         android:background="@drawable/bg_look"
         android:paddingLeft="15dp"

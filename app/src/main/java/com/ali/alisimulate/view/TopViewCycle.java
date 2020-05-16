@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,6 +24,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.ali.alisimulate.R;
+import com.ali.alisimulate.entity.LvXinEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +43,7 @@ public class TopViewCycle extends FrameLayout {
      * Map<String,String> map=new HashMap<String, String>();
      * map.put("","");
      */
-    private List<String> data = new ArrayList<>();
+    private List<LvXinEntity> data = new ArrayList<>();
 
     /**
      * 图片轮播指示器容器
@@ -188,7 +190,7 @@ public class TopViewCycle extends FrameLayout {
     /**
      * 加载显示的数据  网络图片资源及标题
      */
-    public void loadData(List<String> list) {
+    public void loadData(List<LvXinEntity> list) {
         data = list;
         mCount = list.size();
         initIndication();
@@ -399,8 +401,28 @@ public class TopViewCycle extends FrameLayout {
             position = position % mCount;
             TextView tv_name = view.findViewById(R.id.tv_name);
             RelativeLayout rl_body = view.findViewById(R.id.rl_body);
-            tv_name.setText(data.get(position));
+            tv_name.setText(data.get(position).lvxinName);
             TextView tv_change = view.findViewById(R.id.tv_change);
+            TextView tv_syp = view.findViewById(R.id.tv_syp);
+            if(TextUtils.isEmpty(data.get(position).lifePercent)) {
+                tv_syp.setText("-");
+            } else {
+                tv_syp.setText(data.get(position).lifePercent + "%");
+            }
+
+            TextView tv_kyday = view.findViewById(R.id.tv_kyday);
+            if(TextUtils.isEmpty(data.get(position).lifeDay)) {
+                tv_kyday.setText("-");
+            } else {
+                tv_kyday.setText(data.get(position).lifeDay + "天");
+            }
+            TextView tv_smzt = view.findViewById(R.id.tv_smzt);
+            if(TextUtils.isEmpty(data.get(position).lifeStatus)) {
+                tv_smzt.setText("-");
+            } else {
+                tv_smzt.setText(data.get(position).lifeStatus);
+            }
+
             // 设置图片点击监听
             int finalPosition = position;
             tv_change.setOnClickListener(v -> {
