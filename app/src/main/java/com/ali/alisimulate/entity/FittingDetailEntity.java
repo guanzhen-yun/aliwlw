@@ -14,4 +14,5 @@ public class FittingDetailEntity {
     public String productLine;
     public String producter;
     public String rversion;
+    public String subType;
 }

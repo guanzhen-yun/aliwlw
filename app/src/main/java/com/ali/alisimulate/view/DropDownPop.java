@@ -259,8 +259,8 @@ public class DropDownPop {
         } else {
             tv_xh_name.setText("-");
         }
-        if(mFitingEntity != null && !TextUtils.isEmpty(mFitingEntity.rversion)) {//TODO 类型
-            tv_lx_name.setText(mFitingEntity.rversion);
+        if(mFitingEntity != null && !TextUtils.isEmpty(mFitingEntity.subType)) {
+            tv_lx_name.setText(mFitingEntity.subType);
         } else {
             tv_lx_name.setText("-");
         }
