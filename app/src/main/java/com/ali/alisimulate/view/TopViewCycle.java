@@ -34,10 +34,20 @@ public class TopViewCycle extends FrameLayout {
      * 上下文
      */
     private Context mContext;
+
+    public CycleViewPager getmViewPager() {
+        return mViewPager;
+    }
+
     /**
      * 轮播视图
      */
     private CycleViewPager mViewPager;
+
+    public void setData(List<LvXinEntity> data) {
+        this.data = data;
+    }
+
     /**
      * 数据集合
      * Map<String,String> map=new HashMap<String, String>();

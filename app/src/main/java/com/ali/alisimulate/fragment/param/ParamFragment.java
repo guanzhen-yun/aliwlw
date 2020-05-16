@@ -1,13 +1,17 @@
 package com.ali.alisimulate.fragment.param;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ali.alisimulate.MainActivity;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.activity.DeviceDetailActivity;
 import com.ali.alisimulate.adapter.ParamAdapter;
@@ -15,6 +19,7 @@ import com.ali.alisimulate.entity.FittingDetailEntity;
 import com.ali.alisimulate.entity.LvXinEntity;
 import com.ali.alisimulate.entity.ReceiveMsg;
 import com.ali.alisimulate.entity.RefreshEvent;
+import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.view.DropDownPop;
 import com.ali.alisimulate.view.DropDownScanPop;
 import com.ali.alisimulate.view.TopViewCycle;
@@ -27,6 +32,8 @@ import com.aliyun.alink.linksdk.tmp.listener.IPublishResourceListener;
 import com.aliyun.alink.linksdk.tmp.utils.TmpConstant;
 import com.aliyun.alink.linksdk.tools.AError;
 import com.google.gson.Gson;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.common.Constant;
 import com.ziroom.base.BaseFragment;
 import com.ziroom.base.ViewInject;
 
@@ -53,6 +60,8 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
     private Map<String, Property> mapLx = new HashMap<>();
     private DropDownPop dropDownPop;
     private DropDownScanPop dropDownScanPop;
+    private ArrayList<LvXinEntity> listLx;
+    private TopViewCycle topViewCycle;
 
     public static ParamFragment getInstance(String deviceId) {
         ParamFragment fragment = new ParamFragment();
@@ -148,7 +157,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
 
     private void setLvXin() {
         if (mapLx.size() > 0) {
-            ArrayList<LvXinEntity> listLx = new ArrayList<>();
+            listLx = new ArrayList<>();
             LvXinEntity entity = null;
             if (mapLx.containsKey("FilterID_1")) {
                 entity = new LvXinEntity();
@@ -317,7 +326,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
             }
 
             if(listLx.size() > 0) {
-                TopViewCycle topViewCycle = new TopViewCycle(getActivity());
+                topViewCycle = new TopViewCycle(getActivity());
 
                 topViewCycle.loadData(listLx);
                 topViewCycle.setOnPageClickListener(new TopViewCycle.OnPageClickListener() {
@@ -334,11 +343,61 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
 
                     @Override
                     public void onClickButton(int position) {
+                        LvXinEntity entity1 = listLx.get(position);
+                        dropDownScanPop.setDeviceInfo(entity1);
                         dropDownScanPop.showPop(mRvList);
                     }
                 });
                 adapter.setHeadView(topViewCycle);
             }
+
+            dropDownPop.setOnChangePjListener(new DropDownPop.OnChangePjListener() {
+                @Override
+                public void onChange(String lifePercent, int no, String lifeDay, String lifeStatus) {
+                    for (LvXinEntity lx : listLx) {
+                        if(lx.no == no) {
+                            lx.lifeDay = lifeDay;
+                            lx.lifePercent = lifePercent;
+                            lx.lifeStatus = lifeStatus;
+                            topViewCycle.setData(listLx);
+                            topViewCycle.getmViewPager().getAdapter().notifyDataSetChanged();
+                            break;
+                        }
+                    }
+                }
+            });
+
+            dropDownScanPop.setOnChangePjListener(new DropDownScanPop.OnChangePjListener() {
+                @Override
+                public void onChange(String deviceName, int no) {
+                    for (LvXinEntity lx : listLx) {
+                        if(lx.no == no) {
+                            lx.lvxinDeviceName = deviceName;
+                            topViewCycle.setData(listLx);
+                            topViewCycle.getmViewPager().getAdapter().notifyDataSetChanged();
+                            break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onScan() {
+                    Intent intent = new Intent(mContext, CaptureActivity.class);
+                    /*ZxingConfig是配置类  可以设置是否显示底部布局，闪光灯，相册，是否播放提示音  震动等动能
+                     * 也可以不传这个参数
+                     * 不传的话  默认都为默认不震动  其他都为true
+                     * */
+
+                    //ZxingConfig config = new ZxingConfig();
+                    //config.setShowbottomLayout(true);//底部布局（包括闪光灯和相册）
+                    //config.setPlayBeep(true);//是否播放提示音
+                    //config.setShake(true);//是否震动
+                    //config.setShowAlbum(true);//是否显示相册
+                    //config.setShowFlashLight(true);//是否显示闪光灯
+                    //intent.putExtra(Constant.INTENT_ZXING_CONFIG, config);
+                    startActivityForResult(intent, 11);
+                }
+            });
         }
     }
 
@@ -371,6 +430,17 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                 if (params.containsKey(property.getIdentifier())) {
                     adapter.setDataByPos(i, params.get(property.getIdentifier()));
                 }
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 11 && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(Constant.CODED_CONTENT);
+                dropDownScanPop.setDeviceScanName(content);
             }
         }
     }

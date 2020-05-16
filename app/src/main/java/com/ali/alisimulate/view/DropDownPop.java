@@ -59,6 +59,7 @@ public class DropDownPop {
     private TextView tv_sm;
 
     private String mSelectStatus;
+    private String mSelectStatusName;
 
     public void init(Activity activity) {
         if(activity != null) {
@@ -130,6 +131,7 @@ public class DropDownPop {
                                 public void onCheck(int pos) {
                                     tv_sm.setText(listKey.get(pos) + "(" + list.get(pos) + ")");
                                     mSelectStatus = listKey.get(pos);
+                                    mSelectStatusName = list.get(pos);
                                     pw.dismiss();
                                 }
                             });
@@ -200,6 +202,10 @@ public class DropDownPop {
             if(!TextUtils.isEmpty(et_syname.getText().toString())) {
                 reportData.put("FilterLifeTimePercent_5", new ValueWrapper.IntValueWrapper(Integer.parseInt(et_syname.getText().toString())));
             }
+        }
+
+        if(onChangePjListener != null) {
+            onChangePjListener.onChange(et_syname.getText().toString(), mEntity.no, et_kyname.getText().toString(), mSelectStatusName);
         }
 
         LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
@@ -376,4 +382,15 @@ public class DropDownPop {
             }
         }
     }
+
+    public void setOnChangePjListener(OnChangePjListener onChangePjListener) {
+        this.onChangePjListener = onChangePjListener;
+    }
+
+    public interface OnChangePjListener {
+        void onChange(String lifePercent, int no, String lifeDay, String lifeStatus);
+    }
+
+    private OnChangePjListener onChangePjListener;
+
 }

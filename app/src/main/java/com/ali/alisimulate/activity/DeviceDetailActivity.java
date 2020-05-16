@@ -1,5 +1,6 @@
 package com.ali.alisimulate.activity;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -110,6 +111,14 @@ public class DeviceDetailActivity extends BaseActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             return strings[position];
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(paramFragment != null) {
+            paramFragment.onActivityResult(requestCode, resultCode, data);
         }
     }
 }
