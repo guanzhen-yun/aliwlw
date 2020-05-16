@@ -11,12 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:id="@+id/iv_back"
             android:layout_marginLeft="15dp"
             android:layout_centerVertical="true"
-            android:background="@mipmap/ic_launcher"
+            android:scaleType="center"
+            android:src="@mipmap/icon_back"
             />
 
         <TextView
