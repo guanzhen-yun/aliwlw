@@ -1,5 +1,7 @@
 package com.ali.alisimulate.activity;
 
+import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -98,9 +101,9 @@ public class DingshiControlActivity extends BaseActivity {
 
     private void setMinute() {
         List<KeyValue> listMinute = new ArrayList<>();
-        for (int i=0;i<=59;i++) {
+        for (int i = 0; i <= 59; i++) {
             KeyValue keyValue = null;
-            if(i < 10) {
+            if (i < 10) {
                 keyValue = new KeyValue("0" + i);
             } else {
                 keyValue = new KeyValue(String.valueOf(i));
@@ -112,9 +115,9 @@ public class DingshiControlActivity extends BaseActivity {
 
     private void setHour() {
         List<KeyValue> listHour = new ArrayList<>();
-        for (int i=1;i<=24;i++) {
+        for (int i = 1; i <= 24; i++) {
             KeyValue keyValue = null;
-            if(i < 10) {
+            if (i < 10) {
                 keyValue = new KeyValue("0" + i);
             } else {
                 keyValue = new KeyValue(String.valueOf(i));
@@ -124,26 +127,28 @@ public class DingshiControlActivity extends BaseActivity {
         mWvContentHour.setItems(listHour, 0);
     }
 
-    @OnClick(R.id.iv_back)
-    public void onViewClicked() {
-        onBackPressed();
-    }
-
-    @Override
-    public void onBackPressed() {
-        String selectWeek = "";
-        for (WeekEntity weekEntity : weekEntities) {
-            if(weekEntity.isSelect) {
-                selectWeek = selectWeek + weekEntity.week + ",";
-            }
+    @OnClick({R.id.iv_back, R.id.tv_ok})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.iv_back:
+                onBackPressed();
+                break;
+            case R.id.tv_ok:
+                String selectWeek = "";
+                for (WeekEntity weekEntity : weekEntities) {
+                    if (weekEntity.isSelect) {
+                        selectWeek = selectWeek + weekEntity.week + ",";
+                    }
+                }
+                if (title.equals("定时关机")) {
+                    SharedPreferencesUtils.save(this, Constants.KEY_CLOSE_WEEK, selectWeek);
+                    SharedPreferencesUtils.save(this, Constants.KEY_CLOSE_TIME, hour + "," + minite);
+                } else {
+                    SharedPreferencesUtils.save(this, Constants.KEY_OPEN_WEEK, selectWeek);
+                    SharedPreferencesUtils.save(this, Constants.KEY_OPEN_TIME, hour + "," + minite);
+                }
+                finish();
+                break;
         }
-        if(title.equals("定时关机")) {
-            SharedPreferencesUtils.save(this, Constants.KEY_CLOSE_WEEK, selectWeek);
-            SharedPreferencesUtils.save(this, Constants.KEY_CLOSE_TIME, hour + "," + minite);
-        } else {
-            SharedPreferencesUtils.save(this, Constants.KEY_OPEN_WEEK, selectWeek);
-            SharedPreferencesUtils.save(this, Constants.KEY_OPEN_TIME, hour + "," + minite);
-        }
-        finish();
     }
 }
