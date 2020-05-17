@@ -1,5 +1,6 @@
 package com.ali.alisimulate.adapter;
 
+import android.graphics.Color;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -13,7 +14,6 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,11 +43,6 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
     public void onBind(RecyclerView.ViewHolder viewHolder, int realPosition, Property data) {
         if (viewHolder instanceof ParamsHolder) {
             ((ParamsHolder) viewHolder).tv_name.setText(data.getName());
-            if(realPosition == getItemCount()-2) {
-                ((ParamsHolder) viewHolder).view_bottom.setVisibility(View.VISIBLE);
-            } else {
-                ((ParamsHolder) viewHolder).view_bottom.setVisibility(View.GONE);
-            }
             if (TmpConstant.TYPE_VALUE_ENUM.equals(data.getDataType().getType())) {
                 ((ParamsHolder) viewHolder).et_prop.setVisibility(View.GONE);
                 ((ParamsHolder) viewHolder).tv_prop.setVisibility(View.VISIBLE);
@@ -167,16 +162,12 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
                             String et = ((ParamsHolder) viewHolder).et_prop.getText().toString();
                             if(data.getDataType().getSpecs() != null) {
                                 MetaSpec specs = (MetaSpec) data.getDataType().getSpecs();
-                                if(!TextUtils.isEmpty(et) && Double.parseDouble(et) > Double.parseDouble(specs.getMax())) {
-                                    if(et.length() > 1) {
-                                        ((ParamsHolder) viewHolder).et_prop.setText(et.substring(0, et.length()-1));
-                                        ((ParamsHolder) viewHolder).et_prop.setSelection(et.length()-1);
-                                    } else {
-                                        ((ParamsHolder) viewHolder).et_prop.setText("");
-                                        ((ParamsHolder) viewHolder).et_prop.setSelection(0);
-                                    }
+                                if(!TextUtils.isEmpty(et) && (Double.parseDouble(et) > Double.parseDouble(specs.getMax()) || Double.parseDouble(et) < Double.parseDouble(specs.getMin()))) {
+                                    ((ParamsHolder) viewHolder).tv_tip.setTextColor(Color.parseColor("#ff0000"));
+                                } else {
+                                    ((ParamsHolder) viewHolder).tv_tip.setTextColor(Color.parseColor("#ADADAD"));
                                 }
-                                if(!TextUtils.isEmpty(et) && Double.parseDouble(et) <= Double.parseDouble(specs.getMax()) && onCheckedListener != null) {
+                                if(!TextUtils.isEmpty(et) && Double.parseDouble(et) >= Double.parseDouble(specs.getMin()) && Double.parseDouble(et) <= Double.parseDouble(specs.getMax()) && onCheckedListener != null) {
                                     onCheckedListener.onChange(realPosition, et);
                                 }
                             } else {
@@ -204,9 +195,14 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
                 ((ParamsHolder) viewHolder).iv_select.setVisibility(View.GONE);
                 ((ParamsHolder) viewHolder).tv_unit.setVisibility(View.VISIBLE);
                 ((ParamsHolder) viewHolder).tv_tip.setVisibility(View.VISIBLE);
-                MetaSpec specs = (MetaSpec) data.getDataType().getSpecs();
-                ((ParamsHolder) viewHolder).tv_tip.setText("int32型, 范围: " + specs.getMin() + "～" + specs.getMax() + ",步长" + specs.getStep());
-                ((ParamsHolder) viewHolder).tv_unit.setText(specs.getUnit());
+                if(data.getDataType().getSpecs() != null) {
+                    MetaSpec specs = (MetaSpec) data.getDataType().getSpecs();
+                    ((ParamsHolder) viewHolder).tv_tip.setText("int32型, 范围: " + specs.getMin() + "～" + specs.getMax() + ",步长" + specs.getStep());
+                    ((ParamsHolder) viewHolder).tv_unit.setText(specs.getUnit());
+                } else {
+                    ((ParamsHolder) viewHolder).tv_tip.setText("int32型");
+                }
+
                 ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(data.getIdentifier());
                 if (propertyValue != null) {
                     Integer value = ((ValueWrapper.IntValueWrapper) propertyValue).getValue();
@@ -241,17 +237,18 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
                     public void afterTextChanged(Editable s) {
                         if (((ParamsHolder) viewHolder).et_prop.hasFocus()) {
                             String et = ((ParamsHolder) viewHolder).et_prop.getText().toString();
-                            if(!TextUtils.isEmpty(et) && Integer.parseInt(et) > Integer.parseInt(specs.getMax())) {
-                                if(et.length() > 1) {
-                                    ((ParamsHolder) viewHolder).et_prop.setText(et.substring(0, et.length()-1));
-                                    ((ParamsHolder) viewHolder).et_prop.setSelection(et.length()-1);
+                            if(data.getDataType().getSpecs() != null) {
+                                MetaSpec specs = (MetaSpec) data.getDataType().getSpecs();
+                                if(!TextUtils.isEmpty(et) && (Integer.parseInt(et) > Integer.parseInt(specs.getMax()) || Integer.parseInt(et) < Integer.parseInt(specs.getMin()))) {
+                                    ((ParamsHolder) viewHolder).tv_tip.setTextColor(Color.parseColor("#ff0000"));
                                 } else {
-                                    ((ParamsHolder) viewHolder).et_prop.setText("");
-                                    ((ParamsHolder) viewHolder).et_prop.setSelection(0);
+                                    ((ParamsHolder) viewHolder).tv_tip.setTextColor(Color.parseColor("#ADADAD"));
                                 }
-                            }
-                            if(!TextUtils.isEmpty(et) && Integer.parseInt(et) <= Integer.parseInt(specs.getMax()) && onCheckedListener != null) {
-                                onCheckedListener.onChange(realPosition, et);
+                                if(!TextUtils.isEmpty(et) && Integer.parseInt(et) >= Integer.parseInt(specs.getMin()) && Integer.parseInt(et) <= Integer.parseInt(specs.getMax()) && onCheckedListener != null) {
+                                    onCheckedListener.onChange(realPosition, et);
+                                }
+                            } else if(!TextUtils.isEmpty(et) && onCheckedListener != null) {
+                                    onCheckedListener.onChange(realPosition, et);
                             }
                         }
                     }
@@ -290,7 +287,6 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
         private TextView tv_tip;
         private ImageView iv_select;
         private TextView tv_prop;
-        private View view_bottom;
 
         public ParamsHolder(View itemView) {
             super(itemView);
@@ -301,7 +297,6 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
             tv_unit = itemView.findViewById(R.id.tv_unit);
             tv_tip = itemView.findViewById(R.id.tv_tip);
             iv_select = itemView.findViewById(R.id.iv_select);
-            view_bottom = itemView.findViewById(R.id.view_bottom);
         }
     }
 

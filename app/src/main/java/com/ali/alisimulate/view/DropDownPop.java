@@ -53,19 +53,17 @@ public class DropDownPop {
     private TextView tv_tip_yj;
     private EditText et_syname;
     private TextView tv_tip_sy;
-    private TextView tv_cancel;
-    private TextView tv_ok;
     private RelativeLayout rl_sm;
     private TextView tv_sm;
 
     private String mSelectStatus;
     private String mSelectStatusName;
+    private MetaSpec lifeSpec;
 
     public void init(Activity activity) {
         if(activity != null) {
             @SuppressLint("InflateParams")
             View popView = LayoutInflater.from(activity).inflate(R.layout.view_popup_fromdown, null);
-            RelativeLayout rl_body = popView.findViewById(R.id.rl_body);
             rl_sm = popView.findViewById(R.id.rl_sm);
             tv_sm = popView.findViewById(R.id.tv_sm);
             tv_pp_name = popView.findViewById(R.id.tv_pp_name);
@@ -76,14 +74,8 @@ public class DropDownPop {
             et_syname = popView.findViewById(R.id.et_syname);
             tv_dname = popView.findViewById(R.id.tv_dname);
             tv_tip_sy = popView.findViewById(R.id.tv_tip_sy);
-            tv_cancel = popView.findViewById(R.id.tv_cancel);
-            tv_ok = popView.findViewById(R.id.tv_ok);
-            rl_body.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    hidePop();
-                }
-            });
+            TextView tv_cancel = popView.findViewById(R.id.tv_cancel);
+            TextView tv_ok = popView.findViewById(R.id.tv_ok);
             tv_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -437,8 +429,8 @@ public class DropDownPop {
                 }
             }
             if(mapLx.containsKey("FilterLifeTimeDays_1") && mapLx.get("FilterLifeTimeDays_1").getDataType().getSpecs() != null) {
-                MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimeDays_1").getDataType().getSpecs();
-                tv_tip_yj.setText("double型，范围：" + specs.getMin()+ "～" +specs.getMax() +"，步长" + specs.getStep());
+                lifeSpec = (MetaSpec) mapLx.get("FilterLifeTimeDays_1").getDataType().getSpecs();
+                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin()+ "～" +lifeSpec.getMax() +"，步长" + lifeSpec.getStep());
             }
             if(mapLx.containsKey("FilterLifeTimePercent_1") && mapLx.get("FilterLifeTimePercent_1").getDataType().getSpecs() != null) {
                 MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimePercent_1").getDataType().getSpecs();
@@ -457,8 +449,8 @@ public class DropDownPop {
                 }
             }
             if(mapLx.containsKey("FilterLifeTimeDays_2") && mapLx.get("FilterLifeTimeDays_2").getDataType().getSpecs() != null) {
-                MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimeDays_2").getDataType().getSpecs();
-                tv_tip_yj.setText("double型，范围：" + specs.getMin()+ "～" +specs.getMax() +"，步长" + specs.getStep());
+                lifeSpec = (MetaSpec) mapLx.get("FilterLifeTimeDays_2").getDataType().getSpecs();
+                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin()+ "～" +lifeSpec.getMax() +"，步长" + lifeSpec.getStep());
             }
             if(mapLx.containsKey("FilterLifeTimePercent_2") && mapLx.get("FilterLifeTimePercent_2").getDataType().getSpecs() != null) {
                 MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimePercent_2").getDataType().getSpecs();
@@ -477,8 +469,8 @@ public class DropDownPop {
                 }
             }
             if(mapLx.containsKey("FilterLifeTimeDays_3") && mapLx.get("FilterLifeTimeDays_3").getDataType().getSpecs() != null) {
-                MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimeDays_3").getDataType().getSpecs();
-                tv_tip_yj.setText("double型，范围：" + specs.getMin()+ "～" +specs.getMax() +"，步长" + specs.getStep());
+                lifeSpec = (MetaSpec) mapLx.get("FilterLifeTimeDays_3").getDataType().getSpecs();
+                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin()+ "～" +lifeSpec.getMax() +"，步长" + lifeSpec.getStep());
             }
             if(mapLx.containsKey("FilterLifeTimePercent_3") && mapLx.get("FilterLifeTimePercent_3").getDataType().getSpecs() != null) {
                 MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimePercent_3").getDataType().getSpecs();
@@ -497,8 +489,8 @@ public class DropDownPop {
                 }
             }
             if(mapLx.containsKey("FilterLifeTimeDays_4") && mapLx.get("FilterLifeTimeDays_4").getDataType().getSpecs() != null) {
-                MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimeDays_4").getDataType().getSpecs();
-                tv_tip_yj.setText("double型，范围：" + specs.getMin()+ "～" +specs.getMax() +"，步长" + specs.getStep());
+                lifeSpec = (MetaSpec) mapLx.get("FilterLifeTimeDays_4").getDataType().getSpecs();
+                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin()+ "～" +lifeSpec.getMax() +"，步长" + lifeSpec.getStep());
             }
             if(mapLx.containsKey("FilterLifeTimePercent_4") && mapLx.get("FilterLifeTimePercent_4").getDataType().getSpecs() != null) {
                 MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimePercent_4").getDataType().getSpecs();
@@ -517,8 +509,8 @@ public class DropDownPop {
                 }
             }
             if(mapLx.containsKey("FilterLifeTimeDays_5") && mapLx.get("FilterLifeTimeDays_5").getDataType().getSpecs() != null) {
-                MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimeDays_5").getDataType().getSpecs();
-                tv_tip_yj.setText("double型，范围：" + specs.getMin()+ "～" +specs.getMax() +"，步长" + specs.getStep());
+                lifeSpec = (MetaSpec) mapLx.get("FilterLifeTimeDays_5").getDataType().getSpecs();
+                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin()+ "～" + lifeSpec.getMax() +"，步长" + lifeSpec.getStep());
             }
             if(mapLx.containsKey("FilterLifeTimePercent_5") && mapLx.get("FilterLifeTimePercent_5").getDataType().getSpecs() != null) {
                 MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimePercent_5").getDataType().getSpecs();

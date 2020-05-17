@@ -36,6 +36,7 @@ public class AddDeviceActivity extends BaseActivity<AddDevicePresenter> implemen
     RecyclerView mRvLeft;
     @BindView(R.id.rv_right)
     RecyclerView mRvRight;
+
     private BottomTwoButtonDialog dialog;
 
     private String Companyname;
@@ -94,7 +95,6 @@ public class AddDeviceActivity extends BaseActivity<AddDevicePresenter> implemen
             registDeviceRequest.romVersion = String.valueOf(AppUtils.getVersionCode(AddDeviceActivity.this));
         registDeviceRequest.productLine = "产品线1";
         registDeviceRequest.productKey = branchTypeEntity.id;
-//        registDeviceRequest.fittingIds = list;
         registDeviceRequest.deviceComment = branchTypeEntity.name;
         mPresenter.registDevice(registDeviceRequest);
         dialog.setContent("正在创建");
@@ -106,21 +106,18 @@ public class AddDeviceActivity extends BaseActivity<AddDevicePresenter> implemen
         mRvLeft.setLayoutManager(new LinearLayoutManager(this));
         list.get(0).isSelect = true;
         LeftTitleAdapter adapter = new LeftTitleAdapter(list);
-        adapter.setOnCheckedListener(new LeftTitleAdapter.OnCheckedListener() {
-            @Override
-            public void onCheck(int position) {
-                String id = null;
-                for (int i = 0; i < list.size(); i++) {
-                    if (position == i) {
-                        list.get(i).isSelect = true;
-                        id = list.get(i).id;
-                    } else {
-                        list.get(i).isSelect = false;
-                    }
+        adapter.setOnCheckedListener(position -> {
+            String id = null;
+            for (int i = 0; i < list.size(); i++) {
+                if (position == i) {
+                    list.get(i).isSelect = true;
+                    id = list.get(i).id;
+                } else {
+                    list.get(i).isSelect = false;
                 }
-                adapter.notifyDataSetChanged();
-                getBranchTypeList(id);
             }
+            adapter.notifyDataSetChanged();
+            getBranchTypeList(id);
         });
         mRvLeft.setAdapter(adapter);
         getBranchTypeList(list.get(0).id);

@@ -4,22 +4,21 @@
     <ImageView
         android:layout_marginTop="15dp"
         android:id="@+id/iv_pic"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_centerHorizontal="true"
         android:scaleType="fitXY"
         />
     <TextView
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="14dp"
         android:layout_below="@id/iv_pic"
         android:id="@+id/tv_device"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:text="V2空气净化器"
         android:layout_centerHorizontal="true"
-        android:textColor="#000000" />
+        android:textColor="#585858" />
 
     <ImageView
         android:layout_marginTop="5dp"

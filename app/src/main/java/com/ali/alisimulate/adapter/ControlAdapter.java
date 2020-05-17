@@ -1,11 +1,9 @@
 package com.ali.alisimulate.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
@@ -30,12 +28,10 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class ControlAdapter extends RecyclerView.Adapter {
     private final List<List<Property>> mData;
-    private final Context context;
     private OnCheckListener onCheckListener;
 
-    public ControlAdapter(Context context, List<List<Property>> data) {
+    public ControlAdapter(List<List<Property>> data) {
         mData = data;
-        this.context = context;
     }
 
     @NonNull
@@ -161,6 +157,33 @@ public class ControlAdapter extends RecyclerView.Adapter {
                 }
             });
             viewHolder.tv_choose.setVisibility(View.GONE);
+        } else if(TmpConstant.TYPE_VALUE_ARRAY.equals(name.getDataType().getType()) && name.getIdentifier().equals("LocalTimer")) {
+            if(propertyValue != null) {
+                viewHolder.sw.setVisibility(View.VISIBLE);
+                viewHolder.tv_status.setVisibility(View.VISIBLE);
+                List<ValueWrapper> value = ((ValueWrapper.ArrayValueWrapper) propertyValue).getValue();
+                if(value != null && value.size() > 0) {
+                    for (ValueWrapper valueWrapper : value) {
+
+                    }
+                }
+            } else {
+                viewHolder.sw.setChecked(false);
+                viewHolder.tv_status.setText("未开启");
+            }
+            viewHolder.sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (b) {
+                        viewHolder.tv_status.setText("已开启");
+                    } else {
+                        viewHolder.tv_status.setText("未开启");
+                    }
+                    if (onCheckListener != null) {
+                        onCheckListener.onCheck(position, b);
+                    }
+                }
+            });
         }
     }
 

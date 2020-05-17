@@ -2,11 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
     android:layout_marginTop="15dp"
-    android:background="@drawable/bg_device"
-    >
+    android:background="@drawable/bg_device">
 
     <RadioGroup
         android:id="@+id/rg_net"
@@ -22,6 +22,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="false"
+            android:textColor="#585858"
+            android:textSize="12sp"
             android:text="联网" />
 
         <RadioButton
@@ -29,6 +31,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
+            android:textColor="#585858"
+            android:textSize="12sp"
             android:text="断网" />
     </RadioGroup>
 
@@ -41,6 +45,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="15dp"
         android:scaleType="fitXY"
+        tools:background="#000000"
          />
 
     <TextView
@@ -48,19 +53,23 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/iv_code"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginRight="6dp"
         android:text="查看大图"
+        android:textColor="#ADADAD"
         android:textSize="10sp" />
 
     <TextView
         android:id="@+id/tv_devicename"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="15dp"
         android:textColor="#585858"
         android:textSize="16sp"
-        android:text="WaterPurifier" />
+        android:paddingTop="12dp"
+        android:paddingRight="14dp"
+        android:paddingLeft="14dp"
+        android:paddingBottom="18dp"
+        tools:text="WaterPurifier" />
 
     <TextView
         android:id="@+id/tv_devicekey"
@@ -68,7 +77,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_devicename"
         android:layout_marginLeft="15dp"
-        android:text="设备名称: 5aomtqlPeMF28TOtulTM" />
+        android:textSize="12sp"
+        android:textColor="#585858"
+        tools:text="设备名称: 5aomtqlPeMF28TOtulTM" />
 
     <TextView
         android:id="@+id/tv_alias"
@@ -76,8 +87,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tv_devicekey"
         android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp"
+        android:textSize="12sp"
+        android:textColor="#585858"
         android:text="小米 净水机 WaterPurifier" />
 
     <TextView
@@ -87,6 +100,7 @@
         android:layout_marginTop="15dp"
         android:layout_toRightOf="@id/tv_devicename"
         android:text="已绑定"
-        android:textColor="#666666" />
+        android:textSize="12sp"
+        android:textColor="#ADADAD" />
 
 </RelativeLayout>

@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ali.alisimulate.MainActivity;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.activity.DeviceDetailActivity;
 import com.ali.alisimulate.adapter.ParamAdapter;
@@ -19,7 +18,6 @@ import com.ali.alisimulate.entity.FittingDetailEntity;
 import com.ali.alisimulate.entity.LvXinEntity;
 import com.ali.alisimulate.entity.ReceiveMsg;
 import com.ali.alisimulate.entity.RefreshEvent;
-import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.view.DropDownPop;
 import com.ali.alisimulate.view.DropDownScanPop;
 import com.ali.alisimulate.view.TopViewCycle;

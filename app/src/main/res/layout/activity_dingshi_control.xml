@@ -2,9 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -35,95 +36,98 @@
         android:background="#eeeeee" />
 
     <TextView
+        android:id="@+id/tv_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="01:00"
-        android:id="@+id/tv_time"
-        android:textColor="#323232"
-        android:textSize="32sp"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="19dp"
-        android:layout_gravity="center_horizontal"
-        />
+        android:text="01:00"
+        android:textColor="#323232"
+        android:textSize="32sp" />
 
     <LinearLayout
-        android:background="#ffffff"
         android:layout_width="match_parent"
-        android:layout_height="217dp">
+        android:layout_height="217dp"
+        android:background="#ffffff">
+
         <com.ali.alisimulate.view.wheelview.WheelView
             android:id="@+id/wv_content_hour"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
-            app:wheelGravity="center"
+            android:layout_weight="1"
             app:isLoop="true"
-            app:textSizeCenter="16sp"
-            app:textSizeOuter="14sp"
-            app:textColorCenter="#333333"
-            app:textColorOuter="#999999"
-            app:lineSpaceingDimens="10dp"
             app:itemVisibleNum="5"
-            app:lineColor="#efefef"
-            />
+            app:lineColor="#ABA9A2"
+            app:lineSpaceingDimens="10dp"
+            app:textColorCenter="#292929"
+            app:textColorOuter="#9D9D9D"
+            app:textSizeCenter="23sp"
+            app:textSizeOuter="21sp"
+            app:wheelGravity="center" />
+
         <com.ali.alisimulate.view.wheelview.WheelView
             android:id="@+id/wv_content_minute"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
-            app:wheelGravity="center"
+            android:layout_weight="1"
             app:isLoop="true"
-            app:textSizeCenter="16sp"
-            app:textSizeOuter="14sp"
-            app:textColorCenter="#333333"
-            app:textColorOuter="#999999"
+            app:itemVisibleNum="5"
+            app:lineColor="#ABA9A2"
             app:lineSpaceingDimens="10dp"
-            app:itemVisibleNum="4"
-            app:lineColor="#efefef"
-            />
+            app:textColorCenter="#292929"
+            app:textColorOuter="#9D9D9D"
+            app:textSizeCenter="23sp"
+            app:textSizeOuter="21sp"
+            app:wheelGravity="center" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="10dp"
-        android:background="#eeeeee"
-        />
+        android:background="#eeeeee" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="14dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         android:text="重复"
-        android:padding="15dp"
-        />
+        android:textColor="#323232"
+        android:textSize="14sp" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#eeeeee" />
+
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_week"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/rv_week"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        tools:itemCount="7"
-        app:spanCount="5"
         android:layout_marginLeft="10dp"
-        tools:listitem="@layout/item_week"
-        />
+        android:layout_weight="1"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="5"
+        tools:itemCount="7"
+        tools:listitem="@layout/item_week" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#eeeeee" />
+
     <TextView
+        android:id="@+id/tv_ok"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="确定"
-        android:id="@+id/tv_ok"
-        android:background="#10AB6C"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
-        android:textColor="#ffffff"
-        android:gravity="center"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        />
+        android:background="#10AB6C"
+        android:gravity="center"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:text="确定"
+        android:textColor="#ffffff" />
 </LinearLayout>

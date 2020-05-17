@@ -37,9 +37,9 @@ public class LeftTitleAdapter extends RecyclerView.Adapter {
         viewHolder.tv_title.setText(name.name);
         viewHolder.view_green.setVisibility(name.isSelect ? View.VISIBLE : View.INVISIBLE);
         if(name.isSelect) {
-            viewHolder.tv_title.setTextColor(Color.parseColor("#00ff00"));
+            viewHolder.tv_title.setTextColor(Color.parseColor("#10AB6C"));
         } else {
-            viewHolder.tv_title.setTextColor(Color.parseColor("#000000"));
+            viewHolder.tv_title.setTextColor(Color.parseColor("#6E6E6E"));
         }
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

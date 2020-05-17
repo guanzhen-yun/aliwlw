@@ -1,10 +1,8 @@
 package com.ali.alisimulate.fragment;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -17,13 +15,13 @@ import com.ali.alisimulate.activity.DingShiActivity;
 import com.ali.alisimulate.adapter.ControlAdapter;
 import com.ali.alisimulate.entity.ReceiveMsg;
 import com.ali.alisimulate.entity.RefreshEvent;
+import com.ali.alisimulate.util.ParamsUtil;
+import com.ali.alisimulate.util.SaveAndUploadAliUtil;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
-import com.aliyun.alink.linksdk.tmp.listener.IPublishResourceListener;
 import com.aliyun.alink.linksdk.tmp.utils.TmpConstant;
-import com.aliyun.alink.linksdk.tools.AError;
 import com.google.gson.Gson;
 import com.ziroom.base.BaseFragment;
 import com.ziroom.base.ViewInject;
@@ -32,18 +30,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
 @ViewInject(layoutId = R.layout.fragment_control)
 public class ControlFragment extends BaseFragment {
@@ -81,7 +73,7 @@ public class ControlFragment extends BaseFragment {
 
     @Override
     public void initDatas() {
-        inputDatas();
+        list_deviceIndenty = ParamsUtil.getControlParams(deviceTitle);
         // 获取所有属性
         List<Property> properties = LinkKit.getInstance().getDeviceThing().getProperties();
 
@@ -126,19 +118,19 @@ public class ControlFragment extends BaseFragment {
                 list.add(map_control.get("Humidified"));
                 controlList.add(list);
             }
-            if (map_control.containsKey("longSwitch")) {
+            if (map_control.containsKey("IonsSwitch")) {
                 List<Property> list = new ArrayList<>();
-                list.add(map_control.get("longSwitch"));
+                list.add(map_control.get("IonsSwitch"));
                 controlList.add(list);
             }
         } else if ("净水器".equals(deviceTitle)) {
-            if (map_control.containsKey("WashingSwitch")) {
+            if (map_control.containsKey("WashingSwitch")) {//开关
                 List<Property> list = new ArrayList<>();
                 list.add(map_control.get("WashingSwitch"));
-                if (map_control.containsKey("WashingState")) {
+                if (map_control.containsKey("WashingState")) {//状态
                     list.add(map_control.get("WashingSwitch"));
                 }
-                if (map_control.containsKey("WashingPercent")) {
+                if (map_control.containsKey("WashingPercent")) {//百分比
                     list.add(map_control.get("WashingPercent"));
                 }
                 controlList.add(list);
@@ -172,115 +164,35 @@ public class ControlFragment extends BaseFragment {
         if (map_control.containsKey("PowerSwitch")) {
             mIvClose.setVisibility(View.VISIBLE);
             Property powerSwitch = map_control.get("PowerSwitch");
-            if (TmpConstant.TYPE_VALUE_BOOLEAN.equals(powerSwitch.getDataType().getType())) {
-                ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(powerSwitch.getIdentifier());
-                if (propertyValue != null) {
-                    Integer value = ((ValueWrapper.BooleanValueWrapper) propertyValue).getValue();
-                    if (value != null && value == 1) {
-                        mIsOpen = true;
-                        mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
-                    } else {
-                        mIsOpen = false;
-                        mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
-                    }
+            if (powerSwitch != null && TmpConstant.TYPE_VALUE_BOOLEAN.equals(powerSwitch.getDataType().getType())) {
+                if(SaveAndUploadAliUtil.getBoolValue(powerSwitch.getIdentifier())) {
+                    mIsOpen = true;
+                    mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
                 } else {
                     mIsOpen = false;
                     mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
                 }
+                mIvClose.setOnClickListener(view -> {
+                    Map<String, ValueWrapper> reportData = new HashMap<>();
+                    SaveAndUploadAliUtil.putBoolParam(!mIsOpen,reportData,"PowerSwitch");
+                    SaveAndUploadAliUtil.saveAndUpload(reportData);
+                });
+            } else {
+                mIvClose.setVisibility(View.GONE);
             }
         } else {
             mIvClose.setVisibility(View.GONE);
         }
-
-        mIvClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(mContext, DingShiActivity.class));
-            }
-        });
     }
 
     private CountDownTimer countDownTimer = null;
-
-    private String getDateStr() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return formatter.format(new Date());
-    }
 
     @Override
     public void onResume() {
         super.onResume();
         if (map_control.containsKey("PowerSwitch")) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
-            int week = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-            String w = "";
-            switch (week) {
-                case 0:
-                    w = "周日";
-                    break;
-                case 1:
-                    w = "周一";
-                    break;
-                case 2:
-                    w = "周二";
-                    break;
-                case 3:
-                    w = "周三";
-                    break;
-                case 4:
-                    w = "周四";
-                    break;
-                case 5:
-                    w = "周五";
-                    break;
-                case 6:
-                    w = "周六";
-                    break;
-            }
-
-            String time = getDateStr();
-
-            String year = time.split("-")[0];
-            String month = time.split("-")[1];
-            String day = time.split("-")[2].split(" ")[0];
-
-            long openT = 0;
-            long closeT = 0;
-
-            String weeks = SharedPreferencesUtils.getStr(mContext, Constants.KEY_OPEN_WEEK);
-            if (weeks.contains(w)) {
-                String str = SharedPreferencesUtils.getStr(mContext, Constants.KEY_OPEN_TIME);
-                String hour = str.split(",")[0];
-                String minute = str.split(",")[1];
-
-                String openTime = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + 00;
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINESE);
-                sdf.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
-                Date date = null;
-                try {
-                    date = sdf.parse(openTime);
-                } catch (Exception e) {
-                }
-                openT = date.getTime();
-            }
-
-            String weekC = SharedPreferencesUtils.getStr(mContext, Constants.KEY_CLOSE_WEEK);
-            if (weekC.contains(w)) {
-                String str = SharedPreferencesUtils.getStr(mContext, Constants.KEY_CLOSE_TIME);
-                String hour = str.split(",")[0];
-                String minute = str.split(",")[1];
-
-                String openTime = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + 00;
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINESE);
-                sdf.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
-                Date date = null;
-                try {
-                    date = sdf.parse(openTime);
-                } catch (Exception e) {
-                }
-                closeT = date.getTime();
-            }
+            long openT = ParamsUtil.getOpenOrCloseTime(mContext, true);
+            long closeT = ParamsUtil.getOpenOrCloseTime(mContext, false);
 
             long currentTime = System.currentTimeMillis();
             long totalTime = 0;
@@ -301,45 +213,16 @@ public class ControlFragment extends BaseFragment {
                     public void onFinish() {
                         if (mIsOpen) {
                             mIsOpen = false;
-                            //关机
                             // 设备上报
                             Map<String, ValueWrapper> reportData = new HashMap<>();
-                            // identifier 是云端定义的属性的唯一标识，valueWrapper是属性的值
-                            reportData.put("PowerSwitch", new ValueWrapper.BooleanValueWrapper(0));  // 参考示例，更多使用可参考demo
-                            LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
-                                @Override
-                                public void onSuccess(String resID, Object o) {
-                                    // 属性上报成功 resID 设备属性对应的唯一标识
-                                    Log.e("ProductActivity", "属性上报成功");
-                                }
-
-                                @Override
-                                public void onError(String resId, AError aError) {
-                                    // 属性上报失败
-                                    Log.e("ProductActivity", "属性上报失败");
-                                }
-                            });
+                            SaveAndUploadAliUtil.putBoolParam(mIsOpen, reportData, "PowerSwitch");
+                            SaveAndUploadAliUtil.saveAndUpload(reportData);
                             mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
                         } else {
                             mIsOpen = true;
-                            //开机
-                            // 设备上报
                             Map<String, ValueWrapper> reportData = new HashMap<>();
-                            // identifier 是云端定义的属性的唯一标识，valueWrapper是属性的值
-                            reportData.put("PowerSwitch", new ValueWrapper.BooleanValueWrapper(1));  // 参考示例，更多使用可参考demo
-                            LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
-                                @Override
-                                public void onSuccess(String resID, Object o) {
-                                    // 属性上报成功 resID 设备属性对应的唯一标识
-                                    Log.e("ProductActivity", "属性上报成功");
-                                }
-
-                                @Override
-                                public void onError(String resId, AError aError) {
-                                    // 属性上报失败
-                                    Log.e("ProductActivity", "属性上报失败");
-                                }
-                            });
+                            SaveAndUploadAliUtil.putBoolParam(mIsOpen, reportData, "PowerSwitch");
+                            SaveAndUploadAliUtil.saveAndUpload(reportData);
                             mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
                         }
                     }
@@ -352,31 +235,9 @@ public class ControlFragment extends BaseFragment {
     @Override
     public void onStop() {
         super.onStop();
-        if(countDownTimer != null) {
+        if (countDownTimer != null) {
             countDownTimer.cancel();
             countDownTimer = null;
-        }
-    }
-
-    private void inputDatas() {
-        list_deviceIndenty.add("PowerSwitch");//电源开关 bool 0-关闭 1-开启
-        if ("空气净化器".equals(deviceTitle)) {
-            list_deviceIndenty.add("WindSpeed");//风速  enum 0-自动 1-静音档 2-低档 3-中档 4-高档 5-最高档
-            list_deviceIndenty.add("WorkMode");//自动模式 enum 0-自动 1-手动
-            list_deviceIndenty.add("ChildLockSwitch");//童锁开关  bool 0-关闭  1-打开
-            list_deviceIndenty.add("Humidified");//加湿开关  bool 0-关闭  1-打开
-            list_deviceIndenty.add("longSwitch");//离子团开关  bool 0-关闭  1-打开
-//            list_deviceIndenty.add("LocalTimer");//本地定时  array
-            list_deviceIndenty.add("SleepMode");//睡眠模式  bool 0-关闭  1-打开
-        } else if ("净水器".equals(deviceTitle)) {
-            list_deviceIndenty.add("WashingPercent");//冲洗进度  int 0~100
-            list_deviceIndenty.add("WashingState");//冲洗状态 enum 0-正常  1-冲洗中
-            list_deviceIndenty.add("WashingSwitch");//冲洗开关 bool 0-关闭  1-打开
-            list_deviceIndenty.add("ChildLockSwitch");//童锁开关  bool 0-关闭  1-打开
-            list_deviceIndenty.add("PurePercent");//制水进度 int 0~100
-            list_deviceIndenty.add("PureState");//制水状态 enum 0待机 1制水中
-            list_deviceIndenty.add("pureSwitch");//制水开关 bool 0-关闭  1-打开
-//            list_deviceIndenty.add("LocalTimer");//本地定时  array
         }
     }
 
@@ -407,7 +268,7 @@ public class ControlFragment extends BaseFragment {
         EventBus.getDefault().register(this);
         mRvControl.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
-        adapter = new ControlAdapter(getActivity(), controlList);
+        adapter = new ControlAdapter(controlList);
         adapter.setOnCheckListener(new ControlAdapter.OnCheckListener() {
             @Override
             public void onCheck(int position, boolean isOpen) {
@@ -415,49 +276,34 @@ public class ControlFragment extends BaseFragment {
                 Map<String, ValueWrapper> reportData = new HashMap<>();
                 // identifier 是云端定义的属性的唯一标识，valueWrapper是属性的值
                 Property property = controlList.get(position).get(0);
-                reportData.put(property.getIdentifier(), new ValueWrapper.BooleanValueWrapper(isOpen ? 1 : 0));  // 参考示例，更多使用可参考demo
-                LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
-                    @Override
-                    public void onSuccess(String resID, Object o) {
-                        // 属性上报成功 resID 设备属性对应的唯一标识
-                        Log.e("ProductActivity", "属性上报成功");
+                if(TmpConstant.TYPE_VALUE_BOOLEAN.equals(property.getDataType().getType())) {
+                    reportData.put(property.getIdentifier(), new ValueWrapper.BooleanValueWrapper(isOpen ? 1 : 0));  // 参考示例，更多使用可参考demo
+                    SaveAndUploadAliUtil.saveAndUpload(reportData);
+                } else if(TmpConstant.TYPE_VALUE_ARRAY.equals(property.getDataType().getType()) && "LocalTimer".equals(property.getIdentifier())) {
+                    //定时
+                    if(isOpen) {
+                        startActivity(new Intent(mContext, DingShiActivity.class));
+                    } else {
+                        reportData.put(property.getIdentifier(), null);
+                        SharedPreferencesUtils.save(mContext, Constants.KEY_CLOSE_TIME, "");
+                        SharedPreferencesUtils.save(mContext, Constants.KEY_CLOSE_WEEK, "");
+                        SharedPreferencesUtils.save(mContext, Constants.KEY_OPEN_WEEK, "");
+                        SharedPreferencesUtils.save(mContext, Constants.KEY_OPEN_TIME, "");
+                        SaveAndUploadAliUtil.saveAndUpload(reportData);
                     }
-
-                    @Override
-                    public void onError(String resId, AError aError) {
-                        // 属性上报失败
-                        Log.e("ProductActivity", "属性上报失败");
-                    }
-                });
+                }
             }
 
             @Override
             public void onSelect(int position, String level) {
-// 设备上报
+                // 设备上报
                 Map<String, ValueWrapper> reportData = new HashMap<>();
                 // identifier 是云端定义的属性的唯一标识，valueWrapper是属性的值
                 Property property = controlList.get(position).get(0);
                 reportData.put(property.getIdentifier(), new ValueWrapper.EnumValueWrapper(Integer.parseInt(level)));  // 参考示例，更多使用可参考demo
-                LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
-                    @Override
-                    public void onSuccess(String resID, Object o) {
-                        // 属性上报成功 resID 设备属性对应的唯一标识
-                        Log.e("ProductActivity", "属性上报成功");
-                    }
-
-                    @Override
-                    public void onError(String resId, AError aError) {
-                        // 属性上报失败
-                        Log.e("ProductActivity", "属性上报失败");
-                    }
-                });
+                SaveAndUploadAliUtil.saveAndUpload(reportData);
             }
         });
         mRvControl.setAdapter(adapter);
-    }
-
-    @OnClick(R.id.iv_close)
-    public void onViewClicked() {
-        //跳轉定時開關機
     }
 }

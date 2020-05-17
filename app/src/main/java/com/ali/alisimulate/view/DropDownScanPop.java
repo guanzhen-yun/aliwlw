@@ -2,7 +2,6 @@ package com.ali.alisimulate.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -11,17 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.ali.alisimulate.MainActivity;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.entity.LvXinEntity;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.aliyun.alink.linksdk.tmp.listener.IPublishResourceListener;
 import com.aliyun.alink.linksdk.tools.AError;
-import com.yzq.zxinglibrary.android.CaptureActivity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,29 +29,19 @@ public class DropDownScanPop {
     private PopupWindow mPopupWindow;//下拉选项弹窗
     private LvXinEntity mEntity;
     private TextView tv_devicename;
-    private ImageView iv_scan;
-    private TextView tv_cancel;
-    private TextView tv_ok;
 
     public void init(Activity activity) {
         if(activity != null) {
             @SuppressLint("InflateParams")
             View popView = LayoutInflater.from(activity).inflate(R.layout.view_popup_scandown, null);
-            RelativeLayout rl_body = popView.findViewById(R.id.rl_body);
-            rl_body.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    hidePop();
-                }
-            });
-            tv_cancel = popView.findViewById(R.id.tv_cancel);
+            TextView tv_cancel = popView.findViewById(R.id.tv_cancel);
             tv_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     hidePop();
                 }
             });
-            tv_ok = popView.findViewById(R.id.tv_ok);
+            TextView tv_ok = popView.findViewById(R.id.tv_ok);
             tv_ok.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -63,7 +49,7 @@ public class DropDownScanPop {
                 }
             });
             tv_devicename = popView.findViewById(R.id.tv_devicename);
-            iv_scan = popView.findViewById(R.id.iv_scan);
+            ImageView iv_scan = popView.findViewById(R.id.iv_scan);
             mPopupWindow = new PopupWindow(popView, ViewGroup.LayoutParams.MATCH_PARENT,//添加一个布局
                     ViewGroup.LayoutParams.MATCH_PARENT);
             mPopupWindow.setFocusable(true);//获取焦点

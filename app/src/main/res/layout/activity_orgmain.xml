@@ -8,10 +8,10 @@
         android:id="@+id/tv_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:textColor="#000000"
-        android:textSize="15sp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="28dp"
+        android:textColor="#585858"
+        android:textSize="20sp"
         tools:text="Jimmy Huang" />
 
     <TextView
@@ -19,18 +19,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_username"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:textColor="#000000"
-        android:textSize="13sp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="3dp"
+        android:textColor="#585858"
+        android:textSize="12sp"
         tools:text="净源技术服务公司" />
 
     <ImageView
         android:id="@+id/iv_loginout"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="30dp"
         android:layout_toRightOf="@id/tv_username"
         android:scaleType="center"
         android:src="@mipmap/tuichudenglu" />
@@ -43,7 +43,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="15dp"
         android:layout_marginRight="10dp"
-        android:background="#100000ff">
+        android:background="#F3F5F4">
 
         <ImageView
             android:layout_width="40dp"
@@ -51,6 +51,7 @@
             android:scaleType="center"
             android:layout_marginRight="10dp"
             android:src="@mipmap/icon_delete"
+            android:id="@+id/iv_delete"
             android:visibility="gone"
             android:layout_toLeftOf="@+id/iv_arrow"
             android:layout_centerVertical="true"
@@ -71,6 +72,7 @@
             android:layout_height="wrap_content"
             android:hint="请选择"
             android:padding="10dp"
+            android:textSize="14sp"
             android:textColor="#000000"
             android:textColorHint="#ADADAD" />
     </RelativeLayout>
@@ -80,7 +82,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/rl_device"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -94,7 +96,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="11dp"
+            android:textSize="14sp"
+            android:textColor="#ADADAD"
             android:text="暂无设备!" />
 
     </LinearLayout>
@@ -106,6 +110,7 @@
         android:layout_below="@id/rl_device"
         android:layout_marginTop="1dp"
         tools:itemCount="3"
+        android:visibility="visible"
         tools:listitem="@layout/item_devicelist" />
 
     <ImageView

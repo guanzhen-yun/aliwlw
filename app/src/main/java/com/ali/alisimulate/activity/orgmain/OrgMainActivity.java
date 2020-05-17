@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.Constants;
-import com.ali.alisimulate.MainActivity;
 import com.ali.alisimulate.MyApp;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.activity.DeviceDetailActivity;
@@ -63,6 +62,8 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     LinearLayout llNone;
     @BindView(R.id.iv_addDevice)
     ImageView ivAddDevice;
+    @BindView(R.id.iv_delete)
+    ImageView ivDelete;
 
     private List<OrgDevice.DeviceList> orgDevices = new ArrayList<>();
     private DeviceListAdapter adapter;
@@ -90,7 +91,6 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     @Override
     public void initDatas() {
         mPresenter.getUserInfo();
-//        mPresenter.getDevice("a1yz4fe0qG1");
         getDeviceList(true);//获取全部数据
         mPresenter.getBranchList();
     }
@@ -108,9 +108,11 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                     mSelectBranch = mBranchList.get(position);
                     mPresenter.getBranchTypeList(mSelectBranch.id);
                     tvDevice.setText(mSelectBranch.name);
+                    ivDelete.setVisibility(View.VISIBLE);
                 } else if (current == 1) {
                     mSelectBranchType = listSecond.get(position);
                     tvDevice.setText(mSelectBranch.name + "/" + mSelectBranchType.name);
+                    ivDelete.setVisibility(View.VISIBLE);
                     String name = mSelectBranchType.name;
                     if (name.equals("配件")) {
                         branchTypeEntities = listMap.get("1");
@@ -136,6 +138,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                 } else if (current == 2) {
                     mSelectProduct = listThird.get(position);
                     tvDevice.setText(mSelectBranch.name + "/" + mSelectBranchType.name + "/" + mSelectProduct.name);
+                    ivDelete.setVisibility(View.VISIBLE);
                     getDeviceList(true);
                 }
             }
@@ -154,6 +157,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                     }
                     dropDownOrgSelect.showPop(rlDevice);
                     tvDevice.setText(mSelectBranch.name);
+                    ivDelete.setVisibility(View.VISIBLE);
                 } else if(current == 1) {
                     dropDownOrgSelect.setList(listSecond, currentPosition);
                     for (SelectOrgEntity entity : listSecond) {
@@ -165,6 +169,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                     }
                     dropDownOrgSelect.showPop(rlDevice);
                     tvDevice.setText(mSelectBranch.name + "/" + mSelectBranchType.name);
+                    ivDelete.setVisibility(View.VISIBLE);
                 } else if(current == 2) {
                     dropDownOrgSelect.setList(listThird, currentPosition);
                     for (SelectOrgEntity entity : listThird) {
@@ -176,6 +181,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                     }
                     dropDownOrgSelect.showPop(rlDevice);
                     tvDevice.setText(mSelectBranch.name + "/" + mSelectBranchType.name + "/" + mSelectProduct.name);
+                    ivDelete.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -278,7 +284,6 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         if (orgDevice == null && page == 0) {
             llNone.setVisibility(View.VISIBLE);
             rvDevice.setVisibility(View.GONE);
-            tvDevice.setText("无");
         } else {
             llNone.setVisibility(View.GONE);
             rvDevice.setVisibility(View.VISIBLE);
@@ -340,9 +345,14 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         dropDownOrgSelect.showPop(rlDevice);
     }
 
-    @OnClick({R.id.rl_device, R.id.iv_loginout})
+    @OnClick({R.id.rl_device, R.id.iv_loginout, R.id.iv_delete})
     public void onViewClicked(View v) {
         switch (v.getId()) {
+            case R.id.iv_delete:
+                ivDelete.setVisibility(View.GONE);
+                tvDevice.setText("");
+                getDeviceList(true);//获取全部数据
+                break;
             case R.id.rl_device:
                 if (currentPosition == 0 && mBranchList != null) {
                     dropDownOrgSelect.setList(listFirst, currentPosition);

@@ -24,6 +24,8 @@
             android:layout_centerInParent="true"
             android:padding="15dp"
             android:text="空气净化器"
+            android:textSize="18sp"
+            android:textColor="#323232"
             />
     </RelativeLayout>
 

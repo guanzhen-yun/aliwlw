@@ -31,7 +31,7 @@ public class LoginPresenter extends BaseMvpPresenter<LoginContract.IView> implem
 
             @Override
             public void onError(ApiException e) {
-                ToastUtils.showToast("用户名或密码错误");
+                ToastUtils.showMyToast("用户名或密码错误");
             }
         });
     }

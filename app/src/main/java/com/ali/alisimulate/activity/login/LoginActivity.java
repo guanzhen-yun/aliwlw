@@ -99,7 +99,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     @Override
     public void loginResult(LoginSuccess loginSuccess) {
         SharedPreferencesUtils.save(this, Constants.KEY_LOGIN_INFO, new Gson().toJson(loginSuccess));
-        ToastUtils.showToast("登录成功");
         startActivity(new Intent(LoginActivity.this, OrgMainActivity.class));
     }
 

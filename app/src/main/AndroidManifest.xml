@@ -16,20 +16,19 @@
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup,android:label"
         >
-        <activity android:name=".MainActivity">
+        <activity android:name=".SplashActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.login.LoginActivity" />
-        <activity android:name=".activity.orgmain.OrgMainActivity" />
-        <activity android:name=".activity.adddevice.AddDeviceActivity" />
-        <activity android:name=".activity.DeviceDetailActivity" />
-        <activity android:name=".activity.regist.RegistActivity" />
-        <activity android:name=".activity.DingShiActivity" />
-        <activity android:name=".activity.DingshiControlActivity" />
+        <activity android:name=".activity.login.LoginActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".activity.orgmain.OrgMainActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".activity.adddevice.AddDeviceActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".activity.DeviceDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".activity.DingShiActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".activity.DingshiControlActivity" android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

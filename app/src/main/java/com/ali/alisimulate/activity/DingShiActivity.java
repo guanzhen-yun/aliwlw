@@ -12,7 +12,6 @@ import com.ziroom.base.BaseActivity;
 import com.ziroom.base.ViewInject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**

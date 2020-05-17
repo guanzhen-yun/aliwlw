@@ -40,8 +40,8 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/iv_load"
                 android:layout_centerVertical="true"
-                android:textColor="#666666"
-                android:textSize="15sp"
+                android:textColor="#030303"
+                android:textSize="17sp"
                 android:text="你确定要退出登录吗?" />
         </RelativeLayout>
 
@@ -64,7 +64,7 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
                 android:textSize="17sp"
-                android:textColor="#000000"
+                android:textColor="#585858"
                 android:text="取消" />
             <View
                 android:id="@+id/view_line"
@@ -81,7 +81,7 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
                 android:textSize="17sp"
-                android:textColor="#00ff00"
+                android:textColor="#10AB6C"
                 android:text="确定" />
         </LinearLayout>
     </LinearLayout>

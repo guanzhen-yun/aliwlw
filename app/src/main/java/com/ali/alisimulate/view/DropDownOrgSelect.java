@@ -122,7 +122,11 @@ public class DropDownOrgSelect {
             rl_branch.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if(currentPosition == 0) {
+                        return;
+                    }
                     currentPosition = 0;
+                    tv_branch.setText("请选择");
                     rl_branch.setVisibility(View.VISIBLE);
                     view_branch.setVisibility(View.VISIBLE);
                     rl_branchtype.setVisibility(View.GONE);
@@ -138,7 +142,11 @@ public class DropDownOrgSelect {
             rl_branchtype.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if(currentPosition == 1) {
+                        return;
+                    }
                     currentPosition = 1;
+                    tv_branchtype.setText("请选择");
                     view_branch.setVisibility(View.INVISIBLE);
                     rl_device.setVisibility(View.GONE);
                     view_device.setVisibility(View.INVISIBLE);
@@ -193,6 +201,19 @@ public class DropDownOrgSelect {
         listDevice.clear();
         listDevice.addAll(listFirst);
         dropSelectOrgAdapter.notifyDataSetChanged();
+        if(currentPosition == 0) {
+            tv_branch.setText("请选择");
+            view_branch.setVisibility(View.VISIBLE);
+            rl_branchtype.setVisibility(View.GONE);
+            rl_device.setVisibility(View.GONE);
+        } else  if(currentPosition == 1) {
+            tv_branchtype.setText("请选择");
+            view_branchtype.setVisibility(View.VISIBLE);
+            rl_device.setVisibility(View.GONE);
+        }else  if(currentPosition == 2) {
+            tv_device.setText("请选择");
+            view_device.setVisibility(View.VISIBLE);
+        }
     }
 
     private onSelectListener onSelectListener;
