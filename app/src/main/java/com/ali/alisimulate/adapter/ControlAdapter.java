@@ -103,7 +103,12 @@ public class ControlAdapter extends RecyclerView.Adapter {
                         RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
                         rv_device.setLayoutManager(new LinearLayoutManager(view.getContext()));
                         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) rv_device.getLayoutParams();
-                        layoutParams.setMargins(DisplayUtil.getScreenWight((Activity) rv_device.getContext())/2,30,0,0);
+                        if((position+ 1) % 2 != 1) {
+                            layoutParams.setMargins(DisplayUtil.getScreenWight((Activity) rv_device.getContext())/2,30,0,0);
+                        } else {
+                            layoutParams.setMargins(0,30,DisplayUtil.getScreenWight((Activity) rv_device.getContext())/2,0);
+                        }
+
                         rv_device.setLayoutParams(layoutParams);
                         PopDeviceListAdapter adapter = new PopDeviceListAdapter(list);
                         rv_device.setAdapter(adapter);

@@ -35,7 +35,7 @@ public class ParamsUtil {
             list_deviceIndenty.add("ChildLockSwitch");//童锁开关  bool 0-关闭  1-打开
             list_deviceIndenty.add("PurePercent");//制水进度 int 0~100
             list_deviceIndenty.add("PureState");//制水状态 enum 0待机 1制水中
-            list_deviceIndenty.add("pureSwitch");//制水开关 bool 0-关闭  1-打开
+            list_deviceIndenty.add("PureSwitch");//制水开关 bool 0-关闭  1-打开
             list_deviceIndenty.add("LocalTimer");//本地定时  array
         }
         return list_deviceIndenty;

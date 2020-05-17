@@ -141,9 +141,9 @@ public class ControlFragment extends BaseFragment {
                 controlList.add(list);
             }
 
-            if (map_control.containsKey("pureSwitch")) {
+            if (map_control.containsKey("PureSwitch")) {
                 List<Property> list = new ArrayList<>();
-                list.add(map_control.get("pureSwitch"));
+                list.add(map_control.get("PureSwitch"));
                 if (map_control.containsKey("PureState")) {
                     list.add(map_control.get("PureState"));
                 }
