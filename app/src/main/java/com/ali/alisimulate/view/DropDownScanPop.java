@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.entity.LvXinEntity;
+import com.ali.alisimulate.util.SaveAndUploadAliUtil;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.aliyun.alink.linksdk.tmp.listener.IPublishResourceListener;
@@ -74,22 +75,27 @@ public class DropDownScanPop {
         if(mEntity.no == 1) {
             if(!TextUtils.isEmpty(tv_devicename.getText().toString())) {
                 reportData.put("FilterID_1", new ValueWrapper.StringValueWrapper(tv_devicename.getText().toString()));
+                SaveAndUploadAliUtil.saveString(tv_devicename.getText().toString(), "FilterID_1");
             }
         } else if(mEntity.no == 2) {
             if(!TextUtils.isEmpty(tv_devicename.getText().toString())) {
                 reportData.put("FilterID_2", new ValueWrapper.StringValueWrapper(tv_devicename.getText().toString()));
+                SaveAndUploadAliUtil.saveString(tv_devicename.getText().toString(), "FilterID_2");
             }
         }else if(mEntity.no == 3) {
             if(!TextUtils.isEmpty(tv_devicename.getText().toString())) {
                 reportData.put("FilterID_3", new ValueWrapper.StringValueWrapper(tv_devicename.getText().toString()));
+                SaveAndUploadAliUtil.saveString(tv_devicename.getText().toString(), "FilterID_3");
             }
         }else if(mEntity.no == 4) {
             if(!TextUtils.isEmpty(tv_devicename.getText().toString())) {
                 reportData.put("FilterID_4", new ValueWrapper.StringValueWrapper(tv_devicename.getText().toString()));
+                SaveAndUploadAliUtil.saveString(tv_devicename.getText().toString(), "FilterID_4");
             }
         }else if(mEntity.no == 5) {
             if(!TextUtils.isEmpty(tv_devicename.getText().toString())) {
                 reportData.put("FilterID_5", new ValueWrapper.StringValueWrapper(tv_devicename.getText().toString()));
+                SaveAndUploadAliUtil.saveString(tv_devicename.getText().toString(), "FilterID_5");
             }
         }
 
@@ -97,21 +103,8 @@ public class DropDownScanPop {
             onChangePjListener.onChange(tv_devicename.getText().toString(), mEntity.no);
         }
 
-        LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
-            @Override
-            public void onSuccess(String resID, Object o) {
-                // 属性上报成功 resID 设备属性对应的唯一标识
-                Log.e("ProductActivity", "属性上报成功");
-                hidePop();
-            }
-
-            @Override
-            public void onError(String resId, AError aError) {
-                // 属性上报失败
-                Log.e("ProductActivity", "属性上报失败");
-                hidePop();
-            }
-        });
+        SaveAndUploadAliUtil.saveAndUpload(reportData);
+        hidePop();
     }
 
     /**

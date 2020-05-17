@@ -136,8 +136,8 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
                 if (((ParamsHolder) viewHolder).et_prop.getTag() instanceof TextWatcher) {
                     ((ParamsHolder) viewHolder).et_prop.removeTextChangedListener((TextWatcher) (((ParamsHolder) viewHolder).et_prop.getTag()));
                 }
-                if(mData != null && mData instanceof Integer && mPosition == realPosition) {
-                    int dd = (int) mData;
+                if(mData != null && mData instanceof Double && mPosition == realPosition) {
+                    double dd = (double) mData;
                     ((ParamsHolder) viewHolder).et_prop.setText(String.valueOf(dd));
                     if (onCheckedListener != null) {
                         onCheckedListener.onChange(realPosition, dd + "");

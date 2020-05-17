@@ -15,6 +15,10 @@ import androidx.viewpager.widget.ViewPager;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.fragment.ControlFragment;
 import com.ali.alisimulate.fragment.param.ParamFragment;
+import com.ali.alisimulate.util.ParamsUtil;
+import com.ali.alisimulate.util.SaveAndUploadAliUtil;
+import com.aliyun.alink.linkkit.api.LinkKit;
+import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.google.android.material.tabs.TabLayout;
 import com.ziroom.base.BaseActivity;
 import com.ziroom.base.ViewInject;
@@ -60,14 +64,40 @@ public class DeviceDetailActivity extends BaseActivity {
     public void fetchIntents() {
         productKey = getIntent().getStringExtra("productKey");
         deviceName = getIntent().getStringExtra("deviceName");
-        deviceSecret  = getIntent().getStringExtra("deviceSecret");
+        deviceSecret = getIntent().getStringExtra("deviceSecret");
         deviceId = getIntent().getStringExtra("deviceId");
-        title  = getIntent().getStringExtra("title");
+        title = getIntent().getStringExtra("title");
     }
 
     @Override
     public void initViews() {
         mTvTitle.setText(title);
+        ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue("PowerSwitch");
+        if (propertyValue != null) {//阿里云有数据 没断开过连接
+            addFragment();
+        } else if (SaveAndUploadAliUtil.getAliList() == null) {
+            long openT = ParamsUtil.getOpenOrCloseTime(this, true);
+            long closeT = ParamsUtil.getOpenOrCloseTime(this, false);
+            if (openT != 0 || closeT != 0) {
+                upLoadLocal();
+            } else {
+                addFragment();
+            }
+        } else {
+            upLoadLocal();
+        }
+    }
+
+    private void upLoadLocal() {
+        SaveAndUploadAliUtil.upLoadLocalData(new SaveAndUploadAliUtil.OnUploadSuccessListener() {
+            @Override
+            public void onUnloadSuccess() {
+                addFragment();
+            }
+        });
+    }
+
+    private void addFragment() {
         controlFragment = ControlFragment.getInstance(title);
         fragmentList.add(controlFragment);
         paramFragment = ParamFragment.getInstance(deviceId);
@@ -117,7 +147,7 @@ public class DeviceDetailActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(paramFragment != null) {
+        if (paramFragment != null) {
             paramFragment.onActivityResult(requestCode, resultCode, data);
         }
     }

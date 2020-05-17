@@ -2,7 +2,10 @@ package com.ali.alisimulate.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Color;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,8 +23,10 @@ import com.ali.alisimulate.R;
 import com.ali.alisimulate.adapter.PopDeviceListAdapter;
 import com.ali.alisimulate.entity.FittingDetailEntity;
 import com.ali.alisimulate.entity.LvXinEntity;
+import com.ali.alisimulate.util.SaveAndUploadAliUtil;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
+import com.aliyun.alink.linksdk.tmp.devicemodel.DataType;
 import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
 import com.aliyun.alink.linksdk.tmp.devicemodel.specs.EnumSpec;
 import com.aliyun.alink.linksdk.tmp.devicemodel.specs.MetaSpec;
@@ -61,7 +66,7 @@ public class DropDownPop {
     private MetaSpec lifeSpec;
 
     public void init(Activity activity) {
-        if(activity != null) {
+        if (activity != null) {
             @SuppressLint("InflateParams")
             View popView = LayoutInflater.from(activity).inflate(R.layout.view_popup_fromdown, null);
             rl_sm = popView.findViewById(R.id.rl_sm);
@@ -92,9 +97,9 @@ public class DropDownPop {
             rl_sm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(mEntity.no == 1 && mMapLx.containsKey("FilterStatus_1")) {
+                    if (mEntity.no == 1 && mMapLx.containsKey("FilterStatus_1")) {
                         Property filterStatus_1 = mMapLx.get("FilterStatus_1");
-                        if(filterStatus_1.getDataType().getSpecs() != null) {
+                        if (filterStatus_1.getDataType().getSpecs() != null) {
                             EnumSpec specs = (EnumSpec) filterStatus_1.getDataType().getSpecs();
                             Set<String> strings = specs.keySet();
 
@@ -128,9 +133,9 @@ public class DropDownPop {
                                 }
                             });
                         }
-                    } else if(mEntity.no == 2 && mMapLx.containsKey("FilterStatus_2")) {
+                    } else if (mEntity.no == 2 && mMapLx.containsKey("FilterStatus_2")) {
                         Property filterStatus_1 = mMapLx.get("FilterStatus_2");
-                        if(filterStatus_1.getDataType().getSpecs() != null) {
+                        if (filterStatus_1.getDataType().getSpecs() != null) {
                             EnumSpec specs = (EnumSpec) filterStatus_1.getDataType().getSpecs();
                             Set<String> strings = specs.keySet();
 
@@ -164,9 +169,9 @@ public class DropDownPop {
                                 }
                             });
                         }
-                    }else if(mEntity.no == 3 && mMapLx.containsKey("FilterStatus_3")) {
+                    } else if (mEntity.no == 3 && mMapLx.containsKey("FilterStatus_3")) {
                         Property filterStatus_1 = mMapLx.get("FilterStatus_3");
-                        if(filterStatus_1.getDataType().getSpecs() != null) {
+                        if (filterStatus_1.getDataType().getSpecs() != null) {
                             EnumSpec specs = (EnumSpec) filterStatus_1.getDataType().getSpecs();
                             Set<String> strings = specs.keySet();
 
@@ -200,9 +205,9 @@ public class DropDownPop {
                                 }
                             });
                         }
-                    }else if(mEntity.no == 4 && mMapLx.containsKey("FilterStatus_4")) {
+                    } else if (mEntity.no == 4 && mMapLx.containsKey("FilterStatus_4")) {
                         Property filterStatus_1 = mMapLx.get("FilterStatus_4");
-                        if(filterStatus_1.getDataType().getSpecs() != null) {
+                        if (filterStatus_1.getDataType().getSpecs() != null) {
                             EnumSpec specs = (EnumSpec) filterStatus_1.getDataType().getSpecs();
                             Set<String> strings = specs.keySet();
 
@@ -236,9 +241,9 @@ public class DropDownPop {
                                 }
                             });
                         }
-                    }else if(mEntity.no == 5 && mMapLx.containsKey("FilterStatus_5")) {
+                    } else if (mEntity.no == 5 && mMapLx.containsKey("FilterStatus_5")) {
                         Property filterStatus_1 = mMapLx.get("FilterStatus_5");
-                        if(filterStatus_1.getDataType().getSpecs() != null) {
+                        if (filterStatus_1.getDataType().getSpecs() != null) {
                             EnumSpec specs = (EnumSpec) filterStatus_1.getDataType().getSpecs();
                             Set<String> strings = specs.keySet();
 
@@ -281,6 +286,58 @@ public class DropDownPop {
             mPopupWindow.setOutsideTouchable(false);
             mPopupWindow.setBackgroundDrawable(null);
             mPopupWindow.setAnimationStyle(R.style.pop_fromdown_anim);
+
+            et_kyname.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    DataType dataType = mMapLx.get("FilterLifeTimeDays_" + mEntity.no).getDataType();
+                    if(dataType.getSpecs() != null) {
+                        MetaSpec specs = (MetaSpec) dataType.getSpecs();
+                        String et = et_kyname.getText().toString();
+                        if(!TextUtils.isEmpty(et) && (Double.parseDouble(et) > Double.parseDouble(specs.getMax()) || Double.parseDouble(et) < Double.parseDouble(specs.getMin()))) {
+                            tv_tip_yj.setTextColor(Color.parseColor("#ff0000"));
+                        } else {
+                            tv_tip_yj.setTextColor(Color.parseColor("#ADADAD"));
+                        }
+                    }
+                }
+            });
+
+            et_syname.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    DataType dataType = mMapLx.get("FilterLifeTimePercent_" + mEntity.no).getDataType();
+                    if(dataType.getSpecs() != null) {
+                        MetaSpec specs = (MetaSpec) dataType.getSpecs();
+                        String et = et_syname.getText().toString();
+                        if(!TextUtils.isEmpty(et) && (Double.parseDouble(et) > Double.parseDouble(specs.getMax()) || Double.parseDouble(et) < Double.parseDouble(specs.getMin()))) {
+                            tv_tip_sy.setTextColor(Color.parseColor("#ff0000"));
+                        } else {
+                            tv_tip_sy.setTextColor(Color.parseColor("#ADADAD"));
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -288,77 +345,79 @@ public class DropDownPop {
         // 设备上报
         Map<String, ValueWrapper> reportData = new HashMap<>();
         // identifier 是云端定义的属性的唯一标识，valueWrapper是属性的值
-        if(mEntity.no == 1) {
-            if(!TextUtils.isEmpty(mSelectStatus)) {
+        if (mEntity.no == 1) {
+            if (!TextUtils.isEmpty(mSelectStatus)) {
                 reportData.put("FilterStatus_1", new ValueWrapper.EnumValueWrapper(Integer.parseInt(mSelectStatus)));  // 参考示例，更多使用可参考demo
+                SaveAndUploadAliUtil.saveEnum(Integer.parseInt(mSelectStatus), "FilterStatus_1");
             }
-            if(!TextUtils.isEmpty(et_kyname.getText().toString())) {
+            if (!TextUtils.isEmpty(et_kyname.getText().toString())) {
                 reportData.put("FilterLifeTimeDays_1", new ValueWrapper.DoubleValueWrapper(Double.parseDouble(et_kyname.getText().toString())));
+                SaveAndUploadAliUtil.saveDouble(Double.parseDouble(et_kyname.getText().toString()), "FilterLifeTimeDays_1");
             }
-            if(!TextUtils.isEmpty(et_syname.getText().toString())) {
+            if (!TextUtils.isEmpty(et_syname.getText().toString())) {
                 reportData.put("FilterLifeTimePercent_1", new ValueWrapper.IntValueWrapper(Integer.parseInt(et_syname.getText().toString())));
+                SaveAndUploadAliUtil.saveInt(Integer.parseInt(et_syname.getText().toString()), "FilterLifeTimePercent_1");
             }
-        } else if(mEntity.no == 2) {
-            if(!TextUtils.isEmpty(mSelectStatus)) {
+        } else if (mEntity.no == 2) {
+            if (!TextUtils.isEmpty(mSelectStatus)) {
                 reportData.put("FilterStatus_2", new ValueWrapper.EnumValueWrapper(Integer.parseInt(mSelectStatus)));  // 参考示例，更多使用可参考demo
+                SaveAndUploadAliUtil.saveEnum(Integer.parseInt(mSelectStatus), "FilterStatus_2");
             }
-            if(!TextUtils.isEmpty(et_kyname.getText().toString())) {
+            if (!TextUtils.isEmpty(et_kyname.getText().toString())) {
                 reportData.put("FilterLifeTimeDays_2", new ValueWrapper.DoubleValueWrapper(Double.parseDouble(et_kyname.getText().toString())));
+                SaveAndUploadAliUtil.saveDouble(Double.parseDouble(et_kyname.getText().toString()), "FilterLifeTimeDays_2");
             }
-            if(!TextUtils.isEmpty(et_syname.getText().toString())) {
+            if (!TextUtils.isEmpty(et_syname.getText().toString())) {
                 reportData.put("FilterLifeTimePercent_2", new ValueWrapper.IntValueWrapper(Integer.parseInt(et_syname.getText().toString())));
+                SaveAndUploadAliUtil.saveInt(Integer.parseInt(et_syname.getText().toString()), "FilterLifeTimePercent_2");
             }
-        }else if(mEntity.no == 3) {
-            if(!TextUtils.isEmpty(mSelectStatus)) {
+        } else if (mEntity.no == 3) {
+            if (!TextUtils.isEmpty(mSelectStatus)) {
                 reportData.put("FilterStatus_3", new ValueWrapper.EnumValueWrapper(Integer.parseInt(mSelectStatus)));  // 参考示例，更多使用可参考demo
+                SaveAndUploadAliUtil.saveEnum(Integer.parseInt(mSelectStatus), "FilterStatus_3");
             }
-            if(!TextUtils.isEmpty(et_kyname.getText().toString())) {
+            if (!TextUtils.isEmpty(et_kyname.getText().toString())) {
                 reportData.put("FilterLifeTimeDays_3", new ValueWrapper.DoubleValueWrapper(Double.parseDouble(et_kyname.getText().toString())));
+                SaveAndUploadAliUtil.saveDouble(Double.parseDouble(et_kyname.getText().toString()), "FilterLifeTimeDays_3");
             }
-            if(!TextUtils.isEmpty(et_syname.getText().toString())) {
+            if (!TextUtils.isEmpty(et_syname.getText().toString())) {
                 reportData.put("FilterLifeTimePercent_3", new ValueWrapper.IntValueWrapper(Integer.parseInt(et_syname.getText().toString())));
+                SaveAndUploadAliUtil.saveInt(Integer.parseInt(et_syname.getText().toString()), "FilterLifeTimePercent_3");
             }
-        }else if(mEntity.no == 4) {
-            if(!TextUtils.isEmpty(mSelectStatus)) {
+        } else if (mEntity.no == 4) {
+            if (!TextUtils.isEmpty(mSelectStatus)) {
                 reportData.put("FilterStatus_4", new ValueWrapper.EnumValueWrapper(Integer.parseInt(mSelectStatus)));  // 参考示例，更多使用可参考demo
+                SaveAndUploadAliUtil.saveEnum(Integer.parseInt(mSelectStatus), "FilterStatus_4");
             }
-            if(!TextUtils.isEmpty(et_kyname.getText().toString())) {
+            if (!TextUtils.isEmpty(et_kyname.getText().toString())) {
                 reportData.put("FilterLifeTimeDays_4", new ValueWrapper.DoubleValueWrapper(Double.parseDouble(et_kyname.getText().toString())));
+                SaveAndUploadAliUtil.saveDouble(Double.parseDouble(et_kyname.getText().toString()), "FilterLifeTimeDays_4");
             }
-            if(!TextUtils.isEmpty(et_syname.getText().toString())) {
+            if (!TextUtils.isEmpty(et_syname.getText().toString())) {
                 reportData.put("FilterLifeTimePercent_4", new ValueWrapper.IntValueWrapper(Integer.parseInt(et_syname.getText().toString())));
+                SaveAndUploadAliUtil.saveInt(Integer.parseInt(et_syname.getText().toString()), "FilterLifeTimePercent_4");
             }
-        }else if(mEntity.no == 5) {
-            if(!TextUtils.isEmpty(mSelectStatus)) {
+        } else if (mEntity.no == 5) {
+            if (!TextUtils.isEmpty(mSelectStatus)) {
                 reportData.put("FilterStatus_5", new ValueWrapper.EnumValueWrapper(Integer.parseInt(mSelectStatus)));  // 参考示例，更多使用可参考demo
+                SaveAndUploadAliUtil.saveEnum(Integer.parseInt(mSelectStatus), "FilterStatus_5");
             }
-            if(!TextUtils.isEmpty(et_kyname.getText().toString())) {
+            if (!TextUtils.isEmpty(et_kyname.getText().toString())) {
                 reportData.put("FilterLifeTimeDays_5", new ValueWrapper.DoubleValueWrapper(Double.parseDouble(et_kyname.getText().toString())));
+                SaveAndUploadAliUtil.saveDouble(Double.parseDouble(et_kyname.getText().toString()), "FilterLifeTimeDays_5");
             }
-            if(!TextUtils.isEmpty(et_syname.getText().toString())) {
+            if (!TextUtils.isEmpty(et_syname.getText().toString())) {
                 reportData.put("FilterLifeTimePercent_5", new ValueWrapper.IntValueWrapper(Integer.parseInt(et_syname.getText().toString())));
+                SaveAndUploadAliUtil.saveInt(Integer.parseInt(et_syname.getText().toString()), "FilterLifeTimePercent_5");
             }
         }
 
-        if(onChangePjListener != null) {
+        if (onChangePjListener != null) {
             onChangePjListener.onChange(et_syname.getText().toString(), mEntity.no, et_kyname.getText().toString(), mSelectStatusName);
         }
 
-        LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
-            @Override
-            public void onSuccess(String resID, Object o) {
-                // 属性上报成功 resID 设备属性对应的唯一标识
-                Log.e("ProductActivity", "属性上报成功");
-                hidePop();
-            }
-
-            @Override
-            public void onError(String resId, AError aError) {
-                // 属性上报失败
-                Log.e("ProductActivity", "属性上报失败");
-                hidePop();
-            }
-        });
+        SaveAndUploadAliUtil.saveAndUpload(reportData);
+        hidePop();
     }
 
     /**
@@ -366,7 +425,7 @@ public class DropDownPop {
      */
 
     public void showPop(View view) {
-        if(mPopupWindow != null) {
+        if (mPopupWindow != null) {
             mPopupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
         }
     }
@@ -376,7 +435,7 @@ public class DropDownPop {
      */
 
     public void hidePop() {
-        if(mPopupWindow != null) {
+        if (mPopupWindow != null) {
             mPopupWindow.dismiss();
         }
     }
@@ -385,39 +444,39 @@ public class DropDownPop {
         mFitingEntity = fittingDetailEntity;
         mEntity = entity;
         mMapLx = mapLx;
-        if(mFitingEntity != null && !TextUtils.isEmpty(mFitingEntity.productCompany)) {
+        if (mFitingEntity != null && !TextUtils.isEmpty(mFitingEntity.productCompany)) {
             tv_pp_name.setText(mFitingEntity.productCompany);
         } else {
             tv_pp_name.setText("-");
         }
-        if(mFitingEntity != null && !TextUtils.isEmpty(mFitingEntity.deviceTypeName)) {
+        if (mFitingEntity != null && !TextUtils.isEmpty(mFitingEntity.deviceTypeName)) {
             tv_xh_name.setText(mFitingEntity.deviceTypeName);
         } else {
             tv_xh_name.setText("-");
         }
-        if(mFitingEntity != null && !TextUtils.isEmpty(mFitingEntity.subType)) {
+        if (mFitingEntity != null && !TextUtils.isEmpty(mFitingEntity.subType)) {
             tv_lx_name.setText(mFitingEntity.subType);
         } else {
             tv_lx_name.setText("-");
         }
 
-        if(!TextUtils.isEmpty(entity.lvxinDeviceName)) {
+        if (!TextUtils.isEmpty(entity.lvxinDeviceName)) {
             tv_dname.setText(entity.lvxinDeviceName);
         } else {
             tv_dname.setText("-");
         }
-        if(!TextUtils.isEmpty(entity.lifeDay)) {
+        if (!TextUtils.isEmpty(entity.lifeDay)) {
             et_kyname.setText(entity.lifeDay);
         } else {
             et_kyname.setText("");
         }
-        if(!TextUtils.isEmpty(entity.lifePercent)) {
+        if (!TextUtils.isEmpty(entity.lifePercent)) {
             et_syname.setText(entity.lifePercent);
         } else {
             et_syname.setText("");
         }
-        if(entity.no == 1) {
-            if(TextUtils.isEmpty(entity.lifeStatus)) {
+        if (entity.no == 1) {
+            if (TextUtils.isEmpty(entity.lifeStatus)) {
                 tv_sm.setText("");
             } else {
                 ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_1");
@@ -428,16 +487,16 @@ public class DropDownPop {
                     tv_sm.setText("");
                 }
             }
-            if(mapLx.containsKey("FilterLifeTimeDays_1") && mapLx.get("FilterLifeTimeDays_1").getDataType().getSpecs() != null) {
+            if (mapLx.containsKey("FilterLifeTimeDays_1") && mapLx.get("FilterLifeTimeDays_1").getDataType().getSpecs() != null) {
                 lifeSpec = (MetaSpec) mapLx.get("FilterLifeTimeDays_1").getDataType().getSpecs();
-                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin()+ "～" +lifeSpec.getMax() +"，步长" + lifeSpec.getStep());
+                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin() + "～" + lifeSpec.getMax() + "，步长" + lifeSpec.getStep());
             }
-            if(mapLx.containsKey("FilterLifeTimePercent_1") && mapLx.get("FilterLifeTimePercent_1").getDataType().getSpecs() != null) {
+            if (mapLx.containsKey("FilterLifeTimePercent_1") && mapLx.get("FilterLifeTimePercent_1").getDataType().getSpecs() != null) {
                 MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimePercent_1").getDataType().getSpecs();
-                tv_tip_sy.setText("int32型，范围：" + specs.getMin()+ "～" +specs.getMax() +"，步长" + specs.getStep());
+                tv_tip_sy.setText("int32型，范围：" + specs.getMin() + "～" + specs.getMax() + "，步长" + specs.getStep());
             }
-        } else if(entity.no == 2) {
-            if(TextUtils.isEmpty(entity.lifeStatus)) {
+        } else if (entity.no == 2) {
+            if (TextUtils.isEmpty(entity.lifeStatus)) {
                 tv_sm.setText("");
             } else {
                 ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_2");
@@ -448,16 +507,16 @@ public class DropDownPop {
                     tv_sm.setText("");
                 }
             }
-            if(mapLx.containsKey("FilterLifeTimeDays_2") && mapLx.get("FilterLifeTimeDays_2").getDataType().getSpecs() != null) {
+            if (mapLx.containsKey("FilterLifeTimeDays_2") && mapLx.get("FilterLifeTimeDays_2").getDataType().getSpecs() != null) {
                 lifeSpec = (MetaSpec) mapLx.get("FilterLifeTimeDays_2").getDataType().getSpecs();
-                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin()+ "～" +lifeSpec.getMax() +"，步长" + lifeSpec.getStep());
+                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin() + "～" + lifeSpec.getMax() + "，步长" + lifeSpec.getStep());
             }
-            if(mapLx.containsKey("FilterLifeTimePercent_2") && mapLx.get("FilterLifeTimePercent_2").getDataType().getSpecs() != null) {
+            if (mapLx.containsKey("FilterLifeTimePercent_2") && mapLx.get("FilterLifeTimePercent_2").getDataType().getSpecs() != null) {
                 MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimePercent_2").getDataType().getSpecs();
-                tv_tip_sy.setText("int32型，范围：" + specs.getMin()+ "～" +specs.getMax() +"，步长" + specs.getStep());
+                tv_tip_sy.setText("int32型，范围：" + specs.getMin() + "～" + specs.getMax() + "，步长" + specs.getStep());
             }
-        } else if(entity.no == 3) {
-            if(TextUtils.isEmpty(entity.lifeStatus)) {
+        } else if (entity.no == 3) {
+            if (TextUtils.isEmpty(entity.lifeStatus)) {
                 tv_sm.setText("");
             } else {
                 ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_3");
@@ -468,16 +527,16 @@ public class DropDownPop {
                     tv_sm.setText("");
                 }
             }
-            if(mapLx.containsKey("FilterLifeTimeDays_3") && mapLx.get("FilterLifeTimeDays_3").getDataType().getSpecs() != null) {
+            if (mapLx.containsKey("FilterLifeTimeDays_3") && mapLx.get("FilterLifeTimeDays_3").getDataType().getSpecs() != null) {
                 lifeSpec = (MetaSpec) mapLx.get("FilterLifeTimeDays_3").getDataType().getSpecs();
-                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin()+ "～" +lifeSpec.getMax() +"，步长" + lifeSpec.getStep());
+                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin() + "～" + lifeSpec.getMax() + "，步长" + lifeSpec.getStep());
             }
-            if(mapLx.containsKey("FilterLifeTimePercent_3") && mapLx.get("FilterLifeTimePercent_3").getDataType().getSpecs() != null) {
+            if (mapLx.containsKey("FilterLifeTimePercent_3") && mapLx.get("FilterLifeTimePercent_3").getDataType().getSpecs() != null) {
                 MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimePercent_3").getDataType().getSpecs();
-                tv_tip_sy.setText("int32型，范围：" + specs.getMin()+ "～" +specs.getMax() +"，步长" + specs.getStep());
+                tv_tip_sy.setText("int32型，范围：" + specs.getMin() + "～" + specs.getMax() + "，步长" + specs.getStep());
             }
-        }else if(entity.no == 4) {
-            if(TextUtils.isEmpty(entity.lifeStatus)) {
+        } else if (entity.no == 4) {
+            if (TextUtils.isEmpty(entity.lifeStatus)) {
                 tv_sm.setText("");
             } else {
                 ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_4");
@@ -488,16 +547,16 @@ public class DropDownPop {
                     tv_sm.setText("");
                 }
             }
-            if(mapLx.containsKey("FilterLifeTimeDays_4") && mapLx.get("FilterLifeTimeDays_4").getDataType().getSpecs() != null) {
+            if (mapLx.containsKey("FilterLifeTimeDays_4") && mapLx.get("FilterLifeTimeDays_4").getDataType().getSpecs() != null) {
                 lifeSpec = (MetaSpec) mapLx.get("FilterLifeTimeDays_4").getDataType().getSpecs();
-                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin()+ "～" +lifeSpec.getMax() +"，步长" + lifeSpec.getStep());
+                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin() + "～" + lifeSpec.getMax() + "，步长" + lifeSpec.getStep());
             }
-            if(mapLx.containsKey("FilterLifeTimePercent_4") && mapLx.get("FilterLifeTimePercent_4").getDataType().getSpecs() != null) {
+            if (mapLx.containsKey("FilterLifeTimePercent_4") && mapLx.get("FilterLifeTimePercent_4").getDataType().getSpecs() != null) {
                 MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimePercent_4").getDataType().getSpecs();
-                tv_tip_sy.setText("int32型，范围：" + specs.getMin()+ "～" +specs.getMax() +"，步长" + specs.getStep());
+                tv_tip_sy.setText("int32型，范围：" + specs.getMin() + "～" + specs.getMax() + "，步长" + specs.getStep());
             }
-        }else if(entity.no == 5) {
-            if(TextUtils.isEmpty(entity.lifeStatus)) {
+        } else if (entity.no == 5) {
+            if (TextUtils.isEmpty(entity.lifeStatus)) {
                 tv_sm.setText("");
             } else {
                 ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_5");
@@ -508,13 +567,13 @@ public class DropDownPop {
                     tv_sm.setText("");
                 }
             }
-            if(mapLx.containsKey("FilterLifeTimeDays_5") && mapLx.get("FilterLifeTimeDays_5").getDataType().getSpecs() != null) {
+            if (mapLx.containsKey("FilterLifeTimeDays_5") && mapLx.get("FilterLifeTimeDays_5").getDataType().getSpecs() != null) {
                 lifeSpec = (MetaSpec) mapLx.get("FilterLifeTimeDays_5").getDataType().getSpecs();
-                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin()+ "～" + lifeSpec.getMax() +"，步长" + lifeSpec.getStep());
+                tv_tip_yj.setText("double型，范围：" + lifeSpec.getMin() + "～" + lifeSpec.getMax() + "，步长" + lifeSpec.getStep());
             }
-            if(mapLx.containsKey("FilterLifeTimePercent_5") && mapLx.get("FilterLifeTimePercent_5").getDataType().getSpecs() != null) {
+            if (mapLx.containsKey("FilterLifeTimePercent_5") && mapLx.get("FilterLifeTimePercent_5").getDataType().getSpecs() != null) {
                 MetaSpec specs = (MetaSpec) mapLx.get("FilterLifeTimePercent_5").getDataType().getSpecs();
-                tv_tip_sy.setText("int32型，范围：" + specs.getMin()+ "～" +specs.getMax() +"，步长" + specs.getStep());
+                tv_tip_sy.setText("int32型，范围：" + specs.getMin() + "～" + specs.getMax() + "，步长" + specs.getStep());
             }
         }
     }

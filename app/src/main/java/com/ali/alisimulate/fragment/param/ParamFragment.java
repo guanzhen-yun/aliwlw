@@ -18,6 +18,7 @@ import com.ali.alisimulate.entity.FittingDetailEntity;
 import com.ali.alisimulate.entity.LvXinEntity;
 import com.ali.alisimulate.entity.ReceiveMsg;
 import com.ali.alisimulate.entity.RefreshEvent;
+import com.ali.alisimulate.util.SaveAndUploadAliUtil;
 import com.ali.alisimulate.view.DropDownPop;
 import com.ali.alisimulate.view.DropDownScanPop;
 import com.ali.alisimulate.view.TopViewCycle;
@@ -113,19 +114,9 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                 // identifier 是云端定义的属性的唯一标识，valueWrapper是属性的值
                 Property property = paramList.get(position);
                 reportData.put(property.getIdentifier(), new ValueWrapper.EnumValueWrapper(Integer.parseInt(selectId)));  // 参考示例，更多使用可参考demo
-                LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
-                    @Override
-                    public void onSuccess(String resID, Object o) {
-                        // 属性上报成功 resID 设备属性对应的唯一标识
-                        Log.e("ProductActivity", "属性上报成功");
-                    }
 
-                    @Override
-                    public void onError(String resId, AError aError) {
-                        // 属性上报失败
-                        Log.e("ProductActivity", "属性上报失败");
-                    }
-                });
+                SaveAndUploadAliUtil.saveEnum(Integer.parseInt(selectId), property.getIdentifier());
+                SaveAndUploadAliUtil.saveAndUpload(reportData);
             }
 
             @Override
@@ -134,20 +125,14 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                 Map<String, ValueWrapper> reportData = new HashMap<>();
                 // identifier 是云端定义的属性的唯一标识，valueWrapper是属性的值
                 Property property = paramList.get(realPosition);
-                reportData.put(property.getIdentifier(), new ValueWrapper.IntValueWrapper(Integer.parseInt(et)));  // 参考示例，更多使用可参考demo
-                LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
-                    @Override
-                    public void onSuccess(String resID, Object o) {
-                        // 属性上报成功 resID 设备属性对应的唯一标识
-                        Log.e("ProductActivity", "属性上报成功");
-                    }
-
-                    @Override
-                    public void onError(String resId, AError aError) {
-                        // 属性上报失败
-                        Log.e("ProductActivity", "属性上报失败");
-                    }
-                });
+                if(property.getDataType().getType().equals(TmpConstant.TYPE_VALUE_DOUBLE)) {
+                    reportData.put(property.getIdentifier(), new ValueWrapper.DoubleValueWrapper(Double.parseDouble(et)));  // 参考示例，更多使用可参考demo
+                    SaveAndUploadAliUtil.saveDouble(Double.parseDouble(et), property.getIdentifier());
+                } else if(property.getDataType().getType().equals(TmpConstant.TYPE_VALUE_INTEGER)) {
+                    reportData.put(property.getIdentifier(), new ValueWrapper.IntValueWrapper(Integer.parseInt(et)));  // 参考示例，更多使用可参考demo
+                    SaveAndUploadAliUtil.saveInt(Integer.parseInt(et), property.getIdentifier());
+                }
+                SaveAndUploadAliUtil.saveAndUpload(reportData);
             }
         });
         setLvXin();

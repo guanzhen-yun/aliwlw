@@ -1,6 +1,5 @@
 package com.ali.alisimulate.fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -182,6 +181,7 @@ public class ControlFragment extends BaseFragment {
                     Map<String, ValueWrapper> reportData = new HashMap<>();
                     SaveAndUploadAliUtil.putBoolParam(!mIsOpen,reportData,"PowerSwitch");
                     SaveAndUploadAliUtil.saveAndUpload(reportData);
+                    SaveAndUploadAliUtil.saveBoolean(!mIsOpen, "PowerSwitch");
                     if(mIsOpen) {
                         mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
                     } else {
@@ -232,12 +232,14 @@ public class ControlFragment extends BaseFragment {
                             Map<String, ValueWrapper> reportData = new HashMap<>();
                             SaveAndUploadAliUtil.putBoolParam(mIsOpen, reportData, "PowerSwitch");
                             SaveAndUploadAliUtil.saveAndUpload(reportData);
+                            SaveAndUploadAliUtil.saveBoolean(mIsOpen, "PowerSwitch");
                             mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
                         } else {
                             mIsOpen = true;
                             Map<String, ValueWrapper> reportData = new HashMap<>();
                             SaveAndUploadAliUtil.putBoolParam(mIsOpen, reportData, "PowerSwitch");
                             SaveAndUploadAliUtil.saveAndUpload(reportData);
+                            SaveAndUploadAliUtil.saveBoolean(mIsOpen, "PowerSwitch");
                             mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
                         }
                     }
@@ -291,6 +293,7 @@ public class ControlFragment extends BaseFragment {
                     Map<String, ValueWrapper> reportData = new HashMap<>();
                     SaveAndUploadAliUtil.putIntParam(intVal, reportData, controlList.get(position).get(2).getIdentifier());
                     SaveAndUploadAliUtil.saveAndUpload(reportData);
+                    SaveAndUploadAliUtil.saveInt(intVal, controlList.get(position).get(2).getIdentifier());
                     adapter.notifyItemChanged(position);
                     handler.sendEmptyMessageDelayed(position, 1000);
                 }
@@ -313,7 +316,7 @@ public class ControlFragment extends BaseFragment {
                 Property property = controlList.get(position).get(0);
                 if(TmpConstant.TYPE_VALUE_BOOLEAN.equals(property.getDataType().getType())) {
                     reportData.put(property.getIdentifier(), new ValueWrapper.BooleanValueWrapper(isOpen ? 1 : 0));  // 参考示例，更多使用可参考demo
-
+                    SaveAndUploadAliUtil.saveBoolean(isOpen, property.getIdentifier());
                     if(controlList.get(position).size() == 3) {
                         Property statusP = controlList.get(position).get(1);
                         EnumSpec specs = (EnumSpec) statusP.getDataType().getSpecs();
@@ -326,11 +329,15 @@ public class ControlFragment extends BaseFragment {
                             handler.sendEmptyMessageDelayed(position, 1000);
                             SaveAndUploadAliUtil.putEnumParam(Integer.parseInt(listKey.get(listKey.size()-1)), reportData, statusP.getIdentifier());
                             SaveAndUploadAliUtil.putIntParam(0, reportData, controlList.get(position).get(2).getIdentifier());
+                            SaveAndUploadAliUtil.saveEnum(Integer.parseInt(listKey.get(listKey.size()-1)), statusP.getIdentifier());
+                            SaveAndUploadAliUtil.saveInt(0, controlList.get(position).get(2).getIdentifier());
                         } else {
                             handler.removeMessages(position);
                             SaveAndUploadAliUtil.putEnumParam(Integer.parseInt(listKey.get(0)), reportData, statusP.getIdentifier());
                             SaveAndUploadAliUtil.putIntParam(0, reportData, controlList.get(position).get(2).getIdentifier());
                             SaveAndUploadAliUtil.saveAndUpload(reportData);
+                            SaveAndUploadAliUtil.saveEnum(Integer.parseInt(listKey.get(0)), statusP.getIdentifier());
+                            SaveAndUploadAliUtil.saveInt(0, controlList.get(position).get(2).getIdentifier());
                             adapter.notifyItemChanged(position);
                             return;
                         }
@@ -359,6 +366,7 @@ public class ControlFragment extends BaseFragment {
                 Property property = controlList.get(position).get(0);
                 reportData.put(property.getIdentifier(), new ValueWrapper.EnumValueWrapper(Integer.parseInt(level)));  // 参考示例，更多使用可参考demo
                 SaveAndUploadAliUtil.saveAndUpload(reportData);
+                SaveAndUploadAliUtil.saveEnum(Integer.parseInt(level), property.getIdentifier());
             }
         });
         mRvControl.setAdapter(adapter);
