@@ -190,9 +190,13 @@ public class ControlFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (map_control.containsKey("PowerSwitch")) {
+        if (map_control.containsKey("PowerSwitch") && map_control.containsKey("LocalTimer")) {
             long openT = ParamsUtil.getOpenOrCloseTime(mContext, true);
             long closeT = ParamsUtil.getOpenOrCloseTime(mContext, false);
+            if(openT == 0 && closeT == 0) {
+                adapter.setLocalOpenOrFalse();
+                return;
+            }
 
             long currentTime = System.currentTimeMillis();
             long totalTime = 0;

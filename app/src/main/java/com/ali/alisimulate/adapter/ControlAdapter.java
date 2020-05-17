@@ -192,6 +192,16 @@ public class ControlAdapter extends RecyclerView.Adapter {
         return mData.size();
     }
 
+    public void setLocalOpenOrFalse() {
+        for (int i = 0; i < mData.size(); i++) {
+            List<Property> properties = mData.get(i);
+            if(properties.size() == 1 && TmpConstant.TYPE_VALUE_ARRAY.equals(properties.get(0).getDataType().getType())) {
+                notifyItemChanged(i);
+                break;
+            }
+        }
+    }
+
     public class DesignViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_name;
         private TextView tv_status;
