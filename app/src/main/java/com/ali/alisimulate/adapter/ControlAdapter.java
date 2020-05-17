@@ -1,5 +1,6 @@
 package com.ali.alisimulate.adapter;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.R;
+import com.ali.alisimulate.activity.DingShiActivity;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
@@ -22,6 +24,7 @@ import com.aliyun.alink.linksdk.tmp.utils.TmpConstant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
@@ -164,7 +167,12 @@ public class ControlAdapter extends RecyclerView.Adapter {
                 List<ValueWrapper> value = ((ValueWrapper.ArrayValueWrapper) propertyValue).getValue();
                 if(value != null && value.size() > 0) {
                     for (ValueWrapper valueWrapper : value) {
-
+                        Map<String, ValueWrapper> reportData = (Map<String, ValueWrapper>) valueWrapper.getValue();
+                        if(reportData != null && reportData.size() > 0) {
+                            viewHolder.sw.setChecked(true);
+                            viewHolder.tv_status.setText("已开启");
+                            break;
+                        }
                     }
                 }
             } else {
@@ -182,6 +190,13 @@ public class ControlAdapter extends RecyclerView.Adapter {
                     if (onCheckListener != null) {
                         onCheckListener.onCheck(position, b);
                     }
+                }
+            });
+
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    view.getContext().startActivity(new Intent(view.getContext(), DingShiActivity.class));
                 }
             });
         }

@@ -1,6 +1,6 @@
 package com.ali.alisimulate.activity;
 
-import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -11,16 +11,19 @@ import com.ali.alisimulate.R;
 import com.ali.alisimulate.adapter.WeekAdapter;
 import com.ali.alisimulate.entity.KeyValue;
 import com.ali.alisimulate.entity.WeekEntity;
+import com.ali.alisimulate.util.SaveAndUploadAliUtil;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.ali.alisimulate.view.wheelview.WheelView;
+import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.ziroom.base.BaseActivity;
 import com.ziroom.base.ViewInject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -46,6 +49,7 @@ public class DingshiControlActivity extends BaseActivity {
     private String minite;
     private WeekAdapter adapter;
     private List<WeekEntity> weekEntities;
+    private List<ValueWrapper> localTimer;
 
     @Override
     public void fetchIntents() {
@@ -55,6 +59,7 @@ public class DingshiControlActivity extends BaseActivity {
     @Override
     public void initViews() {
         mTvTitle.setText(title);
+        localTimer = SaveAndUploadAliUtil.getList("LocalTimer");
         weekEntities = new ArrayList<>();
         weekEntities.add(new WeekEntity("周一"));
         weekEntities.add(new WeekEntity("周二"));
@@ -68,10 +73,39 @@ public class DingshiControlActivity extends BaseActivity {
         hour = "01";
         minite = "00";
         tvTime.setText(hour + ":" + minite);
+        setInitData();
         setHour();
         setMinute();
-
         setListener();
+    }
+
+    //    selectWeek + ";" + hour + "," + minite
+    private void setInitData() {
+        if (localTimer != null && localTimer.size() == 2) {
+            ValueWrapper valueWrapper = localTimer.get("定时关机".equals(title) ? 1 : 0);
+            Map<String, ValueWrapper> value = (Map<String, ValueWrapper>) valueWrapper.getValue();
+            if(value != null && value.size() > 0) {
+                ValueWrapper.StringValueWrapper timer = (ValueWrapper.StringValueWrapper) value.get("Timer");
+                if(timer != null) {
+                    String value1 = timer.getValue();
+                    String week = value1.split(";")[0];
+                    String t = value1.split(";")[1];
+                    if(!TextUtils.isEmpty(week)) {
+                        for (WeekEntity weekEntity : weekEntities) {
+                            if(week.contains(weekEntity.week)) {
+                                weekEntity.isSelect = true;
+                            }
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                    if(!TextUtils.isEmpty(t)) {
+                        hour = t.split(",")[0];
+                        minite = t.split(",")[1];
+                        tvTime.setText(hour + ":" + minite);
+                    }
+                }
+            }
+        }
     }
 
     private void setListener() {
@@ -100,6 +134,7 @@ public class DingshiControlActivity extends BaseActivity {
     }
 
     private void setMinute() {
+        int initPos = 0;
         List<KeyValue> listMinute = new ArrayList<>();
         for (int i = 0; i <= 59; i++) {
             KeyValue keyValue = null;
@@ -108,13 +143,17 @@ public class DingshiControlActivity extends BaseActivity {
             } else {
                 keyValue = new KeyValue(String.valueOf(i));
             }
+            if(keyValue.getValue().equals(minite)) {
+                initPos = i;
+            }
             listMinute.add(keyValue);
         }
-        mWvContentMinute.setItems(listMinute, 0);
+        mWvContentMinute.setItems(listMinute, initPos);
     }
 
     private void setHour() {
         List<KeyValue> listHour = new ArrayList<>();
+        int initPos = 0;
         for (int i = 1; i <= 24; i++) {
             KeyValue keyValue = null;
             if (i < 10) {
@@ -122,9 +161,12 @@ public class DingshiControlActivity extends BaseActivity {
             } else {
                 keyValue = new KeyValue(String.valueOf(i));
             }
+            if(keyValue.getValue().equals(hour)) {
+                initPos = i-1;
+            }
             listHour.add(keyValue);
         }
-        mWvContentHour.setItems(listHour, 0);
+        mWvContentHour.setItems(listHour, initPos);
     }
 
     @OnClick({R.id.iv_back, R.id.tv_ok})
@@ -140,15 +182,56 @@ public class DingshiControlActivity extends BaseActivity {
                         selectWeek = selectWeek + weekEntity.week + ",";
                     }
                 }
+                if (!TextUtils.isEmpty(selectWeek)) {
+                    selectWeek = selectWeek.substring(0, selectWeek.length() - 1);
+                }
+                //第一个为开机  第二个为关机
                 if (title.equals("定时关机")) {
-                    SharedPreferencesUtils.save(this, Constants.KEY_CLOSE_WEEK, selectWeek);
-                    SharedPreferencesUtils.save(this, Constants.KEY_CLOSE_TIME, hour + "," + minite);
+                    saveTime(false, selectWeek);
                 } else {
-                    SharedPreferencesUtils.save(this, Constants.KEY_OPEN_WEEK, selectWeek);
-                    SharedPreferencesUtils.save(this, Constants.KEY_OPEN_TIME, hour + "," + minite);
+                    saveTime(true, selectWeek);
                 }
                 finish();
                 break;
         }
+    }
+
+    private void saveTime(boolean isOpen, String selectWeek) {
+        SharedPreferencesUtils.save(this, isOpen ? Constants.KEY_OPEN_WEEK : Constants.KEY_CLOSE_WEEK, selectWeek);
+        SharedPreferencesUtils.save(this, isOpen ? Constants.KEY_OPEN_TIME : Constants.KEY_CLOSE_TIME, hour + "," + minite);
+        Map<String, ValueWrapper> reportData = new HashMap<>();
+
+        if (localTimer == null) {
+            localTimer = new ArrayList<>();
+            if (!isOpen) {//关机
+                Map<String, ValueWrapper> value2 = new HashMap<>();
+                ValueWrapper.StructValueWrapper structValueWrapper2 = new ValueWrapper.StructValueWrapper();
+                structValueWrapper2.setValue(value2);
+                localTimer.add(structValueWrapper2);
+            }
+            Map<String, ValueWrapper> value1 = new HashMap<>();
+            addMap(value1, selectWeek);
+            ValueWrapper.StructValueWrapper structValueWrapper = new ValueWrapper.StructValueWrapper();
+            structValueWrapper.setValue(value1);
+            localTimer.add(structValueWrapper);
+            if (isOpen) {//开机
+                Map<String, ValueWrapper> value2 = new HashMap<>();
+                ValueWrapper.StructValueWrapper structValueWrapper2 = new ValueWrapper.StructValueWrapper();
+                structValueWrapper2.setValue(value2);
+                localTimer.add(structValueWrapper2);
+            }
+        } else if (localTimer.size() == 2) {
+            ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
+            Map<String, ValueWrapper> value1 = new HashMap<>();
+            addMap(value1, selectWeek);
+            structValueWrapper.setValue(value1);
+        }
+        SaveAndUploadAliUtil.putList("LocalTimer", reportData, localTimer);
+        SaveAndUploadAliUtil.saveAndUpload(reportData);
+    }
+
+    private void addMap(Map<String, ValueWrapper> value1, String selectWeek) {
+        value1.put("Timer", new ValueWrapper.StringValueWrapper(selectWeek + ";" + hour + "," + minite));
+        value1.put("Enable", new ValueWrapper.BooleanValueWrapper(1));
     }
 }

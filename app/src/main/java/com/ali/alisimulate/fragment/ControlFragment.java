@@ -1,5 +1,6 @@
 package com.ali.alisimulate.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -176,12 +177,20 @@ public class ControlFragment extends BaseFragment {
                     Map<String, ValueWrapper> reportData = new HashMap<>();
                     SaveAndUploadAliUtil.putBoolParam(!mIsOpen,reportData,"PowerSwitch");
                     SaveAndUploadAliUtil.saveAndUpload(reportData);
+                    if(mIsOpen) {
+                        mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
+                    } else {
+                        mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
+                    }
+                    mIsOpen = !mIsOpen;
                 });
             } else {
                 mIvClose.setVisibility(View.GONE);
+                mIsOpen = false;
             }
         } else {
             mIvClose.setVisibility(View.GONE);
+            mIsOpen = false;
         }
     }
 
@@ -193,10 +202,7 @@ public class ControlFragment extends BaseFragment {
         if (map_control.containsKey("PowerSwitch") && map_control.containsKey("LocalTimer")) {
             long openT = ParamsUtil.getOpenOrCloseTime(mContext, true);
             long closeT = ParamsUtil.getOpenOrCloseTime(mContext, false);
-            if(openT == 0 && closeT == 0) {
-                adapter.setLocalOpenOrFalse();
-                return;
-            }
+            adapter.setLocalOpenOrFalse();
 
             long currentTime = System.currentTimeMillis();
             long totalTime = 0;

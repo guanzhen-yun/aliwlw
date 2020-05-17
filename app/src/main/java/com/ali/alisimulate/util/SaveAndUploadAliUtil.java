@@ -7,6 +7,7 @@ import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.aliyun.alink.linksdk.tmp.listener.IPublishResourceListener;
 import com.aliyun.alink.linksdk.tools.AError;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +45,20 @@ public class SaveAndUploadAliUtil {
             }
         } else {
             return false;
+        }
+    }
+
+    public static void putList(String indentify, Map<String, ValueWrapper> reportData, List<ValueWrapper> list) {
+        reportData.put(indentify, new ValueWrapper.ArrayValueWrapper(list));
+    }
+
+    public static List<ValueWrapper> getList(String indentify) {
+        ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(indentify);
+        if (propertyValue == null) {
+            return null;
+        } else {
+            List<ValueWrapper> value = ((ValueWrapper.ArrayValueWrapper) propertyValue).getValue();
+            return value;
         }
     }
 }
