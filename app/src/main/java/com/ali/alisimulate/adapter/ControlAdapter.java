@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.activity.DingShiActivity;
+import com.ali.alisimulate.util.SaveAndUploadAliUtil;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
@@ -53,7 +54,8 @@ public class ControlAdapter extends RecyclerView.Adapter {
         ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(name.getIdentifier());
 
         if (TmpConstant.TYPE_VALUE_ENUM.equals(name.getDataType().getType())) {
-
+            viewHolder.tv_other_status.setVisibility(View.GONE);
+            viewHolder.tv_other_per.setVisibility(View.GONE);
             EnumSpec specs = (EnumSpec) name.getDataType().getSpecs();
 
             Set<String> strings = specs.keySet();
@@ -66,14 +68,14 @@ public class ControlAdapter extends RecyclerView.Adapter {
                 list.add(specs.get(string));
                 listKey.add(string);
             }
-            if(propertyValue != null) {
+            if (propertyValue != null) {
                 Integer value = ((ValueWrapper.EnumValueWrapper) propertyValue).getValue();
                 viewHolder.tv_choose.setText(value + "(" + specs.get(String.valueOf(value)) + ")");
             } else {
                 viewHolder.tv_choose.setText("请选择");
             }
 
-            if(mDatas != null && mDatas instanceof Integer && mPosition == position) {
+            if (mDatas != null && mDatas instanceof Integer && mPosition == position) {
                 int dd = (int) mDatas;
                 viewHolder.tv_choose.setText(dd + "(" + specs.get(String.valueOf(dd)) + ")");
                 if (onCheckListener != null) {
@@ -115,7 +117,7 @@ public class ControlAdapter extends RecyclerView.Adapter {
                 }
             });
         } else if (TmpConstant.TYPE_VALUE_BOOLEAN.equals(name.getDataType().getType())) {
-            if(propertyValue != null) {
+            if (propertyValue != null) {
                 Integer value = ((ValueWrapper.BooleanValueWrapper) propertyValue).getValue();
                 if (value != null && value == 1) {
                     viewHolder.sw.setChecked(true);
@@ -129,9 +131,9 @@ public class ControlAdapter extends RecyclerView.Adapter {
                 viewHolder.tv_status.setText("未开启");
             }
 
-            if(mDatas != null && mDatas instanceof Integer && mPosition == position) {
+            if (mDatas != null && mDatas instanceof Integer && mPosition == position) {
                 int dd = (int) mDatas;
-                if(dd == 1) {
+                if (dd == 1) {
                     viewHolder.sw.setChecked(true);
                     viewHolder.tv_status.setText("已开启");
                 } else {
@@ -160,15 +162,42 @@ public class ControlAdapter extends RecyclerView.Adapter {
                 }
             });
             viewHolder.tv_choose.setVisibility(View.GONE);
-        } else if(TmpConstant.TYPE_VALUE_ARRAY.equals(name.getDataType().getType()) && name.getIdentifier().equals("LocalTimer")) {
-            if(propertyValue != null) {
+
+            if (mData.get(position).size() == 3) {
+                viewHolder.tv_other_status.setVisibility(View.VISIBLE);
+                viewHolder.tv_other_per.setVisibility(View.VISIBLE);
+                Property propertyStatus = mData.get(position).get(1);
+
+                Integer value = SaveAndUploadAliUtil.getEnumVal(propertyStatus.getIdentifier());
+                if (value == null) {
+                    if (propertyStatus.getIdentifier().equals("WashingState")) {
+                        viewHolder.tv_other_status.setText("正常");
+                    } else if (propertyStatus.getIdentifier().equals("PureState")) {
+                        viewHolder.tv_other_status.setText("待机");
+                    }
+                } else {
+                    String enumValue = SaveAndUploadAliUtil.getEnumValue(propertyStatus, value);
+                    viewHolder.tv_other_status.setText(enumValue);
+                }
+                Property propertyPer = mData.get(position).get(2);
+                Integer pervalue = SaveAndUploadAliUtil.getIntVal(propertyPer.getIdentifier());
+                if(pervalue == null) {
+                    viewHolder.tv_other_per.setText("0%");
+                } else {
+                    viewHolder.tv_other_per.setText(pervalue + "%");
+                }
+            }
+        } else if (TmpConstant.TYPE_VALUE_ARRAY.equals(name.getDataType().getType()) && name.getIdentifier().equals("LocalTimer")) {
+            viewHolder.tv_other_status.setVisibility(View.GONE);
+            viewHolder.tv_other_per.setVisibility(View.GONE);
+            if (propertyValue != null) {
                 viewHolder.sw.setVisibility(View.VISIBLE);
                 viewHolder.tv_status.setVisibility(View.VISIBLE);
                 List<ValueWrapper> value = ((ValueWrapper.ArrayValueWrapper) propertyValue).getValue();
-                if(value != null && value.size() > 0) {
+                if (value != null && value.size() > 0) {
                     for (ValueWrapper valueWrapper : value) {
                         Map<String, ValueWrapper> reportData = (Map<String, ValueWrapper>) valueWrapper.getValue();
-                        if(reportData != null && reportData.size() > 0) {
+                        if (reportData != null && reportData.size() > 0) {
                             viewHolder.sw.setChecked(true);
                             viewHolder.tv_status.setText("已开启");
                             break;
@@ -210,7 +239,7 @@ public class ControlAdapter extends RecyclerView.Adapter {
     public void setLocalOpenOrFalse() {
         for (int i = 0; i < mData.size(); i++) {
             List<Property> properties = mData.get(i);
-            if(properties.size() == 1 && TmpConstant.TYPE_VALUE_ARRAY.equals(properties.get(0).getDataType().getType())) {
+            if (properties.size() == 1 && TmpConstant.TYPE_VALUE_ARRAY.equals(properties.get(0).getDataType().getType())) {
                 notifyItemChanged(i);
                 break;
             }
@@ -222,6 +251,8 @@ public class ControlAdapter extends RecyclerView.Adapter {
         private TextView tv_status;
         private TextView tv_choose;
         private Switch sw;
+        private TextView tv_other_status;
+        private TextView tv_other_per;
 
         public DesignViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -229,6 +260,8 @@ public class ControlAdapter extends RecyclerView.Adapter {
             tv_name = itemView.findViewById(R.id.tv_name);
             tv_status = itemView.findViewById(R.id.tv_status);
             tv_choose = itemView.findViewById(R.id.tv_choose);
+            tv_other_status = itemView.findViewById(R.id.tv_other_status);
+            tv_other_per = itemView.findViewById(R.id.tv_other_per);
         }
     }
 

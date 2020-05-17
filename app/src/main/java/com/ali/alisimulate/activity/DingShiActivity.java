@@ -2,7 +2,6 @@ package com.ali.alisimulate.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.ali.alisimulate.Constants;
@@ -13,6 +12,7 @@ import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.ziroom.base.BaseActivity;
 import com.ziroom.base.ViewInject;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,37 +52,41 @@ public class DingShiActivity extends BaseActivity {
             }
         }
 
-        mSwOpen.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("title", "定时开机");
-                    Intent intent = new Intent(DingShiActivity.this, DingshiControlActivity.class);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                } else {
-                    SharedPreferencesUtils.save(DingShiActivity.this, Constants.KEY_OPEN_TIME, "");
-                    SharedPreferencesUtils.save(DingShiActivity.this, Constants.KEY_OPEN_WEEK, "");
-                }
+        mSwOpen.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                jumpControl(true);
+            } else {
+                closeStatus(true);
             }
         });
 
-        mSwClose.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("title", "定时关机");
-                    Intent intent = new Intent(DingShiActivity.this, DingshiControlActivity.class);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                } else {
-                    SharedPreferencesUtils.save(DingShiActivity.this, Constants.KEY_CLOSE_WEEK, "");
-                    SharedPreferencesUtils.save(DingShiActivity.this, Constants.KEY_CLOSE_TIME, "");
-                }
+        mSwClose.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                jumpControl(false);
+            } else {
+                closeStatus(false);
             }
         });
+    }
+
+    private void jumpControl(boolean isOpen) {
+        Bundle bundle = new Bundle();
+        bundle.putString("title", isOpen ? "定时开机" : "定时关机");
+        Intent intent = new Intent(DingShiActivity.this, DingshiControlActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    private void closeStatus(boolean isOpen) {
+        SharedPreferencesUtils.save(DingShiActivity.this, isOpen ? Constants.KEY_OPEN_WEEK : Constants.KEY_CLOSE_WEEK, "");
+        SharedPreferencesUtils.save(DingShiActivity.this, isOpen ? Constants.KEY_OPEN_TIME : Constants.KEY_CLOSE_TIME, "");
+        Map<String, ValueWrapper> reportData = new HashMap<>();
+        List<ValueWrapper> localTimer = SaveAndUploadAliUtil.getList("LocalTimer");
+        ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
+        Map<String, ValueWrapper> value1 = new HashMap<>();
+        structValueWrapper.setValue(value1);
+        SaveAndUploadAliUtil.putList("LocalTimer", reportData, localTimer);
+        SaveAndUploadAliUtil.saveAndUpload(reportData);
     }
 
     @OnClick(R.id.iv_back)

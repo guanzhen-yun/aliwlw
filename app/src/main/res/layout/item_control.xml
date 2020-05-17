@@ -23,9 +23,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="9dp"
-        android:layout_below="@id/tv_name"
         tools:text="冲洗中"
+        android:layout_marginBottom="11dp"
+        android:layout_alignParentBottom="true"
         android:textColor="#585858"
         android:visibility="gone"
         android:textSize="14sp" />
@@ -36,10 +36,10 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@id/tv_other_status"
-        android:layout_marginTop="9dp"
-        android:layout_below="@id/tv_name"
         android:visibility="gone"
         tools:text="40%"
+        android:layout_marginBottom="11dp"
+        android:layout_alignParentBottom="true"
         android:textColor="#585858"
         android:textSize="14sp" />
 

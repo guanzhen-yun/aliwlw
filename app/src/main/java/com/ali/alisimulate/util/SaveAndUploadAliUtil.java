@@ -4,11 +4,15 @@ import android.util.Log;
 
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
+import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
+import com.aliyun.alink.linksdk.tmp.devicemodel.specs.EnumSpec;
 import com.aliyun.alink.linksdk.tmp.listener.IPublishResourceListener;
 import com.aliyun.alink.linksdk.tools.AError;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Author:关震
@@ -47,6 +51,46 @@ public class SaveAndUploadAliUtil {
             return false;
         }
     }
+
+    public static void putEnumParam(int valueKey, Map<String, ValueWrapper> reportData, String indentify) {
+        reportData.put(indentify, new ValueWrapper.EnumValueWrapper(valueKey));
+    }
+
+    public static void putIntParam(int value, Map<String, ValueWrapper> reportData, String indentify) {
+        reportData.put(indentify, new ValueWrapper.IntValueWrapper(value));
+    }
+
+    public static Integer getEnumVal(String indentify) {
+        ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(indentify);
+        if (propertyValue != null) {
+            Integer value = ((ValueWrapper.EnumValueWrapper) propertyValue).getValue();
+            return value;
+        } else {
+            return null;
+        }
+    }
+
+    public static Integer getIntVal(String indentify) {
+        ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(indentify);
+        if (propertyValue != null) {
+            Integer value = ((ValueWrapper.IntValueWrapper) propertyValue).getValue();
+            return value;
+        } else {
+            return null;
+        }
+    }
+
+    public static String getEnumValue(Property propertyStatus, Integer value) {
+        EnumSpec specs = (EnumSpec) propertyStatus.getDataType().getSpecs();
+        Set<String> strings = specs.keySet();
+        List<String> listValue = new ArrayList<>();
+        for (String string : strings) {
+            listValue.add(specs.get(string));
+        }
+        String v = listValue.get(value);
+        return v;
+    }
+
 
     public static void putList(String indentify, Map<String, ValueWrapper> reportData, List<ValueWrapper> list) {
         reportData.put(indentify, new ValueWrapper.ArrayValueWrapper(list));

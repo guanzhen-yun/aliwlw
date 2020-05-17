@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +25,7 @@ import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.aliyun.alink.linksdk.tmp.devicemodel.Property;
+import com.aliyun.alink.linksdk.tmp.devicemodel.specs.EnumSpec;
 import com.aliyun.alink.linksdk.tmp.utils.TmpConstant;
 import com.google.gson.Gson;
 import com.ziroom.base.BaseFragment;
@@ -35,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import butterknife.BindView;
 
@@ -129,7 +134,7 @@ public class ControlFragment extends BaseFragment {
                 List<Property> list = new ArrayList<>();
                 list.add(map_control.get("WashingSwitch"));
                 if (map_control.containsKey("WashingState")) {//状态
-                    list.add(map_control.get("WashingSwitch"));
+                    list.add(map_control.get("WashingState"));
                 }
                 if (map_control.containsKey("WashingPercent")) {//百分比
                     list.add(map_control.get("WashingPercent"));
@@ -273,6 +278,26 @@ public class ControlFragment extends BaseFragment {
         }
     }
 
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            int position = msg.what;
+            if(controlList.get(position).size() == 3) {
+                Property property = controlList.get(0).get(2);
+                Integer intVal = SaveAndUploadAliUtil.getIntVal(property.getIdentifier());
+                intVal = intVal + 1;
+                if(intVal < 100) {
+                    Map<String, ValueWrapper> reportData = new HashMap<>();
+                    SaveAndUploadAliUtil.putIntParam(intVal, reportData, controlList.get(position).get(2).getIdentifier());
+                    SaveAndUploadAliUtil.saveAndUpload(reportData);
+                    adapter.notifyItemChanged(position);
+                    handler.sendEmptyMessageDelayed(position, 1000);
+                }
+            }
+        }
+    };
+
     @Override
     public void initViews(View mView) {
         EventBus.getDefault().register(this);
@@ -288,6 +313,28 @@ public class ControlFragment extends BaseFragment {
                 Property property = controlList.get(position).get(0);
                 if(TmpConstant.TYPE_VALUE_BOOLEAN.equals(property.getDataType().getType())) {
                     reportData.put(property.getIdentifier(), new ValueWrapper.BooleanValueWrapper(isOpen ? 1 : 0));  // 参考示例，更多使用可参考demo
+
+                    if(controlList.get(position).size() == 3) {
+                        Property statusP = controlList.get(position).get(1);
+                        EnumSpec specs = (EnumSpec) statusP.getDataType().getSpecs();
+                        Set<String> strings = specs.keySet();
+                        List<String> listKey = new ArrayList<>();
+                        for (String string : strings) {
+                            listKey.add(string);
+                        }
+                        if(isOpen) {
+                            handler.sendEmptyMessageDelayed(position, 1000);
+                            SaveAndUploadAliUtil.putEnumParam(Integer.parseInt(listKey.get(listKey.size()-1)), reportData, statusP.getIdentifier());
+                            SaveAndUploadAliUtil.putIntParam(0, reportData, controlList.get(position).get(2).getIdentifier());
+                        } else {
+                            handler.removeMessages(position);
+                            SaveAndUploadAliUtil.putEnumParam(Integer.parseInt(listKey.get(0)), reportData, statusP.getIdentifier());
+                            SaveAndUploadAliUtil.putIntParam(0, reportData, controlList.get(position).get(2).getIdentifier());
+                            SaveAndUploadAliUtil.saveAndUpload(reportData);
+                            adapter.notifyItemChanged(position);
+                            return;
+                        }
+                    }
                     SaveAndUploadAliUtil.saveAndUpload(reportData);
                 } else if(TmpConstant.TYPE_VALUE_ARRAY.equals(property.getDataType().getType()) && "LocalTimer".equals(property.getIdentifier())) {
                     //定时
