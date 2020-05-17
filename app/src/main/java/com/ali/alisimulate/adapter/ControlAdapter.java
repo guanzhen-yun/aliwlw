@@ -1,5 +1,6 @@
 package com.ali.alisimulate.adapter;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.activity.DingShiActivity;
+import com.ali.alisimulate.util.DisplayUtil;
 import com.ali.alisimulate.util.SaveAndUploadAliUtil;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
@@ -94,13 +96,15 @@ public class ControlAdapter extends RecyclerView.Adapter {
                         LayoutInflater mLayoutInflater = (LayoutInflater) view.getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
                         ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
                                 R.layout.pop_device, null, true);
-                        PopupWindow pw = new PopupWindow(menuView, RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        PopupWindow pw = new PopupWindow(menuView, RelativeLayout.LayoutParams.MATCH_PARENT,
                                 RelativeLayout.LayoutParams.WRAP_CONTENT);
                         pw.setOutsideTouchable(true);
                         pw.showAsDropDown(viewHolder.tv_choose);
                         RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
                         rv_device.setLayoutManager(new LinearLayoutManager(view.getContext()));
-
+                        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) rv_device.getLayoutParams();
+                        layoutParams.setMargins(DisplayUtil.getScreenWight((Activity) rv_device.getContext())/2,30,0,0);
+                        rv_device.setLayoutParams(layoutParams);
                         PopDeviceListAdapter adapter = new PopDeviceListAdapter(list);
                         rv_device.setAdapter(adapter);
                         adapter.setOnCheckedListener(new PopDeviceListAdapter.OnCheckedListener() {
