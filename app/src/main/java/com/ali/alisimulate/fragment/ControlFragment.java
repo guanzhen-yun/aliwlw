@@ -296,6 +296,23 @@ public class ControlFragment extends BaseFragment {
                     SaveAndUploadAliUtil.saveInt(intVal, controlList.get(position).get(2).getIdentifier());
                     adapter.notifyItemChanged(position);
                     handler.sendEmptyMessageDelayed(position, 1000);
+                } else if(intVal == 100) {
+                    handler.removeMessages(position);
+                    Map<String, ValueWrapper> reportData = new HashMap<>();
+                    Property statusP = controlList.get(position).get(1);
+                    EnumSpec specs = (EnumSpec) statusP.getDataType().getSpecs();
+                    Set<String> strings = specs.keySet();
+                    List<String> listKey = new ArrayList<>();
+                    for (String string : strings) {
+                        listKey.add(string);
+                    }
+                    SaveAndUploadAliUtil.putIntParam(100, reportData, controlList.get(position).get(2).getIdentifier());
+                    SaveAndUploadAliUtil.putEnumParam(Integer.parseInt(listKey.get(0)), reportData, controlList.get(position).get(1).getIdentifier());
+                    SaveAndUploadAliUtil.saveAndUpload(reportData);
+                    SaveAndUploadAliUtil.saveEnum(Integer.parseInt(listKey.get(0)), controlList.get(position).get(1).getIdentifier());
+                    SaveAndUploadAliUtil.saveInt(100, controlList.get(position).get(2).getIdentifier());
+                    adapter.notifyItemChanged(position);
+
                 }
             }
         }

@@ -310,7 +310,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
 
             if(listLx.size() > 0) {
                 topViewCycle = new TopViewCycle(getActivity());
-
+                topViewCycle.setAutoCycle(false);
                 topViewCycle.loadData(listLx);
                 topViewCycle.setOnPageClickListener(new TopViewCycle.OnPageClickListener() {
                     @Override

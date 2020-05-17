@@ -44,6 +44,11 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
     @Override
     public void onBind(RecyclerView.ViewHolder viewHolder, int realPosition, Property data) {
         if (viewHolder instanceof ParamsHolder) {
+            if(realPosition == getItemCount()-1) {
+                ((ParamsHolder) viewHolder).view_bottom.setVisibility(View.VISIBLE);
+            } else {
+                ((ParamsHolder) viewHolder).view_bottom.setVisibility(View.GONE);
+            }
             ((ParamsHolder) viewHolder).tv_name.setText(data.getName());
             if (TmpConstant.TYPE_VALUE_ENUM.equals(data.getDataType().getType())) {
                 ((ParamsHolder) viewHolder).et_prop.setVisibility(View.GONE);
@@ -291,7 +296,7 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
         private TextView tv_tip;
         private ImageView iv_select;
         private TextView tv_prop;
-
+        private View view_bottom;
         public ParamsHolder(View itemView) {
             super(itemView);
             tv_prop = itemView.findViewById(R.id.tv_prop);
@@ -301,6 +306,7 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
             tv_unit = itemView.findViewById(R.id.tv_unit);
             tv_tip = itemView.findViewById(R.id.tv_tip);
             iv_select = itemView.findViewById(R.id.iv_select);
+            view_bottom = itemView.findViewById(R.id.view_bottom);
         }
     }
 

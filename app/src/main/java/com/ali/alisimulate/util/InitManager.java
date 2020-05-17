@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.ali.alisimulate.Constants;
 import com.ali.alisimulate.MyApp;
+import com.ali.alisimulate.entity.RefreshEvent;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.alink.dm.api.DeviceInfo;
 import com.aliyun.alink.dm.api.IoTApiClientConfig;
@@ -28,6 +29,8 @@ import com.aliyun.alink.linksdk.id2.Id2ItlsSdk;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.aliyun.alink.linksdk.tools.AError;
 import com.aliyun.alink.linksdk.tools.ALog;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -128,7 +131,7 @@ public class InitManager {
         IoTMqttClientConfig clientConfig = new IoTMqttClientConfig(productKey, deviceName, deviceSecret);
         // 对应 receiveOfflineMsg = !cleanSession, 默认不接受离线消息 false
         clientConfig.receiveOfflineMsg = true;//cleanSession=1
-        clientConfig.receiveOfflineMsg = false;//cleanSession=0
+//        clientConfig.receiveOfflineMsg = false;//cleanSession=0
 //        clientConfig.channelHost = productKey + ".iot-as-mqtt.cn-shanghai.aliyuncs.com:1883";//线上
         // 设置 mqtt 请求域名，默认"{pk}.iot-as-mqtt.cn-shanghai.aliyuncs.com:1883" ,如果无具体的业务需求，请不要设置。
         // 文件配置测试 itls
@@ -146,7 +149,7 @@ public class InitManager {
         IoTDMConfig ioTDMConfig = new IoTDMConfig();
         // 是否启用本地通信功能，默认不开启，
         // 启用之后会初始化本地通信CoAP相关模块，设备将允许被生活物联网平台的应用发现、绑定、控制，依赖enableThingModel开启
-        ioTDMConfig.enableLocalCommunication = false;
+        ioTDMConfig.enableLocalCommunication = true;
         // 是否启用物模型功能，如果不开启，本地通信功能也不支持
         // 默认不开启，开启之后init方法会等到物模型初始化（包含请求云端物模型）完成之后才返回onInitDone
         ioTDMConfig.enableThingModel = true;
@@ -205,12 +208,13 @@ public class InitManager {
         @Override
         public void onNotify(String connectId, String topic, AMessage aMessage) {
             String data = new String((byte[]) aMessage.data);
+            EventBus.getDefault().post(new RefreshEvent(aMessage));
             // 服务端返回数据示例  data = {"method":"thing.service.test_service","id":"123374967","params":{"vv":60},"version":"1.0.0"}
             ALog.d(TAG, "onNotify() called with: connectId = [" + connectId + "], topic = [" + topic + "], aMessage = [" + data + "]");
 
             if (ConnectSDK.getInstance().getPersistentConnectId().equals(connectId) && !TextUtils.isEmpty(topic) &&
                     topic.startsWith("/ext/rrpc/")) {
-//                ToastUtils.showToast("收到云端自定义RRPC下行：topic=" + topic + ",data=" + data);
+                ToastUtils.showToast("收到云端自定义RRPC下行：topic=" + topic + ",data=" + data);
                 //示例 topic=/ext/rrpc/1138654706478941696//a1ExY4afKY1/testDevice/user/get
                 //ALog.d(TAG, "receice Message=" + new String((byte[]) aMessage.data));
                 // 服务端返回数据示例  {"method":"thing.service.test_service","id":"123374967","params":{"vv":60},"version":"1.0.0"}
@@ -226,18 +230,18 @@ public class InitManager {
                     @Override
                     public void onResponse(ARequest aRequest, AResponse aResponse) {
                         // 响应成功
-//                        ToastUtils.showToast("云端系统RRPC下行响应成功");
+                        ToastUtils.showToast("云端系统RRPC下行响应成功");
                     }
 
                     @Override
                     public void onFailure(ARequest aRequest, AError aError) {
                         // 响应失败
-//                        ToastUtils.showToast("云端系统RRPC下行响应失败");
+                        ToastUtils.showToast("云端系统RRPC下行响应失败");
                     }
                 });
             } else if (ConnectSDK.getInstance().getPersistentConnectId().equals(connectId) && !TextUtils.isEmpty(topic) &&
                     topic.startsWith("/sys/" + MyApp.getApp().productKey + "/" + MyApp.getApp().deviceName + "/rrpc/request/")) {
-//                ToastUtils.showToast("收到云端系统RRPC下行：topic=" + topic + ",data=" + data);
+                ToastUtils.showToast("收到云端系统RRPC下行：topic=" + topic + ",data=" + data);
 //                    ALog.d(TAG, "receice Message=" + new String((byte[]) aMessage.data));
                 // 服务端返回数据示例  {"method":"thing.service.test_service","id":"123374967","params":{"vv":60},"version":"1.0.0"}
                 MqttPublishRequest request = new MqttPublishRequest();
@@ -254,12 +258,12 @@ public class InitManager {
                 LinkKit.getInstance().publish(request, new IConnectSendListener() {
                     @Override
                     public void onResponse(ARequest aRequest, AResponse aResponse) {
-//                        ToastUtils.showToast("云端系统RRPC下行响应成功");
+                        ToastUtils.showToast("云端系统RRPC下行响应成功");
                     }
 
                     @Override
                     public void onFailure(ARequest aRequest, AError aError) {
-//                        ToastUtils.showToast("云端系统RRPC下行响应失败");
+                        ToastUtils.showToast("云端系统RRPC下行响应失败");
                     }
                 });
             } else if (ConnectSDK.getInstance().getPersistentConnectId().equals(connectId) && !TextUtils.isEmpty(topic) &&
@@ -272,7 +276,7 @@ public class InitManager {
                  * 如云端： org.apache.commons.codec.binary.Base64.encodeBase64String("broadcastContent".getBytes())
                  */
                 //
-//                ToastUtils.showToast("收到云端批量广播下行：topic=" + topic + ",data=" + data);
+                ToastUtils.showToast("收到云端批量广播下行：topic=" + topic + ",data=" + data);
                 //TODO 根据批量广播做业务逻辑处理
 
             } else if (ConnectSDK.getInstance().getPersistentConnectId().equals(connectId) && !TextUtils.isEmpty(topic) &&
@@ -284,10 +288,10 @@ public class InitManager {
                  * 注意：触发端数据需要进行Base64编码，否则会出现端上乱码，
                  * 如云端： org.apache.commons.codec.binary.Base64.encodeBase64String("broadcastContent".getBytes())
                  */
-//                ToastUtils.showToast("收到云端广播下行：topic=" + topic + ",data=" + data);
+                ToastUtils.showToast("收到云端广播下行：topic=" + topic + ",data=" + data);
                 //TODO 根据广播做业务逻辑处理
             } else {
-//                ToastUtils.showToast("收到云端下行：topic=" + topic + ",data=" + data);
+                ToastUtils.showToast("收到云端下行：topic=" + topic + ",data=" + data);
                 /**
                  * TODO
                  * 根据订阅的具体 topic 做业务处理

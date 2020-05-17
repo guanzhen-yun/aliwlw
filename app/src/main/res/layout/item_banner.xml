@@ -13,7 +13,7 @@
         android:layout_marginTop="14dp"
         tools:text="滤芯1"
         android:textColor="#333333"
-        android:textSize="23sp" />
+        android:textSize="17sp" />
 
     <TextView
         android:id="@+id/tv_sm"
