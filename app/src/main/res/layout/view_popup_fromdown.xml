@@ -275,12 +275,29 @@
             android:padding="15dp"
             android:text="取消"
             android:id="@+id/tv_cancel"
-            android:background="@drawable/bg_green_2dp"
+            android:background="@drawable/bg_58"
             android:gravity="center"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="30dp"
+            android:textSize="16sp"
             android:layout_below="@id/tv_tip_sy"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:text="复位"
+            android:id="@+id/tv_reset"
+            android:background="@drawable/bg_green_2dp"
+            android:gravity="center"
+            android:textColor="#585858"
+            android:textSize="16sp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_below="@id/tv_cancel"
             />
 
         <TextView
@@ -295,8 +312,9 @@
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp"
             android:textColor="#ffffff"
+            android:textSize="16sp"
             android:layout_marginBottom="20dp"
-            android:layout_below="@id/tv_cancel"
+            android:layout_below="@id/tv_reset"
             />
 
     </RelativeLayout>

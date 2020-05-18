@@ -183,8 +183,6 @@ public class ControlAdapter extends RecyclerView.Adapter {
                         viewHolder.tv_other_status.setText("正常");
                     } else if (propertyStatus.getIdentifier().equals("PureState")) {
                         viewHolder.tv_other_status.setText("待机");
-                    } else if (propertyStatus.getIdentifier().equals("WaterShortageStatus")) {
-                        viewHolder.tv_other_status.setText("正常");
                     }
                 } else {
                     String enumValue = SaveAndUploadAliUtil.getEnumValue(propertyStatus, value);

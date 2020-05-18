@@ -4,6 +4,7 @@ import com.ali.alisimulate.Constants;
 import com.ali.alisimulate.entity.BranchEntity;
 import com.ali.alisimulate.entity.BranchTypeEntity;
 import com.ali.alisimulate.entity.FittingDetailEntity;
+import com.ali.alisimulate.entity.FittingResetDetailEntity;
 import com.ali.alisimulate.entity.LoginModel;
 import com.ali.alisimulate.entity.LoginSuccess;
 import com.ali.alisimulate.entity.OrgDevice;
@@ -65,4 +66,9 @@ public interface AppService {
     @Headers({Constants.DOMAIN_ALI_HEADR})
     @GET("/api/device/fixing_detail")
     Observable<Result<FittingDetailEntity>> getFitingInfo (@Query("device_name") String device_name);
+
+    //TODO 配件复位
+    @Headers({Constants.DOMAIN_ALI_HEADR})
+    @GET("/api/device/fixing_detail")
+    Observable<Result<FittingResetDetailEntity>> reset (@Query("device_name") String device_name);
 }

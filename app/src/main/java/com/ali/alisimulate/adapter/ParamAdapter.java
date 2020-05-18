@@ -28,7 +28,9 @@ import com.aliyun.alink.linksdk.tmp.devicemodel.specs.MetaSpec;
 import com.aliyun.alink.linksdk.tmp.utils.TmpConstant;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
@@ -107,6 +109,69 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
                                     ((ParamsHolder) viewHolder).tv_prop.setText(listKey.get(pos) + "(" + list.get(pos) + ")");
                                     if (onCheckedListener != null) {
                                         onCheckedListener.onSelect(realPosition, listKey.get(pos));
+                                    }
+                                    pw.dismiss();
+                                }
+                            });
+                        }
+                    }
+                });
+                ((ParamsHolder) viewHolder).tv_tip.setVisibility(View.GONE);
+            }
+            else if (TmpConstant.TYPE_VALUE_BOOLEAN.equals(data.getDataType().getType())) {
+                ((ParamsHolder) viewHolder).et_prop.setVisibility(View.GONE);
+                ((ParamsHolder) viewHolder).tv_prop.setVisibility(View.VISIBLE);
+
+                MetaSpec specs = (MetaSpec) data.getDataType().getSpecs();
+
+                Map<String, String> map = new HashMap<>();
+                map.put("0", specs.getZero());
+                map.put("1", specs.getOne());
+
+                ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(data.getIdentifier());
+                if (propertyValue != null) {
+                    Integer value = ((ValueWrapper.BooleanValueWrapper) propertyValue).getValue();
+                    ((ParamsHolder) viewHolder).tv_prop.setText(value + "(" + map.get(String.valueOf(value)) + ")");
+                }
+                ((ParamsHolder) viewHolder).iv_select.setVisibility(View.VISIBLE);
+                ((ParamsHolder) viewHolder).tv_unit.setVisibility(View.GONE);
+
+                if(mData != null && mData instanceof Integer && mPosition == realPosition) {
+                    int dd = (int) mData;
+                    ((ParamsHolder) viewHolder).tv_prop.setText(dd + "(" + map.get(String.valueOf(dd)) + ")");
+                    if (onCheckedListener != null) {
+                        onCheckedListener.onSelectBool(realPosition, dd + "");
+                    }
+                    mData = null;
+                }
+
+                ((ParamsHolder) viewHolder).rl_form.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (TmpConstant.TYPE_VALUE_ENUM.equals(data.getDataType().getType())) {
+                            LayoutInflater mLayoutInflater = (LayoutInflater) view.getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                            ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
+                                    R.layout.pop_device, null, true);
+                            PopupWindow pw = new PopupWindow(menuView, RelativeLayout.LayoutParams.MATCH_PARENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+                            pw.setOutsideTouchable(true);
+                            pw.showAsDropDown(((ParamsHolder) viewHolder).rl_form);
+                            RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
+                            rv_device.setLayoutManager(new LinearLayoutManager(view.getContext()));
+                            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) rv_device.getLayoutParams();
+                            layoutParams.setMargins(DisplayUtil.dip2px(rv_device.getContext(), 109),10,0,0);
+                            rv_device.setLayoutParams(layoutParams);
+                            List<String> list = new ArrayList<>();
+                            list.add(map.get("0"));
+                            list.add(map.get("1"));
+                            PopDeviceListAdapter adapter = new PopDeviceListAdapter(list);
+                            rv_device.setAdapter(adapter);
+                            adapter.setOnCheckedListener(new PopDeviceListAdapter.OnCheckedListener() {
+                                @Override
+                                public void onCheck(int pos) {
+                                    ((ParamsHolder) viewHolder).tv_prop.setText(pos + "(" + list.get(pos) + ")");
+                                    if (onCheckedListener != null) {
+                                        onCheckedListener.onSelectBool(realPosition, pos + "");
                                     }
                                     pw.dismiss();
                                 }
@@ -284,6 +349,8 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
 
     public interface OnCheckedListener {
         void onSelect(int position, String selectId);
+
+        void onSelectBool(int position, String value);
 
         void onChange(int realPosition, String et);
     }

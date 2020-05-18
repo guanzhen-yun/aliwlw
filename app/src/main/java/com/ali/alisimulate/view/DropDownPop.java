@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.adapter.PopDeviceListAdapter;
 import com.ali.alisimulate.entity.FittingDetailEntity;
+import com.ali.alisimulate.entity.FittingResetDetailEntity;
 import com.ali.alisimulate.entity.LvXinEntity;
 import com.ali.alisimulate.util.SaveAndUploadAliUtil;
 import com.aliyun.alink.linkkit.api.LinkKit;
@@ -60,6 +61,7 @@ public class DropDownPop {
     private TextView tv_tip_sy;
     private RelativeLayout rl_sm;
     private TextView tv_sm;
+    private TextView tv_reset;
 
     private String mSelectStatus;
     private String mSelectStatusName;
@@ -71,6 +73,7 @@ public class DropDownPop {
             View popView = LayoutInflater.from(activity).inflate(R.layout.view_popup_fromdown, null);
             rl_sm = popView.findViewById(R.id.rl_sm);
             tv_sm = popView.findViewById(R.id.tv_sm);
+            tv_reset = popView.findViewById(R.id.tv_reset);
             tv_pp_name = popView.findViewById(R.id.tv_pp_name);
             tv_xh_name = popView.findViewById(R.id.tv_xh_name);
             tv_lx_name = popView.findViewById(R.id.tv_lx_name);
@@ -94,6 +97,17 @@ public class DropDownPop {
                     saveChange();
                 }
             });
+
+            tv_reset.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //复位 ---走接口 然后设置参数 上传阿里云 保存本地
+                    if (onChangePjListener != null) {
+                        onChangePjListener.onReset(mEntity.no);
+                    }
+                }
+            });
+
             rl_sm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -301,10 +315,10 @@ public class DropDownPop {
                 @Override
                 public void afterTextChanged(Editable editable) {
                     DataType dataType = mMapLx.get("FilterLifeTimeDays_" + mEntity.no).getDataType();
-                    if(dataType.getSpecs() != null) {
+                    if (dataType.getSpecs() != null) {
                         MetaSpec specs = (MetaSpec) dataType.getSpecs();
                         String et = et_kyname.getText().toString();
-                        if(!TextUtils.isEmpty(et) && (Double.parseDouble(et) > Double.parseDouble(specs.getMax()) || Double.parseDouble(et) < Double.parseDouble(specs.getMin()))) {
+                        if (!TextUtils.isEmpty(et) && (Double.parseDouble(et) > Double.parseDouble(specs.getMax()) || Double.parseDouble(et) < Double.parseDouble(specs.getMin()))) {
                             tv_tip_yj.setTextColor(Color.parseColor("#ff0000"));
                         } else {
                             tv_tip_yj.setTextColor(Color.parseColor("#ADADAD"));
@@ -327,10 +341,10 @@ public class DropDownPop {
                 @Override
                 public void afterTextChanged(Editable editable) {
                     DataType dataType = mMapLx.get("FilterLifeTimePercent_" + mEntity.no).getDataType();
-                    if(dataType.getSpecs() != null) {
+                    if (dataType.getSpecs() != null) {
                         MetaSpec specs = (MetaSpec) dataType.getSpecs();
                         String et = et_syname.getText().toString();
-                        if(!TextUtils.isEmpty(et) && (Double.parseDouble(et) > Double.parseDouble(specs.getMax()) || Double.parseDouble(et) < Double.parseDouble(specs.getMin()))) {
+                        if (!TextUtils.isEmpty(et) && (Double.parseDouble(et) > Double.parseDouble(specs.getMax()) || Double.parseDouble(et) < Double.parseDouble(specs.getMin()))) {
                             tv_tip_sy.setTextColor(Color.parseColor("#ff0000"));
                         } else {
                             tv_tip_sy.setTextColor(Color.parseColor("#ADADAD"));
@@ -465,8 +479,12 @@ public class DropDownPop {
 
         if (!TextUtils.isEmpty(entity.lvxinDeviceName)) {
             tv_dname.setText(entity.lvxinDeviceName);
+            tv_reset.setEnabled(true);
+            tv_reset.setTextColor(Color.parseColor("#585858"));
         } else {
             tv_dname.setText("-");
+            tv_reset.setTextColor(Color.parseColor("#999999"));
+            tv_reset.setEnabled(false);
         }
         if (!TextUtils.isEmpty(entity.lifeDay)) {
             et_kyname.setText(entity.lifeDay);
@@ -585,8 +603,31 @@ public class DropDownPop {
         this.onChangePjListener = onChangePjListener;
     }
 
+    public void setReset(int no, FittingResetDetailEntity entity) {
+        et_syname.setText(entity.percent);
+        et_syname.setText(entity.days);
+        String enumValue = SaveAndUploadAliUtil.getEnumValue(mMapLx.get("FilterStatus_" + no), Integer.parseInt(entity.status));
+        tv_sm.setText(enumValue);
+        Map<String, ValueWrapper> reportData = new HashMap<>();
+        if (!TextUtils.isEmpty(mSelectStatus)) {
+            reportData.put("FilterStatus_" + no, new ValueWrapper.EnumValueWrapper(Integer.parseInt(mSelectStatus)));  // 参考示例，更多使用可参考demo
+            SaveAndUploadAliUtil.saveEnum(Integer.parseInt(mSelectStatus), "FilterStatus_" + no);
+        }
+        if (!TextUtils.isEmpty(et_kyname.getText().toString())) {
+            reportData.put("FilterLifeTimeDays_" + no, new ValueWrapper.DoubleValueWrapper(Double.parseDouble(et_kyname.getText().toString())));
+            SaveAndUploadAliUtil.saveDouble(Double.parseDouble(et_kyname.getText().toString()), "FilterLifeTimeDays_" + no);
+        }
+        if (!TextUtils.isEmpty(et_syname.getText().toString())) {
+            reportData.put("FilterLifeTimePercent_" + no, new ValueWrapper.IntValueWrapper(Integer.parseInt(et_syname.getText().toString())));
+            SaveAndUploadAliUtil.saveInt(Integer.parseInt(et_syname.getText().toString()), "FilterLifeTimePercent_" + no);
+        }
+        SaveAndUploadAliUtil.saveAndUpload(reportData);
+    }
+
     public interface OnChangePjListener {
         void onChange(String lifePercent, int no, String lifeDay, String lifeStatus);
+
+        void onReset(int no);
     }
 
     private OnChangePjListener onChangePjListener;

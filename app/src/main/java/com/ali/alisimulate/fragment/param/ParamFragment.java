@@ -15,6 +15,7 @@ import com.ali.alisimulate.R;
 import com.ali.alisimulate.activity.DeviceDetailActivity;
 import com.ali.alisimulate.adapter.ParamAdapter;
 import com.ali.alisimulate.entity.FittingDetailEntity;
+import com.ali.alisimulate.entity.FittingResetDetailEntity;
 import com.ali.alisimulate.entity.LvXinEntity;
 import com.ali.alisimulate.entity.ReceiveMsg;
 import com.ali.alisimulate.entity.RefreshEvent;
@@ -85,7 +86,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
         mRvList.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new ParamAdapter();
 
-        List<Event> events = LinkKit.getInstance().getDeviceThing().getEvents();
+        List<Event> events = LinkKit.getInstance().getDeviceThing().getEvents();//TODO
         // 获取所有属性
         List<Property> properties = LinkKit.getInstance().getDeviceThing().getProperties();
         paramList = new ArrayList<>();
@@ -98,7 +99,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                 mapLx.put(property.getIdentifier(), property);
                 continue;
             }
-            if (TmpConstant.TYPE_VALUE_ENUM.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_INTEGER.equals(property.getDataType().getType())|| TmpConstant.TYPE_VALUE_DOUBLE.equals(property.getDataType().getType())) {
+            if (TmpConstant.TYPE_VALUE_BOOLEAN.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_ENUM.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_INTEGER.equals(property.getDataType().getType())|| TmpConstant.TYPE_VALUE_DOUBLE.equals(property.getDataType().getType())) {
                 paramList.add(property);
             }
         }
@@ -116,6 +117,18 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                 reportData.put(property.getIdentifier(), new ValueWrapper.EnumValueWrapper(Integer.parseInt(selectId)));  // 参考示例，更多使用可参考demo
 
                 SaveAndUploadAliUtil.saveEnum(Integer.parseInt(selectId), property.getIdentifier());
+                SaveAndUploadAliUtil.saveAndUpload(reportData);
+            }
+
+            @Override
+            public void onSelectBool(int position, String value) {
+                // 设备上报
+                Map<String, ValueWrapper> reportData = new HashMap<>();
+                // identifier 是云端定义的属性的唯一标识，valueWrapper是属性的值
+                Property property = paramList.get(position);
+                reportData.put(property.getIdentifier(), new ValueWrapper.BooleanValueWrapper(Integer.parseInt(value)));  // 参考示例，更多使用可参考demo
+
+                SaveAndUploadAliUtil.saveBoolean(Integer.parseInt(value) == 1, property.getIdentifier());
                 SaveAndUploadAliUtil.saveAndUpload(reportData);
             }
 
@@ -344,6 +357,11 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                         }
                     }
                 }
+
+                @Override
+                public void onReset(int no) {
+
+                }
             });
 
             dropDownScanPop.setOnChangePjListener(new DropDownScanPop.OnChangePjListener() {
@@ -395,6 +413,11 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
     public void getPjInfoSuccess(FittingDetailEntity fittingDetailEntity, LvXinEntity entity) {
         dropDownPop.setFitInfo(fittingDetailEntity, entity, mapLx);
         dropDownPop.showPop(mRvList);
+    }
+
+    @Override
+    public void resetSuccess(FittingResetDetailEntity entity, int no) {
+        dropDownPop.setReset(no, entity);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -1,6 +1,7 @@
 package com.ali.alisimulate.fragment.param;
 
 import com.ali.alisimulate.entity.FittingDetailEntity;
+import com.ali.alisimulate.entity.FittingResetDetailEntity;
 import com.ali.alisimulate.entity.LvXinEntity;
 import com.ali.alisimulate.entity.UserInfoEntity;
 import com.ali.alisimulate.service.AppService;
@@ -32,6 +33,28 @@ public class ParamPresenter extends BaseMvpPresenter<ParamContract.IView> implem
             @Override
             public void onNext(FittingDetailEntity detailEntity) {
                 mView.getPjInfoSuccess(detailEntity, entity);
+            }
+
+            @Override
+            public void onError(ApiException e) {
+
+            }
+        });
+
+
+    }
+
+    @Override
+    public void reset(String deviceName, int no) {
+        ApiUtil.getResponse(ApiUtil.getService(AppService.class).reset(deviceName), new OnResponseListener<FittingResetDetailEntity>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                addDisposable(d);
+            }
+
+            @Override
+            public void onNext(FittingResetDetailEntity detailEntity) {
+                mView.resetSuccess(detailEntity, no);
             }
 
             @Override
