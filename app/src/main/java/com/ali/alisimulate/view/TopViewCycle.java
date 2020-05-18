@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -180,7 +181,7 @@ public class TopViewCycle extends FrameLayout {
         isAutoCycle = state;
         if (!state) {
             stopImageCycle();
-            mIndicationGroup.setVisibility(GONE);
+//            mIndicationGroup.setVisibility(GONE);
         } else {
             mIndicationGroup.setVisibility(VISIBLE);
             stopImageCycle();
@@ -465,6 +466,11 @@ public class TopViewCycle extends FrameLayout {
         @Override
         public boolean isViewFromObject(View view, Object obj) {
             return view == obj;
+        }
+
+        @Override
+        public int getItemPosition(@NonNull Object object) {
+            return POSITION_NONE;
         }
     }
 

@@ -169,8 +169,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                     ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_1");
                     if (status_1 != null) {
                         int value = ((ValueWrapper.EnumValueWrapper) status_1).getValue();
-                        EnumSpec filterStatus_1 = (EnumSpec) mapLx.get("FilterStatus_1").getDataType().getSpecs();
-                        entity.lifeStatus = filterStatus_1.get(value);
+                        entity.lifeStatus = SaveAndUploadAliUtil.getEnumValue(mapLx.get("FilterStatus_1"), value);
                     }
                 }
                 listLx.add(entity);
@@ -202,8 +201,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                     ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_2");
                     if (status_1 != null) {
                         int value = ((ValueWrapper.EnumValueWrapper) status_1).getValue();
-                        EnumSpec filterStatus_1 = (EnumSpec) mapLx.get("FilterStatus_2").getDataType().getSpecs();
-                        entity.lifeStatus = filterStatus_1.get(value);
+                        entity.lifeStatus = SaveAndUploadAliUtil.getEnumValue(mapLx.get("FilterStatus_2"), value);
                     }
                 }
                 listLx.add(entity);
@@ -235,8 +233,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                     ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_3");
                     if (status_1 != null) {
                         int value = ((ValueWrapper.EnumValueWrapper) status_1).getValue();
-                        EnumSpec filterStatus_1 = (EnumSpec) mapLx.get("FilterStatus_3").getDataType().getSpecs();
-                        entity.lifeStatus = filterStatus_1.get(value);
+                        entity.lifeStatus = SaveAndUploadAliUtil.getEnumValue(mapLx.get("FilterStatus_3"), value);
                     }
                 }
                 listLx.add(entity);
@@ -268,8 +265,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                     ValueWrapper status_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterStatus_4");
                     if (status_1 != null) {
                         int value = ((ValueWrapper.EnumValueWrapper) status_1).getValue();
-                        EnumSpec filterStatus_1 = (EnumSpec) mapLx.get("FilterStatus_4").getDataType().getSpecs();
-                        entity.lifeStatus = filterStatus_1.get(value);
+                        entity.lifeStatus = SaveAndUploadAliUtil.getEnumValue(mapLx.get("FilterStatus_4"), value);
                     }
                 }
                 listLx.add(entity);
@@ -302,7 +298,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                     if (status_1 != null) {
                         int value = ((ValueWrapper.EnumValueWrapper) status_1).getValue();
                         EnumSpec filterStatus_1 = (EnumSpec) mapLx.get("FilterStatus_5").getDataType().getSpecs();
-                        entity.lifeStatus = filterStatus_1.get(value);
+                        entity.lifeStatus = SaveAndUploadAliUtil.getEnumValue(mapLx.get("FilterStatus_5"), value);
                     }
                 }
                 listLx.add(entity);
@@ -405,14 +401,17 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
     public void onGetStickyEvent(RefreshEvent message) {
         if (message != null && message.aMessage != null) {
             String data = new String((byte[]) message.aMessage.data);
-            String s = data.split("data=")[1];
-            ReceiveMsg receiveMsg = new Gson().fromJson(s, ReceiveMsg.class);
-            Map<String, Object> params = receiveMsg.params;
-            for (int i = 0; i < paramList.size(); i++) {
-                Property property = paramList.get(i);
-                if (params.containsKey(property.getIdentifier())) {
-                    adapter.setDataByPos(i, params.get(property.getIdentifier()));
+            try {
+                ReceiveMsg receiveMsg = new Gson().fromJson(data, ReceiveMsg.class);
+                Map<String, Object> params = receiveMsg.params;
+                for (int i = 0; i < paramList.size(); i++) {
+                    Property property = paramList.get(i);
+                    if (params.containsKey(property.getIdentifier())) {
+                        adapter.setDataByPos(i, params.get(property.getIdentifier()));
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

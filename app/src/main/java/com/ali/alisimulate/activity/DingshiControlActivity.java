@@ -210,7 +210,7 @@ public class DingshiControlActivity extends BaseActivity {
                 localTimer.add(structValueWrapper2);
             }
             Map<String, ValueWrapper> value1 = new HashMap<>();
-            addMap(value1, selectWeek);
+            addMap(value1, selectWeek, isOpen);
             ValueWrapper.StructValueWrapper structValueWrapper = new ValueWrapper.StructValueWrapper();
             structValueWrapper.setValue(value1);
             localTimer.add(structValueWrapper);
@@ -223,15 +223,15 @@ public class DingshiControlActivity extends BaseActivity {
         } else if (localTimer.size() == 2) {
             ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
             Map<String, ValueWrapper> value1 = new HashMap<>();
-            addMap(value1, selectWeek);
+            addMap(value1, selectWeek, isOpen);
             structValueWrapper.setValue(value1);
         }
         SaveAndUploadAliUtil.putList("LocalTimer", reportData, localTimer);
         SaveAndUploadAliUtil.saveAndUpload(reportData);
     }
 
-    private void addMap(Map<String, ValueWrapper> value1, String selectWeek) {
+    private void addMap(Map<String, ValueWrapper> value1, String selectWeek, boolean isOpen) {
         value1.put("Timer", new ValueWrapper.StringValueWrapper(selectWeek + ";" + hour + "," + minite));
-        value1.put("Enable", new ValueWrapper.BooleanValueWrapper(1));
+        value1.put("Enable", new ValueWrapper.BooleanValueWrapper(isOpen ?  1: 0));
     }
 }

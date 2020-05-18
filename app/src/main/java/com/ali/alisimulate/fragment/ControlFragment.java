@@ -268,14 +268,30 @@ public class ControlFragment extends BaseFragment {
     public void onGetStickyEvent(RefreshEvent message) {
         if (message != null && message.aMessage != null) {
             String data = new String((byte[]) message.aMessage.data);
-            String s = data.split("data=")[1];
-            ReceiveMsg receiveMsg = new Gson().fromJson(s, ReceiveMsg.class);
-            Map<String, Object> params = receiveMsg.params;
-            for (int i = 0; i < controlList.size(); i++) {
-                Property property = controlList.get(i).get(0);
-                if (params.containsKey(property.getIdentifier())) {
-                    adapter.setDataByPos(i, params.get(property.getIdentifier()));
+            try {
+                ReceiveMsg receiveMsg = new Gson().fromJson(data, ReceiveMsg.class);
+                Map<String, Object> params = receiveMsg.params;
+                for (int i = 0; i < controlList.size(); i++) {
+                    Property property = controlList.get(i).get(0);
+                    if (params.containsKey(property.getIdentifier())) {
+                        adapter.setDataByPos(i, params.get(property.getIdentifier()));
+                    }
                 }
+                if(params.containsKey("PowerSwitch")) {
+                    double pw = (double) params.get("PowerSwitch");
+                    Map<String, ValueWrapper> reportData = new HashMap<>();
+                    mIsOpen = (1 == pw);
+                    SaveAndUploadAliUtil.putBoolParam(mIsOpen,reportData,"PowerSwitch");
+                    SaveAndUploadAliUtil.saveAndUpload(reportData);
+                    SaveAndUploadAliUtil.saveBoolean(pw == 1, "PowerSwitch");
+                    if(mIsOpen) {
+                        mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
+                    } else {
+                        mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
+                    }
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -286,16 +302,21 @@ public class ControlFragment extends BaseFragment {
             super.handleMessage(msg);
             int position = msg.what;
             if(controlList.get(position).size() == 3) {
-                Property property = controlList.get(0).get(2);
+                Property property = controlList.get(position).get(2);
                 Integer intVal = SaveAndUploadAliUtil.getIntVal(property.getIdentifier());
                 intVal = intVal + 1;
                 if(intVal < 100) {
                     Map<String, ValueWrapper> reportData = new HashMap<>();
                     SaveAndUploadAliUtil.putIntParam(intVal, reportData, controlList.get(position).get(2).getIdentifier());
                     SaveAndUploadAliUtil.saveAndUpload(reportData);
+                    SaveAndUploadAliUtil.saveAndUpload(reportData, new SaveAndUploadAliUtil.OnUploadSuccessListener() {
+                        @Override
+                        public void onUnloadSuccess() {
+                            handler.sendEmptyMessageDelayed(position, 1000);
+                        }
+                    });
                     SaveAndUploadAliUtil.saveInt(intVal, controlList.get(position).get(2).getIdentifier());
                     adapter.notifyItemChanged(position);
-                    handler.sendEmptyMessageDelayed(position, 1000);
                 } else if(intVal == 100) {
                     handler.removeMessages(position);
                     Map<String, ValueWrapper> reportData = new HashMap<>();
@@ -312,7 +333,6 @@ public class ControlFragment extends BaseFragment {
                     SaveAndUploadAliUtil.saveEnum(Integer.parseInt(listKey.get(0)), controlList.get(position).get(1).getIdentifier());
                     SaveAndUploadAliUtil.saveInt(100, controlList.get(position).get(2).getIdentifier());
                     adapter.notifyItemChanged(position);
-
                 }
             }
         }
@@ -343,23 +363,31 @@ public class ControlFragment extends BaseFragment {
                             listKey.add(string);
                         }
                         if(isOpen) {
-                            handler.sendEmptyMessageDelayed(position, 1000);
                             SaveAndUploadAliUtil.putEnumParam(Integer.parseInt(listKey.get(listKey.size()-1)), reportData, statusP.getIdentifier());
                             SaveAndUploadAliUtil.putIntParam(0, reportData, controlList.get(position).get(2).getIdentifier());
                             SaveAndUploadAliUtil.saveEnum(Integer.parseInt(listKey.get(listKey.size()-1)), statusP.getIdentifier());
                             SaveAndUploadAliUtil.saveInt(0, controlList.get(position).get(2).getIdentifier());
+                            SaveAndUploadAliUtil.saveAndUpload(reportData, new SaveAndUploadAliUtil.OnUploadSuccessListener() {
+                                @Override
+                                public void onUnloadSuccess() {
+                                    handler.sendEmptyMessageDelayed(position, 1000);
+                                }
+                            });
                         } else {
                             handler.removeMessages(position);
-                            SaveAndUploadAliUtil.putEnumParam(Integer.parseInt(listKey.get(0)), reportData, statusP.getIdentifier());
-                            SaveAndUploadAliUtil.putIntParam(0, reportData, controlList.get(position).get(2).getIdentifier());
-                            SaveAndUploadAliUtil.saveAndUpload(reportData);
-                            SaveAndUploadAliUtil.saveEnum(Integer.parseInt(listKey.get(0)), statusP.getIdentifier());
-                            SaveAndUploadAliUtil.saveInt(0, controlList.get(position).get(2).getIdentifier());
-                            adapter.notifyItemChanged(position);
-                            return;
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    SaveAndUploadAliUtil.putEnumParam(Integer.parseInt(listKey.get(0)), reportData, statusP.getIdentifier());
+                                    SaveAndUploadAliUtil.putIntParam(0, reportData, controlList.get(position).get(2).getIdentifier());
+                                    SaveAndUploadAliUtil.saveAndUpload(reportData);
+                                    SaveAndUploadAliUtil.saveEnum(Integer.parseInt(listKey.get(0)), statusP.getIdentifier());
+                                    SaveAndUploadAliUtil.saveInt(0, controlList.get(position).get(2).getIdentifier());
+                                    adapter.notifyItemChanged(position);
+                                }
+                            }, 500);
                         }
                     }
-                    SaveAndUploadAliUtil.saveAndUpload(reportData);
                 } else if(TmpConstant.TYPE_VALUE_ARRAY.equals(property.getDataType().getType()) && "LocalTimer".equals(property.getIdentifier())) {
                     //定时
                     if(isOpen) {

@@ -55,6 +55,7 @@ public class DeviceDetailActivity extends BaseActivity {
     private String productKey;
     private String deviceName;
     private String deviceSecret;
+    private String deviceComment;
     private String deviceId;
     private String title;
     private ControlFragment controlFragment;
@@ -67,11 +68,12 @@ public class DeviceDetailActivity extends BaseActivity {
         deviceSecret = getIntent().getStringExtra("deviceSecret");
         deviceId = getIntent().getStringExtra("deviceId");
         title = getIntent().getStringExtra("title");
+        deviceComment = getIntent().getStringExtra("deviceComment");
     }
 
     @Override
     public void initViews() {
-        mTvTitle.setText(title);
+        mTvTitle.setText(deviceComment);
         ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue("PowerSwitch");
         if (propertyValue != null) {//阿里云有数据 没断开过连接
             addFragment();

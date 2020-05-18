@@ -41,6 +41,20 @@ public class SaveAndUploadAliUtil {
             }
         });
     }
+    public static void saveAndUpload(Map<String, ValueWrapper> reportData,  OnUploadSuccessListener onUploadSuccessListener) {
+        LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
+            @Override
+            public void onSuccess(String resID, Object o) {
+                Log.e("ProductActivity", "属性上报成功");
+                onUploadSuccessListener.onUnloadSuccess();
+            }
+
+            @Override
+            public void onError(String resId, AError aError) {
+                Log.e("ProductActivity", "属性上报失败");
+            }
+        });
+    }
 
     public static void putBoolParam(boolean bool, Map<String, ValueWrapper> reportData, String indentify) {
         reportData.put(indentify, new ValueWrapper.BooleanValueWrapper(bool ? 1 : 0));
@@ -49,9 +63,12 @@ public class SaveAndUploadAliUtil {
     public static boolean getBoolValue(String indentify) {
         ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(indentify);
         if (propertyValue != null) {
-            Integer value = ((ValueWrapper.BooleanValueWrapper) propertyValue).getValue();
-            if (value != null && value == 1) {
-                return true;
+            if(propertyValue instanceof ValueWrapper.IntValueWrapper) {
+                Integer value = ((ValueWrapper.IntValueWrapper) propertyValue).getValue();
+                return value != null && value == 1;
+            } else if(propertyValue instanceof ValueWrapper.BooleanValueWrapper) {
+                Integer value = ((ValueWrapper.BooleanValueWrapper) propertyValue).getValue();
+                return value != null && value == 1;
             } else {
                 return false;
             }

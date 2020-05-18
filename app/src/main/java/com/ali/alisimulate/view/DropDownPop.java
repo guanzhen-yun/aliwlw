@@ -412,12 +412,15 @@ public class DropDownPop {
             }
         }
 
-        if (onChangePjListener != null) {
-            onChangePjListener.onChange(et_syname.getText().toString(), mEntity.no, et_kyname.getText().toString(), mSelectStatusName);
-        }
-
-        SaveAndUploadAliUtil.saveAndUpload(reportData);
-        hidePop();
+        SaveAndUploadAliUtil.saveAndUpload(reportData, new SaveAndUploadAliUtil.OnUploadSuccessListener() {
+            @Override
+            public void onUnloadSuccess() {
+                if (onChangePjListener != null) {
+                    onChangePjListener.onChange(et_syname.getText().toString(), mEntity.no, et_kyname.getText().toString(), mSelectStatusName);
+                }
+                hidePop();
+            }
+        });
     }
 
     /**

@@ -16,6 +16,7 @@ import com.ali.alisimulate.MyApp;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.activity.DeviceDetailActivity;
 import com.ali.alisimulate.activity.adddevice.AddDeviceActivity;
+import com.ali.alisimulate.activity.login.LoginActivity;
 import com.ali.alisimulate.adapter.DeviceListAdapter;
 import com.ali.alisimulate.dialog.BottomTwoButtonDialog;
 import com.ali.alisimulate.entity.BranchEntity;
@@ -222,6 +223,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                 Bundle bundle = new Bundle();
                 bundle.putString("productKey", deviceList.productKey);
                 bundle.putString("deviceName", deviceList.deviceName);
+                bundle.putString("deviceComment", deviceList.deviceComment);
                 bundle.putString("deviceSecret", deviceList.deviceSecret);
                 bundle.putString("deviceId", deviceList.deviceId);
                 bundle.putString("title", adapter.getModelStr(deviceList.deviceModel));
@@ -277,6 +279,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     @Override
     public void logoutSuccess() {
         finish();
+        startActivity(new Intent(OrgMainActivity.this, LoginActivity.class));
     }
 
     @Override
@@ -351,6 +354,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
             case R.id.iv_delete:
                 ivDelete.setVisibility(View.GONE);
                 tvDevice.setText("");
+                mSelectProduct = null;
                 getDeviceList(true);//获取全部数据
                 break;
             case R.id.rl_device:

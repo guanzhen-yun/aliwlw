@@ -100,6 +100,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     public void loginResult(LoginSuccess loginSuccess) {
         SharedPreferencesUtils.save(this, Constants.KEY_LOGIN_INFO, new Gson().toJson(loginSuccess));
         startActivity(new Intent(LoginActivity.this, OrgMainActivity.class));
+        finish();
     }
 
     @Override
