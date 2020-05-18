@@ -121,6 +121,8 @@ public class ControlFragment extends BaseFragment {
             if (map_control.containsKey("Humidified")) {
                 List<Property> list = new ArrayList<>();
                 list.add(map_control.get("Humidified"));
+                list.add(map_control.get("WaterShortageStatus"));
+                list.add(map_control.get("CurrentHumidity"));
                 controlList.add(list);
             }
             if (map_control.containsKey("IonsSwitch")) {

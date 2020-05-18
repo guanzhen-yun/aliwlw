@@ -25,6 +25,8 @@ public class ParamsUtil {
             list_deviceIndenty.add("WorkMode");//自动模式 enum 0-自动 1-手动
             list_deviceIndenty.add("ChildLockSwitch");//童锁开关  bool 0-关闭  1-打开
             list_deviceIndenty.add("Humidified");//加湿开关  bool 0-关闭  1-打开
+            list_deviceIndenty.add("CurrentHumidity");//当前湿度
+            list_deviceIndenty.add("WaterShortageStatus");//加湿缺水状态  bool "0":"正常", "1":"缺水"
             list_deviceIndenty.add("IonsSwitch");//离子团开关  bool 0-关闭  1-打开
             list_deviceIndenty.add("LocalTimer");//本地定时  array
             list_deviceIndenty.add("SleepMode");//睡眠模式  bool 0-关闭  1-打开
