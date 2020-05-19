@@ -82,6 +82,10 @@ public class ControlFragment extends BaseFragment {
         // 获取所有属性
         List<Property> properties = LinkKit.getInstance().getDeviceThing().getProperties();
 
+        if(properties == null) {
+            return;
+        }
+
         for (Property property : properties) {
             if (list_deviceIndenty.contains(property.getIdentifier())) {
                 map_control.put(property.getIdentifier(), property);
