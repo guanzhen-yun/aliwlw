@@ -48,13 +48,24 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
         return new DesignViewHolder(inflate);
     }
 
+    public void setOnCheckListener(OnCheckListener onCheckListener) {
+        this.onCheckListener = onCheckListener;
+    }
+
+    public interface OnCheckListener {
+        void onCheck(int position, boolean isCheck);
+    }
+
+    private OnCheckListener onCheckListener;
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         DesignViewHolder viewHolder = (DesignViewHolder) holder;
         OrgDevice.DeviceList name = mData.get(position);
-        if (name.deviceName.equals(SharedPreferencesUtils.getStr(context, Constants.KEY_CONNECT_STATUS))) {
+        if(name.isCheck) {
             viewHolder.rb_net.setChecked(true);
         } else {
+            viewHolder.rb_net.setChecked(false);
             viewHolder.rb_unnet.setChecked(true);
         }
 
@@ -62,32 +73,13 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
                 if (checkedId == viewHolder.rb_net.getId()) {
-                    String deviceName = name.deviceName;
-                    String productKey = name.productKey;
-                    String deviceSecret = name.deviceSecret;
-                    if(TextUtils.isEmpty(SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CONNECT_STATUS))) {
-                        MyApp.getApp().regist(deviceName, productKey, deviceSecret);
-                    } else {
-                        if(!TextUtils.isEmpty(deviceName) && !deviceName.equals(SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CONNECT_STATUS))) {
-                            String predevice = SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CONNECT_STATUS);
-                            setPreUninit(predevice);
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    MyApp.getApp().unregistConnectAli();
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            MyApp.getApp().regist(deviceName, productKey, deviceSecret);
-                                        }
-                                    }, 500);
-                                }
-                            }).start();
-                        }
+                    if(onCheckListener != null) {
+                        onCheckListener.onCheck(viewHolder.getAdapterPosition(), viewHolder.rb_net.isChecked());
                     }
                 } else {
-                    MyApp.getApp().unregistConnectAli();
-                    SharedPreferencesUtils.save(MyApp.getApp(),  Constants.KEY_CONNECT_STATUS, "");
+                    if(onCheckListener != null && viewHolder.rb_unnet.isChecked()) {
+                        onCheckListener.onCheck(viewHolder.getAdapterPosition(), false);
+                    }
                 }
             }
         });

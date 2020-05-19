@@ -2,6 +2,7 @@ package com.ali.alisimulate.activity.orgmain;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -88,6 +89,8 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     private List<SelectOrgEntity> listThird = new ArrayList<>();
 
     private SelectOrgEntity mSelectProduct;
+
+    private int mCheckPosition = -1;
 
     @Override
     public void initDatas() {
@@ -204,6 +207,51 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
             }
         });
 
+        adapter.setOnCheckListener(new DeviceListAdapter.OnCheckListener() {
+            @Override
+            public void onCheck(int position, boolean isCheck) {
+                if(!isCheck) {
+                    if(rvDevice.isComputingLayout()) {
+                        rvDevice.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                orgDevices.get(position).isCheck = false;
+                                adapter.notifyItemChanged(position);
+                                mCheckPosition = -1;
+                            }
+                        });
+                    } else {
+                        orgDevices.get(position).isCheck = false;
+                        mCheckPosition = -1;
+                        adapter.notifyItemChanged(position);
+                    }
+                } else {
+                        if(rvDevice.isComputingLayout()) {
+                            rvDevice.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(mCheckPosition != -1) {
+                                        orgDevices.get(mCheckPosition).isCheck = false;
+                                        adapter.notifyItemChanged(mCheckPosition);
+                                    }
+                                    orgDevices.get(position).isCheck = true;
+                                    mCheckPosition = position;
+                                    adapter.notifyItemChanged(position);
+                                }
+                            });
+                        } else {
+                            if(mCheckPosition != -1) {
+                                orgDevices.get(mCheckPosition).isCheck = false;
+                                adapter.notifyItemChanged(mCheckPosition);
+                            }
+                            orgDevices.get(position).isCheck = true;
+                            mCheckPosition = position;
+                            adapter.notifyItemChanged(position);
+                    }
+                }
+            }
+        });
+
         adapter.setOnSelectListener(new DeviceListAdapter.OnSelectListener() {
             @Override
             public void onSelect(int position) {
@@ -211,25 +259,59 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                 if("配件".equals(adapter.getModelStr(deviceList.deviceModel))) {
                     return;
                 }
-                if (!MyApp.getApp().mapInit.containsKey(orgDevices.get(position).deviceName) || !MyApp.getApp().mapInit.get(orgDevices.get(position).deviceName)){
-                    ToastUtils.showToast("初始化尚未成功，请稍后点击");
+                if(!deviceList.isCheck) {
+                    ToastUtils.showToast("请先联网");
                     return;
                 }
                 if (LinkKit.getInstance().getDeviceThing() == null) {
-                    ToastUtils.showToast("物模型功能未启用");
-                    return;
+//                    ToastUtils.showToast("物模型功能未启用");
+//                    return;
+                    MyApp.getApp().regist(deviceList.deviceName, deviceList.productKey, deviceList.deviceSecret, new MyApp.OnConnectListener() {
+                        @Override
+                        public void onConnect() {
+                            Bundle bundle = new Bundle();
+                            bundle.putString("productKey", deviceList.productKey);
+                            bundle.putString("deviceName", deviceList.deviceName);
+                            bundle.putString("deviceComment", deviceList.deviceComment);
+                            bundle.putString("deviceSecret", deviceList.deviceSecret);
+                            bundle.putString("deviceId", deviceList.deviceId);
+                            bundle.putString("title", adapter.getModelStr(deviceList.deviceModel));
+                            Intent intent = new Intent(OrgMainActivity.this, DeviceDetailActivity.class);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                        }
+                    });
+                } else {
+                    if(!TextUtils.isEmpty(deviceList.deviceName) && !deviceList.deviceName.equals(SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CONNECT_STATUS))) {
+                        MyApp.getApp().unregistConnectAli();
+                        MyApp.getApp().regist(deviceList.deviceName, deviceList.productKey, deviceList.deviceSecret, new MyApp.OnConnectListener() {
+                            @Override
+                            public void onConnect() {
+                                Bundle bundle = new Bundle();
+                                bundle.putString("productKey", deviceList.productKey);
+                                bundle.putString("deviceName", deviceList.deviceName);
+                                bundle.putString("deviceComment", deviceList.deviceComment);
+                                bundle.putString("deviceSecret", deviceList.deviceSecret);
+                                bundle.putString("deviceId", deviceList.deviceId);
+                                bundle.putString("title", adapter.getModelStr(deviceList.deviceModel));
+                                Intent intent = new Intent(OrgMainActivity.this, DeviceDetailActivity.class);
+                                intent.putExtras(bundle);
+                                startActivity(intent);
+                            }
+                        });
+                    } else {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("productKey", deviceList.productKey);
+                        bundle.putString("deviceName", deviceList.deviceName);
+                        bundle.putString("deviceComment", deviceList.deviceComment);
+                        bundle.putString("deviceSecret", deviceList.deviceSecret);
+                        bundle.putString("deviceId", deviceList.deviceId);
+                        bundle.putString("title", adapter.getModelStr(deviceList.deviceModel));
+                        Intent intent = new Intent(OrgMainActivity.this, DeviceDetailActivity.class);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
                 }
-
-                Bundle bundle = new Bundle();
-                bundle.putString("productKey", deviceList.productKey);
-                bundle.putString("deviceName", deviceList.deviceName);
-                bundle.putString("deviceComment", deviceList.deviceComment);
-                bundle.putString("deviceSecret", deviceList.deviceSecret);
-                bundle.putString("deviceId", deviceList.deviceId);
-                bundle.putString("title", adapter.getModelStr(deviceList.deviceModel));
-                Intent intent = new Intent(OrgMainActivity.this, DeviceDetailActivity.class);
-                intent.putExtras(bundle);
-                startActivity(intent);
             }
         });
     }

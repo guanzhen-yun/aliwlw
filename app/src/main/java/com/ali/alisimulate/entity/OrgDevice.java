@@ -28,5 +28,6 @@ public class OrgDevice {
         public String romVersion;
         public String brandName;
         public String deviceSecret;
+        public boolean isCheck;
     }
 }

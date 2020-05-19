@@ -1,6 +1,7 @@
 package com.ali.alisimulate.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,11 @@ public class RightDeviceAdapter extends RecyclerView.Adapter {
             viewHolder.iv.setBackgroundResource(R.mipmap.icon_unsel);
         }
 
-        Glide.with(mContext).load(name.imageUrl).into(viewHolder.iv_pic);
+        if(TextUtils.isEmpty(name.imageUrl)) {
+            viewHolder.iv_pic.setImageResource(R.mipmap.shebei);
+        } else {
+            Glide.with(mContext).load(name.imageUrl).into(viewHolder.iv_pic);
+        }
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

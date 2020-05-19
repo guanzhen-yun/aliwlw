@@ -24,6 +24,10 @@
             android:checked="false"
             android:textColor="#585858"
             android:textSize="12sp"
+            android:padding="5dp"
+            android:layout_marginRight="5dp"
+            android:button="@drawable/icon_radio"
+            android:gravity="center_vertical"
             android:text="联网" />
 
         <RadioButton
@@ -33,6 +37,9 @@
             android:checked="true"
             android:textColor="#585858"
             android:textSize="12sp"
+            android:padding="5dp"
+            android:button="@drawable/icon_radio"
+            android:gravity="center_vertical"
             android:text="断网" />
     </RadioGroup>
 

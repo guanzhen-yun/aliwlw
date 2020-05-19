@@ -35,6 +35,8 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.https.HttpsUtils;
 import com.ziroom.net.RetrofitManager;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +57,6 @@ public class MyApp extends Application {
     public static boolean isInitDone = false;
     public String productKey = null, deviceName = null, deviceSecret = null, productSecret = null;
     private InitManager initManager;
-    public HashMap<String, Boolean> mapInit = new HashMap<>();
 
     @Override
     public void onCreate() {
@@ -108,49 +109,12 @@ public class MyApp extends Application {
         RetrofitUrlManager.getInstance().putDomain(Constants.DOMAIN_ALI2_KEY, ConfigManager.getInstance().getHost2());
     }
 
-    public void regist(String mDeviceName, String mproductKey, String mdeviceSecret) {
+    public void regist(String mDeviceName, String mproductKey, String mdeviceSecret, OnConnectListener listener) {
         deviceName = mDeviceName;
         deviceSecret = mdeviceSecret;
         productKey = mproductKey;
-        ALog.i(TAG, "sdk version = " + LinkKit.getInstance().getSDKVersion());
-        if (TextUtils.isEmpty(deviceSecret) && !TextUtils.isEmpty(productSecret)) {
-            initManager.registerDevice(this, productKey, deviceName, productSecret, new IConnectSendListener() {
-                @Override
-                public void onResponse(ARequest aRequest, AResponse aResponse) {
-                    Log.d(TAG, "registerDevice onResponse() called with: aRequest = [" + aRequest + "], aResponse = [" + (aResponse == null ? "null" : aResponse.data) + "]");
-                    if (aResponse != null && aResponse.data != null) {
-                        // 解析云端返回的数据
-                        ResponseModel<Map<String, String>> response = JSONObject.parseObject(aResponse.data.toString(),
-                                new TypeReference<ResponseModel<Map<String, String>>>() {
-                                }.getType());
-                        if ("200".equals(response.code) && response.data != null && response.data.containsKey("deviceSecret") &&
-                                !TextUtils.isEmpty(response.data.get("deviceSecret"))) {
-                            /**
-                             * ds必须保存在非应用目录，确保卸载之后ds仍然可以读取到。
-                             * 以下代码仅供测试验证使用
-                             */
-                            deviceSecret = response.data.get("deviceSecret");
-                            // getDeviceSecret success, to build connection.
-                            // 持久化 deviceSecret 初始化建联的时候需要
-                            // 用户需要按照实际场景持久化设备的三元组信息，用于后续的连接
-                            SharedPreferences preferences = getSharedPreferences("deviceAuthInfo", 0);
-                            SharedPreferences.Editor editor = preferences.edit();
-                            editor.putString("deviceId", productKey+deviceName);
-                            editor.putString("deviceSecret", deviceSecret);
-                            //提交当前数据
-                            editor.apply();
-                            connect();
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(ARequest aRequest, AError aError) {
-                    Log.d(TAG, "onFailure() called with: aRequest = [" + aRequest + "], aError = [" + aError + "]");
-                }
-            });
-        } else if (!TextUtils.isEmpty(deviceSecret)){
-            connect();
+       if (!TextUtils.isEmpty(deviceSecret)){
+            connect(listener);
         }
     }
 
@@ -164,6 +128,10 @@ public class MyApp extends Application {
         MqttConfigure.setKeepAliveInterval(65);
 
         mAppContext = getApplicationContext();
+    }
+
+    public interface OnConnectListener {
+        void onConnect();
     }
 
     /**
@@ -181,7 +149,7 @@ public class MyApp extends Application {
      * MqttConfigure.mqttClientId = clientId;
      *
      */
-    public void connect() {
+    public void connect(OnConnectListener listener) {
         Log.d(TAG, "connect() called");
         // SDK初始化
 
@@ -202,8 +170,10 @@ public class MyApp extends Application {
                 Log.d(TAG, "onInitDone() called with: data = [" + data + "]");
 //                showToast("初始化成功");
                 isInitDone = true;
-                mapInit.put(deviceName, true);
                 SharedPreferencesUtils.save(MyApp.getApp(),  Constants.KEY_CONNECT_STATUS, deviceName);
+                if(listener != null) {
+                    listener.onConnect();
+                }
 
                 // 监听云端设备影子更新
                 LinkKit.getInstance().getDeviceShadow().setShadowChangeListener(new IShadowRRPC() {
