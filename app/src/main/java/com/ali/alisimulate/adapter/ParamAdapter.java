@@ -46,7 +46,7 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
     @Override
     public void onBind(RecyclerView.ViewHolder viewHolder, int realPosition, Property data) {
         if (viewHolder instanceof ParamsHolder) {
-            if(realPosition == getItemCount()-1) {
+            if((getHeadView() != null && realPosition == getItemCount()-2) || (getHeadView() == null && realPosition == getItemCount()-1)) {
                 ((ParamsHolder) viewHolder).view_bottom.setVisibility(View.VISIBLE);
             } else {
                 ((ParamsHolder) viewHolder).view_bottom.setVisibility(View.GONE);
@@ -148,7 +148,6 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
                 ((ParamsHolder) viewHolder).rl_form.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (TmpConstant.TYPE_VALUE_ENUM.equals(data.getDataType().getType())) {
                             LayoutInflater mLayoutInflater = (LayoutInflater) view.getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
                             ViewGroup menuView = (ViewGroup) mLayoutInflater.inflate(
                                     R.layout.pop_device, null, true);
@@ -176,7 +175,6 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
                                     pw.dismiss();
                                 }
                             });
-                        }
                     }
                 });
                 ((ParamsHolder) viewHolder).tv_tip.setVisibility(View.GONE);
