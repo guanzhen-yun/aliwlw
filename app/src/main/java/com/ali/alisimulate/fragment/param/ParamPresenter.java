@@ -3,7 +3,6 @@ package com.ali.alisimulate.fragment.param;
 import com.ali.alisimulate.entity.FittingDetailEntity;
 import com.ali.alisimulate.entity.FittingResetDetailEntity;
 import com.ali.alisimulate.entity.LvXinEntity;
-import com.ali.alisimulate.entity.UserInfoEntity;
 import com.ali.alisimulate.service.AppService;
 import com.ziroom.mvp.base.BaseMvpPresenter;
 import com.ziroom.net.ApiUtil;

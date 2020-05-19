@@ -46,7 +46,7 @@ public class ParamAdapter extends BaseRecyclerAdapter<Property> {
     @Override
     public void onBind(RecyclerView.ViewHolder viewHolder, int realPosition, Property data) {
         if (viewHolder instanceof ParamsHolder) {
-            if(realPosition == getItemCount()-2) {
+            if(realPosition == getItemCount()-1) {
                 ((ParamsHolder) viewHolder).view_bottom.setVisibility(View.VISIBLE);
             } else {
                 ((ParamsHolder) viewHolder).view_bottom.setVisibility(View.GONE);

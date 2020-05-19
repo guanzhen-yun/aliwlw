@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="110dp"
-        android:text="健康生活"
+        android:text="设备模拟器"
         android:textColor="#10AB6C"
         android:textSize="34sp"
         android:textStyle="bold" />
@@ -88,6 +88,7 @@
         android:textSize="16sp"
         android:maxLines="1"
         android:paddingBottom="12dp"
+        android:inputType="textPassword"
         android:paddingTop="12dp"
         android:paddingLeft="14dp" />
 

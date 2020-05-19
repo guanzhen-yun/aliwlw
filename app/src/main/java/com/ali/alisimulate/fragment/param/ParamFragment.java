@@ -40,6 +40,7 @@ import com.ziroom.base.ViewInject;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,6 +90,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
         List<Event> events = LinkKit.getInstance().getDeviceThing().getEvents();//TODO
         // 获取所有属性
         List<Property> properties = LinkKit.getInstance().getDeviceThing().getProperties();
+
         paramList = new ArrayList<>();
         for (Property property : properties) {
             List<String> controlList = ((DeviceDetailActivity) getActivity()).getControlList();
@@ -99,7 +101,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                 mapLx.put(property.getIdentifier(), property);
                 continue;
             }
-            if (TmpConstant.TYPE_VALUE_BOOLEAN.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_ENUM.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_INTEGER.equals(property.getDataType().getType())|| TmpConstant.TYPE_VALUE_DOUBLE.equals(property.getDataType().getType())) {
+            if (TmpConstant.TYPE_VALUE_BOOLEAN.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_ENUM.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_INTEGER.equals(property.getDataType().getType()) || TmpConstant.TYPE_VALUE_DOUBLE.equals(property.getDataType().getType())) {
                 paramList.add(property);
             }
         }
@@ -138,10 +140,10 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                 Map<String, ValueWrapper> reportData = new HashMap<>();
                 // identifier 是云端定义的属性的唯一标识，valueWrapper是属性的值
                 Property property = paramList.get(realPosition);
-                if(property.getDataType().getType().equals(TmpConstant.TYPE_VALUE_DOUBLE)) {
+                if (property.getDataType().getType().equals(TmpConstant.TYPE_VALUE_DOUBLE)) {
                     reportData.put(property.getIdentifier(), new ValueWrapper.DoubleValueWrapper(Double.parseDouble(et)));  // 参考示例，更多使用可参考demo
                     SaveAndUploadAliUtil.saveDouble(Double.parseDouble(et), property.getIdentifier());
-                } else if(property.getDataType().getType().equals(TmpConstant.TYPE_VALUE_INTEGER)) {
+                } else if (property.getDataType().getType().equals(TmpConstant.TYPE_VALUE_INTEGER)) {
                     reportData.put(property.getIdentifier(), new ValueWrapper.IntValueWrapper(Integer.parseInt(et)));  // 参考示例，更多使用可参考demo
                     SaveAndUploadAliUtil.saveInt(Integer.parseInt(et), property.getIdentifier());
                 }
@@ -168,14 +170,14 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                     ValueWrapper percent1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimePercent_1");
                     if (percent1 != null) {
                         int value = ((ValueWrapper.IntValueWrapper) percent1).getValue();
-                        entity.lifePercent = value +"";
+                        entity.lifePercent = value + "";
                     }
                 }
                 if (mapLx.containsKey("FilterLifeTimeDays_1")) {
                     ValueWrapper days_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimeDays_1");
                     if (days_1 != null) {
                         double value = ((ValueWrapper.DoubleValueWrapper) days_1).getValue();
-                        entity.lifeDay = value +"";
+                        entity.lifeDay = value + "";
                     }
                 }
                 if (mapLx.containsKey("FilterStatus_1")) {
@@ -200,14 +202,14 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                     ValueWrapper percent1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimePercent_2");
                     if (percent1 != null) {
                         int value = ((ValueWrapper.IntValueWrapper) percent1).getValue();
-                        entity.lifePercent = value +"";
+                        entity.lifePercent = value + "";
                     }
                 }
                 if (mapLx.containsKey("FilterLifeTimeDays_2")) {
                     ValueWrapper days_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimeDays_2");
                     if (days_1 != null) {
                         double value = ((ValueWrapper.DoubleValueWrapper) days_1).getValue();
-                        entity.lifeDay = value +"";
+                        entity.lifeDay = value + "";
                     }
                 }
                 if (mapLx.containsKey("FilterStatus_2")) {
@@ -232,14 +234,14 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                     ValueWrapper percent1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimePercent_3");
                     if (percent1 != null) {
                         int value = ((ValueWrapper.IntValueWrapper) percent1).getValue();
-                        entity.lifePercent = value +"";
+                        entity.lifePercent = value + "";
                     }
                 }
                 if (mapLx.containsKey("FilterLifeTimeDays_3")) {
                     ValueWrapper days_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimeDays_3");
                     if (days_1 != null) {
                         double value = ((ValueWrapper.DoubleValueWrapper) days_1).getValue();
-                        entity.lifeDay = value +"";
+                        entity.lifeDay = value + "";
                     }
                 }
                 if (mapLx.containsKey("FilterStatus_3")) {
@@ -264,14 +266,14 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                     ValueWrapper percent1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimePercent_4");
                     if (percent1 != null) {
                         int value = ((ValueWrapper.IntValueWrapper) percent1).getValue();
-                        entity.lifePercent = value +"";
+                        entity.lifePercent = value + "";
                     }
                 }
                 if (mapLx.containsKey("FilterLifeTimeDays_4")) {
                     ValueWrapper days_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimeDays_4");
                     if (days_1 != null) {
                         double value = ((ValueWrapper.DoubleValueWrapper) days_1).getValue();
-                        entity.lifeDay = value +"";
+                        entity.lifeDay = value + "";
                     }
                 }
                 if (mapLx.containsKey("FilterStatus_4")) {
@@ -296,14 +298,14 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                     ValueWrapper percent1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimePercent_5");
                     if (percent1 != null) {
                         int value = ((ValueWrapper.IntValueWrapper) percent1).getValue();
-                        entity.lifePercent = value +"";
+                        entity.lifePercent = value + "";
                     }
                 }
                 if (mapLx.containsKey("FilterLifeTimeDays_5")) {
                     ValueWrapper days_1 = LinkKit.getInstance().getDeviceThing().getPropertyValue("FilterLifeTimeDays_5");
                     if (days_1 != null) {
                         double value = ((ValueWrapper.DoubleValueWrapper) days_1).getValue();
-                        entity.lifeDay = value +"";
+                        entity.lifeDay = value + "";
                     }
                 }
                 if (mapLx.containsKey("FilterStatus_5")) {
@@ -317,7 +319,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                 listLx.add(entity);
             }
 
-            if(listLx.size() > 0) {
+            if (listLx.size() > 0) {
                 topViewCycle = new TopViewCycle(getActivity());
                 topViewCycle.setAutoCycle(false);
                 topViewCycle.loadData(listLx);
@@ -325,7 +327,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                     @Override
                     public void onClick(int position) {
                         LvXinEntity entity1 = listLx.get(position);
-                        if(TextUtils.isEmpty(entity1.lvxinDeviceName)) {
+                        if (TextUtils.isEmpty(entity1.lvxinDeviceName)) {
                             dropDownPop.setFitInfo(null, entity1, mapLx);
                             dropDownPop.showPop(mRvList);
                         } else {
@@ -347,7 +349,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                 @Override
                 public void onChange(String lifePercent, int no, String lifeDay, String lifeStatus) {
                     for (LvXinEntity lx : listLx) {
-                        if(lx.no == no) {
+                        if (lx.no == no) {
                             lx.lifeDay = lifeDay;
                             lx.lifePercent = lifePercent;
                             lx.lifeStatus = lifeStatus;
@@ -359,8 +361,8 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                 }
 
                 @Override
-                public void onReset(int no) {
-
+                public void onReset(int no, String deviceName) {
+                    mPresenter.reset(deviceName, no);
                 }
             });
 
@@ -368,7 +370,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
                 @Override
                 public void onChange(String deviceName, int no) {
                     for (LvXinEntity lx : listLx) {
-                        if(lx.no == no) {
+                        if (lx.no == no) {
                             lx.lvxinDeviceName = deviceName;
                             topViewCycle.setData(listLx);
                             topViewCycle.getmViewPager().getAdapter().notifyDataSetChanged();
@@ -442,7 +444,7 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 11 && resultCode == Activity.RESULT_OK) {
+        if (requestCode == 11 && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
                 dropDownScanPop.setDeviceScanName(content);

@@ -67,8 +67,7 @@ public interface AppService {
     @GET("/api/device/fixing_detail")
     Observable<Result<FittingDetailEntity>> getFitingInfo (@Query("device_name") String device_name);
 
-    //TODO 配件复位
     @Headers({Constants.DOMAIN_ALI_HEADR})
-    @GET("/api/device/fixing_detail")
+    @GET("/api/device/sync_state")
     Observable<Result<FittingResetDetailEntity>> reset (@Query("device_name") String device_name);
 }

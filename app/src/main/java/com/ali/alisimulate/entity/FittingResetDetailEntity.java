@@ -6,7 +6,7 @@ package com.ali.alisimulate.entity;
  * Description:FittingResetDetailEntity
  **/
 public class FittingResetDetailEntity {
-    public String status;
-    public String percent;
-    public String days;
+    public String state;
+    public String remainingPercent;
+    public String remainingDays;
 }

@@ -103,7 +103,7 @@ public class DropDownPop {
                 public void onClick(View view) {
                     //复位 ---走接口 然后设置参数 上传阿里云 保存本地
                     if (onChangePjListener != null) {
-                        onChangePjListener.onReset(mEntity.no);
+                        onChangePjListener.onReset(mEntity.no, mEntity.lvxinDeviceName);
                     }
                 }
             });
@@ -604,9 +604,9 @@ public class DropDownPop {
     }
 
     public void setReset(int no, FittingResetDetailEntity entity) {
-        et_syname.setText(entity.percent);
-        et_syname.setText(entity.days);
-        String enumValue = SaveAndUploadAliUtil.getEnumValue(mMapLx.get("FilterStatus_" + no), Integer.parseInt(entity.status));
+        et_syname.setText(entity.remainingPercent);
+        et_syname.setText(entity.remainingDays);
+        String enumValue = SaveAndUploadAliUtil.getEnumValue(mMapLx.get("FilterStatus_" + no), Integer.parseInt(entity.state));
         tv_sm.setText(enumValue);
         Map<String, ValueWrapper> reportData = new HashMap<>();
         if (!TextUtils.isEmpty(mSelectStatus)) {
@@ -621,13 +621,20 @@ public class DropDownPop {
             reportData.put("FilterLifeTimePercent_" + no, new ValueWrapper.IntValueWrapper(Integer.parseInt(et_syname.getText().toString())));
             SaveAndUploadAliUtil.saveInt(Integer.parseInt(et_syname.getText().toString()), "FilterLifeTimePercent_" + no);
         }
-        SaveAndUploadAliUtil.saveAndUpload(reportData);
+        SaveAndUploadAliUtil.saveAndUpload(reportData, new SaveAndUploadAliUtil.OnUploadSuccessListener() {
+            @Override
+            public void onUnloadSuccess() {
+                if (onChangePjListener != null) {
+                    onChangePjListener.onChange(et_syname.getText().toString(), mEntity.no, et_kyname.getText().toString(), mSelectStatusName);
+                }
+            }
+        });
     }
 
     public interface OnChangePjListener {
         void onChange(String lifePercent, int no, String lifeDay, String lifeStatus);
 
-        void onReset(int no);
+        void onReset(int no, String deviceName);
     }
 
     private OnChangePjListener onChangePjListener;

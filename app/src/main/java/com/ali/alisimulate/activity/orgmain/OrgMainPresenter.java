@@ -69,7 +69,8 @@ public class OrgMainPresenter extends BaseMvpPresenter<OrgMainContract.IView> im
 
             @Override
             public void onError(ApiException e) {
-
+                SharedPreferencesUtils.save(MyApp.getApp(), Constants.KEY_LOGIN_INFO, null);
+                mView.logoutSuccess();
             }
         });
     }

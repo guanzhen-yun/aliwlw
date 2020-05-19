@@ -13,7 +13,7 @@ public class OrgDevice {
     public int total;
     public List<DeviceList> data;
     public class DeviceList {
-        public int activeTime;
+        public long activeTime;
         public String bindingStatus;
         public String deviceComment;
         public String deviceId;
@@ -21,7 +21,7 @@ public class OrgDevice {
         public String deviceName;
         public String lastOnlineTime;
         public int num;
-        public int leftTime;
+        public long leftTime;
         public String onlineStatus;
         public String productKey;
         public String productName;
