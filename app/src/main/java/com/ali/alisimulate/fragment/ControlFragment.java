@@ -391,6 +391,8 @@ public class ControlFragment extends BaseFragment {
                                 }
                             }, 500);
                         }
+                    } else {
+                        SaveAndUploadAliUtil.saveAndUpload(reportData);
                     }
                 } else if(TmpConstant.TYPE_VALUE_ARRAY.equals(property.getDataType().getType()) && "LocalTimer".equals(property.getIdentifier())) {
                     //定时
