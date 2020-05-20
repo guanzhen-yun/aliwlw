@@ -231,7 +231,9 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                                 @Override
                                 public void run() {
                                     if(mCheckPosition != -1) {
-                                        orgDevices.get(mCheckPosition).isCheck = false;
+                                        if(mCheckPosition < orgDevices.size()) {
+                                            orgDevices.get(mCheckPosition).isCheck = false;
+                                        }
                                         adapter.notifyItemChanged(mCheckPosition);
                                     }
                                     orgDevices.get(position).isCheck = true;
@@ -241,7 +243,9 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                             });
                         } else {
                             if(mCheckPosition != -1) {
-                                orgDevices.get(mCheckPosition).isCheck = false;
+                                if(mCheckPosition < orgDevices.size()) {
+                                    orgDevices.get(mCheckPosition).isCheck = false;
+                                }
                                 adapter.notifyItemChanged(mCheckPosition);
                             }
                             orgDevices.get(position).isCheck = true;

@@ -605,7 +605,7 @@ public class DropDownPop {
 
     public void setReset(int no, FittingResetDetailEntity entity) {
         et_syname.setText(entity.remainingPercent);
-        et_syname.setText(entity.remainingDays);
+        et_kyname.setText(entity.remainingDays);
         String enumValue = SaveAndUploadAliUtil.getEnumValue(mMapLx.get("FilterStatus_" + no), Integer.parseInt(entity.state));
         tv_sm.setText(enumValue);
         Map<String, ValueWrapper> reportData = new HashMap<>();
