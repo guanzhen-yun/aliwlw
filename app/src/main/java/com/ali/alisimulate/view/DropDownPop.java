@@ -314,6 +314,9 @@ public class DropDownPop {
 
                 @Override
                 public void afterTextChanged(Editable editable) {
+                    if(mMapLx.get("FilterLifeTimeDays_" + mEntity.no) == null) {
+                        return;
+                    }
                     DataType dataType = mMapLx.get("FilterLifeTimeDays_" + mEntity.no).getDataType();
                     if (dataType.getSpecs() != null) {
                         MetaSpec specs = (MetaSpec) dataType.getSpecs();

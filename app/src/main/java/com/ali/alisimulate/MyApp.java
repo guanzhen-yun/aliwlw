@@ -12,6 +12,7 @@ import com.ali.alisimulate.config.ConfigManager;
 import com.ali.alisimulate.config.LogUtils;
 import com.ali.alisimulate.config.ParamsInterceptor;
 import com.ali.alisimulate.config.SSLSocketClient;
+import com.ali.alisimulate.util.CrashProtectManager;
 import com.ali.alisimulate.util.IDemoCallback;
 import com.ali.alisimulate.util.InitManager;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
@@ -62,6 +63,7 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         app = this;
+        CrashProtectManager.getInstance(this).init();
         MultiDex.install(this);
         initAli();
         RetrofitManager.initClient(getOkhttpClient(), ConfigManager.getInstance().getHost());
