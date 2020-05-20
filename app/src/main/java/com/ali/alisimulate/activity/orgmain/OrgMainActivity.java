@@ -222,8 +222,8 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                         });
                     } else {
                         orgDevices.get(position).isCheck = false;
-                        mCheckPosition = -1;
                         adapter.notifyItemChanged(position);
+                        mCheckPosition = -1;
                     }
                 } else {
                         if(rvDevice.isComputingLayout()) {
@@ -235,8 +235,8 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                                         adapter.notifyItemChanged(mCheckPosition);
                                     }
                                     orgDevices.get(position).isCheck = true;
-                                    mCheckPosition = position;
                                     adapter.notifyItemChanged(position);
+                                    mCheckPosition = position;
                                 }
                             });
                         } else {
@@ -245,8 +245,8 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                                 adapter.notifyItemChanged(mCheckPosition);
                             }
                             orgDevices.get(position).isCheck = true;
-                            mCheckPosition = position;
                             adapter.notifyItemChanged(position);
+                            mCheckPosition = position;
                     }
                 }
             }

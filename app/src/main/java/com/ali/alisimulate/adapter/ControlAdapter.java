@@ -71,8 +71,15 @@ public class ControlAdapter extends RecyclerView.Adapter {
                 listKey.add(string);
             }
             if (propertyValue != null) {
-                Integer value = ((ValueWrapper.EnumValueWrapper) propertyValue).getValue();
-                viewHolder.tv_choose.setText(value + "(" + specs.get(String.valueOf(value)) + ")");
+                if (propertyValue instanceof ValueWrapper.EnumValueWrapper) {
+                    Integer value = ((ValueWrapper.EnumValueWrapper) propertyValue).getValue();
+                    viewHolder.tv_choose.setText(value + "(" + specs.get(String.valueOf(value)) + ")");
+                } else if (propertyValue instanceof ValueWrapper.IntValueWrapper) {
+                    Integer value = ((ValueWrapper.IntValueWrapper) propertyValue).getValue();
+                    if(value != null) {
+                        viewHolder.tv_choose.setText(value + "(" + specs.get(String.valueOf(value)) + ")");
+                    }
+                }
             } else {
                 viewHolder.tv_choose.setText("请选择");
             }
@@ -103,10 +110,10 @@ public class ControlAdapter extends RecyclerView.Adapter {
                         RecyclerView rv_device = menuView.findViewById(R.id.rv_device);
                         rv_device.setLayoutManager(new LinearLayoutManager(view.getContext()));
                         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) rv_device.getLayoutParams();
-                        if((position+ 1) % 2 != 1) {
-                            layoutParams.setMargins(DisplayUtil.getScreenWight((Activity) rv_device.getContext())/2,30,0,0);
+                        if ((position + 1) % 2 != 1) {
+                            layoutParams.setMargins(DisplayUtil.getScreenWight((Activity) rv_device.getContext()) / 2, 30, 0, 0);
                         } else {
-                            layoutParams.setMargins(0,30,DisplayUtil.getScreenWight((Activity) rv_device.getContext())/2,0);
+                            layoutParams.setMargins(0, 30, DisplayUtil.getScreenWight((Activity) rv_device.getContext()) / 2, 0);
                         }
 
                         rv_device.setLayoutParams(layoutParams);
@@ -127,13 +134,24 @@ public class ControlAdapter extends RecyclerView.Adapter {
             });
         } else if (TmpConstant.TYPE_VALUE_BOOLEAN.equals(name.getDataType().getType())) {
             if (propertyValue != null) {
-                Integer value = ((ValueWrapper.BooleanValueWrapper) propertyValue).getValue();
-                if (value != null && value == 1) {
-                    viewHolder.sw.setChecked(true);
-                    viewHolder.tv_status.setText("已开启");
-                } else {
-                    viewHolder.sw.setChecked(false);
-                    viewHolder.tv_status.setText("未开启");
+                if(propertyValue instanceof ValueWrapper.IntValueWrapper) {
+                    Integer value = ((ValueWrapper.IntValueWrapper) propertyValue).getValue();
+                    if (value != null && value == 1) {
+                        viewHolder.sw.setChecked(true);
+                        viewHolder.tv_status.setText("已开启");
+                    } else {
+                        viewHolder.sw.setChecked(false);
+                        viewHolder.tv_status.setText("未开启");
+                    }
+                } else if(propertyValue instanceof ValueWrapper.BooleanValueWrapper) {
+                    Integer value = ((ValueWrapper.BooleanValueWrapper) propertyValue).getValue();
+                    if (value != null && value == 1) {
+                        viewHolder.sw.setChecked(true);
+                        viewHolder.tv_status.setText("已开启");
+                    } else {
+                        viewHolder.sw.setChecked(false);
+                        viewHolder.tv_status.setText("未开启");
+                    }
                 }
             } else {
                 viewHolder.sw.setChecked(false);
@@ -190,7 +208,7 @@ public class ControlAdapter extends RecyclerView.Adapter {
                 }
                 Property propertyPer = mData.get(position).get(2);
                 Integer pervalue = SaveAndUploadAliUtil.getIntVal(propertyPer.getIdentifier());
-                if(pervalue == null) {
+                if (pervalue == null) {
                     viewHolder.tv_other_per.setText("0%");
                 } else {
                     viewHolder.tv_other_per.setText(pervalue + "%");

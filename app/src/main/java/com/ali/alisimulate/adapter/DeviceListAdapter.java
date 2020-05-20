@@ -2,6 +2,7 @@ package com.ali.alisimulate.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ali.alisimulate.Constants;
@@ -58,31 +60,33 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
 
     private OnCheckListener onCheckListener;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         DesignViewHolder viewHolder = (DesignViewHolder) holder;
         OrgDevice.DeviceList name = mData.get(position);
         if(name.isCheck) {
-            viewHolder.rb_net.setChecked(true);
+            viewHolder.tv_net.setCompoundDrawablesWithIntrinsicBounds(context.getDrawable(R.drawable.icon_check), null, null, null);
+            viewHolder.tv_unnet.setCompoundDrawablesWithIntrinsicBounds(context.getDrawable(R.drawable.icon_uncheck), null, null, null);
         } else {
-            viewHolder.rb_net.setChecked(false);
-            viewHolder.rb_unnet.setChecked(true);
+            viewHolder.tv_net.setCompoundDrawablesWithIntrinsicBounds(context.getDrawable(R.drawable.icon_uncheck), null, null, null);
+            viewHolder.tv_unnet.setCompoundDrawablesWithIntrinsicBounds(context.getDrawable(R.drawable.icon_check), null, null, null);
         }
 
-        viewHolder.rg_net.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        viewHolder.tv_net.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                if (checkedId == viewHolder.rb_net.getId()) {
-                    if(onCheckListener != null) {
-                        onCheckListener.onCheck(viewHolder.getAdapterPosition(), viewHolder.rb_net.isChecked());
-                    }
-                } else {
-                    if(onCheckListener != null && viewHolder.rb_unnet.isChecked()) {
-                        onCheckListener.onCheck(viewHolder.getAdapterPosition(), false);
-                    }
-                }
+            public void onClick(View view) {
+                onCheckListener.onCheck(viewHolder.getAdapterPosition(), true);
             }
         });
+
+        viewHolder.tv_unnet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onCheckListener.onCheck(viewHolder.getAdapterPosition(), false);
+            }
+        });
+
         Bitmap bitmap = ZXingUtils.createQRImage(name.deviceName, DisplayUtil.dip2px(context, 24), DisplayUtil.dip2px(context, 24));
         viewHolder.iv_code.setImageBitmap(bitmap);
         viewHolder.tv_devicename.setText(name.deviceComment);
@@ -92,10 +96,12 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
         viewHolder.tv_status.setText(name.bindingStatus);
 
         if("1".equals(name.deviceModel)) {
-            viewHolder.rg_net.setVisibility(View.INVISIBLE);
+            viewHolder.tv_net.setVisibility(View.INVISIBLE);
             viewHolder.tv_status.setVisibility(View.INVISIBLE);
+            viewHolder.tv_unnet.setVisibility(View.INVISIBLE);
         } else {
-            viewHolder.rg_net.setVisibility(View.VISIBLE);
+            viewHolder.tv_net.setVisibility(View.VISIBLE);
+            viewHolder.tv_unnet.setVisibility(View.VISIBLE);
             viewHolder.tv_status.setVisibility(View.VISIBLE);
         }
 
@@ -152,9 +158,8 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
     }
 
     public class DesignViewHolder extends RecyclerView.ViewHolder {
-        private RadioGroup rg_net;
-        private RadioButton rb_net;
-        private RadioButton rb_unnet;
+        private TextView tv_net;
+        private TextView tv_unnet;
         private ImageView iv_code;
         private TextView tv_devicename;
         private TextView tv_devicekey;
@@ -163,9 +168,8 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
 
         public DesignViewHolder(@NonNull View itemView) {
             super(itemView);
-            rg_net = itemView.findViewById(R.id.rg_net);
-            rb_net = itemView.findViewById(R.id.rb_net);
-            rb_unnet = itemView.findViewById(R.id.rb_unnet);
+            tv_net = itemView.findViewById(R.id.tv_net);
+            tv_unnet = itemView.findViewById(R.id.tv_unnet);
             tv_status = itemView.findViewById(R.id.tv_status);
             tv_alias = itemView.findViewById(R.id.tv_alias);
             tv_devicekey = itemView.findViewById(R.id.tv_devicekey);
