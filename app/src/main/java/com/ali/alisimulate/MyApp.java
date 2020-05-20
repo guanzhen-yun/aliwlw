@@ -63,7 +63,7 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         app = this;
-        CrashProtectManager.getInstance(this).init();
+//        CrashProtectManager.getInstance(this).init();
         MultiDex.install(this);
         initAli();
         RetrofitManager.initClient(getOkhttpClient(), ConfigManager.getInstance().getHost());

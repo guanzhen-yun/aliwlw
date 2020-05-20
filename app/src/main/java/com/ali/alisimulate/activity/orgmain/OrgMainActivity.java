@@ -91,6 +91,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     private SelectOrgEntity mSelectProduct;
 
     private int mCheckPosition = -1;
+    private BottomTwoButtonDialog dialog;
 
     @Override
     public void initDatas() {
@@ -239,6 +240,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                                     orgDevices.get(position).isCheck = true;
                                     adapter.notifyItemChanged(position);
                                     mCheckPosition = position;
+                                    showConnectDialog();
                                 }
                             });
                         } else {
@@ -251,6 +253,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                             orgDevices.get(position).isCheck = true;
                             adapter.notifyItemChanged(position);
                             mCheckPosition = position;
+                            showConnectDialog();
                     }
                 }
             }
@@ -318,6 +321,29 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                 }
             }
         });
+    }
+
+    private void showConnectDialog() {
+        if(dialog == null) {
+            dialog = new BottomTwoButtonDialog(OrgMainActivity.this);
+        }
+        dialog.setContent("联网中,设备正在初始化\n其他联网设备已断开连接");
+        dialog.setLeftButton("取消");
+        dialog.setRightButton("确定");
+        dialog.setOnClickDialogListener(new BottomTwoButtonDialog.OnClickDialogListener() {
+            @Override
+            public void onClickLeft() {
+
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onClickRight() {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+        dialog.loading(true);
     }
 
     private void getDeviceList(boolean isFirst) {

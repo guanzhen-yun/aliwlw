@@ -41,7 +41,7 @@ public class CrashProtectManager {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
                 handleFileException(e);
-                if (!BuildConfig.DEBUG && t == Looper.getMainLooper().getThread()) {
+                if (t == Looper.getMainLooper().getThread()) {
                     handleMainThread(e);
                 } else {
                     android.os.Process.killProcess(android.os.Process.myPid());

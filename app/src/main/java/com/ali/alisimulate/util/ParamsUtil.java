@@ -88,6 +88,9 @@ public class ParamsUtil {
         String weeks = SharedPreferencesUtils.getStr(context, isOpen ? Constants.KEY_OPEN_WEEK : Constants.KEY_CLOSE_WEEK);
 //        if (!TextUtils.isEmpty(weeks) && weeks.contains(getCurrentWeek())) {
         String str = SharedPreferencesUtils.getStr(context, isOpen ? Constants.KEY_OPEN_TIME : Constants.KEY_CLOSE_TIME);
+        if(str.split(",").length <=1) {
+            return 0;
+        }
         String hour = str.split(",")[0];
         String minute = str.split(",")[1];
 
