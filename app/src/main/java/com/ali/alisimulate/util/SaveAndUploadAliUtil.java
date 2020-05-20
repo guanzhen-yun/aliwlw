@@ -282,4 +282,18 @@ public class SaveAndUploadAliUtil {
     public interface OnUploadSuccessListener {
         void onUnloadSuccess();
     }
+
+    /**
+     * 保存开机状态
+     */
+    public static void saveTimerStata(boolean hasOpen, boolean hasClose) {
+
+    }
+
+    /**
+     * 修改开机/关机状态
+     */
+    public static void changeTimerState(boolean isOpen, int state) {
+
+    }
 }

@@ -253,6 +253,14 @@ public class ControlFragment extends BaseFragment {
         }
     }
 
+    /**
+     * 处理一次的定时
+     */
+
+    private void handleOneTime() {
+
+    }
+
     @Override
     public void onStop() {
         super.onStop();

@@ -24,4 +24,6 @@ public class Constants {
     public static final String KEY_CLOSE_WEEK = "close_week";
 
     public static final String KEY_LOCAN_ALI = "local_ali";
+
+    public static final String KEY_TIMER = "timer";//开启定时的涨停 “开机-关机”;
 }
