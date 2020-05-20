@@ -1,6 +1,7 @@
 package com.ali.alisimulate.util;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.ali.alisimulate.Constants;
 
@@ -84,25 +85,27 @@ public class ParamsUtil {
     public static long getOpenOrCloseTime(Context context, boolean isOpen) {
         long time = 0;
 
-        String weeks = SharedPreferencesUtils.getStr(context, isOpen ? Constants.KEY_OPEN_WEEK: Constants.KEY_CLOSE_WEEK);
-        if (weeks.contains(getCurrentWeek())) {
-            String str = SharedPreferencesUtils.getStr(context,isOpen ?  Constants.KEY_OPEN_TIME : Constants.KEY_CLOSE_TIME);
-            String hour = str.split(",")[0];
-            String minute = str.split(",")[1];
+        String weeks = SharedPreferencesUtils.getStr(context, isOpen ? Constants.KEY_OPEN_WEEK : Constants.KEY_CLOSE_WEEK);
+//        if (!TextUtils.isEmpty(weeks) && weeks.contains(getCurrentWeek())) {
+        String str = SharedPreferencesUtils.getStr(context, isOpen ? Constants.KEY_OPEN_TIME : Constants.KEY_CLOSE_TIME);
+        String hour = str.split(",")[0];
+        String minute = str.split(",")[1];
 
-            String openTime = getDateStr() + " " + hour + ":" + minute + ":" + 0;
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINESE);
-            sdf.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
-            Date date = null;
-            try {
-                date = sdf.parse(openTime);
-                if(date != null) {
-                    time = date.getTime();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        String openTime = getDateStr() + " " + hour + ":" + minute + ":" + 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINESE);
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
+        Date date = null;
+        try {
+            date = sdf.parse(openTime);
+            if (date != null) {
+                time = date.getTime();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+//        } else {
+//
+//        }
         return time;
     }
 }

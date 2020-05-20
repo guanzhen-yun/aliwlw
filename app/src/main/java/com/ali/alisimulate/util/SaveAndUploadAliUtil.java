@@ -106,6 +106,7 @@ public class SaveAndUploadAliUtil {
 
     public static Integer getIntVal(String indentify) {
         ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(indentify);
+
         if (propertyValue != null) {
             Integer value = ((ValueWrapper.IntValueWrapper) propertyValue).getValue();
             return value;

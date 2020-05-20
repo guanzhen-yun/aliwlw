@@ -610,7 +610,9 @@ public class DropDownPop {
         et_syname.setText(entity.remainingPercent);
         et_kyname.setText(entity.remainingDays);
         String enumValue = SaveAndUploadAliUtil.getEnumValue(mMapLx.get("FilterStatus_" + no), Integer.parseInt(entity.state));
-        tv_sm.setText(enumValue);
+        mSelectStatus = entity.state;
+        mSelectStatusName = enumValue;
+        tv_sm.setText(mSelectStatus + "(" + mSelectStatusName + ")");
         Map<String, ValueWrapper> reportData = new HashMap<>();
         if (!TextUtils.isEmpty(mSelectStatus)) {
             reportData.put("FilterStatus_" + no, new ValueWrapper.EnumValueWrapper(Integer.parseInt(mSelectStatus)));  // 参考示例，更多使用可参考demo

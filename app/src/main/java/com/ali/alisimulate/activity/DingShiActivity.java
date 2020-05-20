@@ -83,7 +83,7 @@ public class DingShiActivity extends BaseActivity {
                 localTimer.add(structValueWrapper2);
             }
             Map<String, ValueWrapper> value1 = new HashMap<>();
-            addMap(value1, isOpen);
+            addMap(value1);
             ValueWrapper.StructValueWrapper structValueWrapper = new ValueWrapper.StructValueWrapper();
             structValueWrapper.setValue(value1);
             localTimer.add(structValueWrapper);
@@ -95,16 +95,21 @@ public class DingShiActivity extends BaseActivity {
             }
         } else if (localTimer.size() == 2) {
             ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
-            Map<String, ValueWrapper> value1 = new HashMap<>();
-            addMap(value1, isOpen);
-            structValueWrapper.setValue(value1);
+            Map<String, ValueWrapper> value = structValueWrapper.getValue();
+            if(value != null) {
+                value.put("Enable", new ValueWrapper.BooleanValueWrapper(1));
+            } else {
+                Map<String, ValueWrapper> value1 = new HashMap<>();
+                addMap(value1);
+                structValueWrapper.setValue(value1);
+            }
         }
         SaveAndUploadAliUtil.putList("LocalTimer", reportData, localTimer);
         SaveAndUploadAliUtil.saveAndUpload(reportData);
     }
 
-    private void addMap(Map<String, ValueWrapper> value1, boolean isOpen) {
-        value1.put("Enable", new ValueWrapper.BooleanValueWrapper(isOpen ? 1 : 0));
+    private void addMap(Map<String, ValueWrapper> value1) {
+        value1.put("Enable", new ValueWrapper.BooleanValueWrapper(1));
     }
 
     private void jumpControl(boolean isOpen) {
@@ -116,15 +121,17 @@ public class DingShiActivity extends BaseActivity {
     }
 
     private void closeStatus(boolean isOpen) {
-        SharedPreferencesUtils.save(DingShiActivity.this, isOpen ? Constants.KEY_OPEN_WEEK : Constants.KEY_CLOSE_WEEK, "");
-        SharedPreferencesUtils.save(DingShiActivity.this, isOpen ? Constants.KEY_OPEN_TIME : Constants.KEY_CLOSE_TIME, "");
         Map<String, ValueWrapper> reportData = new HashMap<>();
         List<ValueWrapper> localTimer = SaveAndUploadAliUtil.getList("LocalTimer");
         ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
-        Map<String, ValueWrapper> value1 = new HashMap<>();
-        structValueWrapper.setValue(value1);
-        SaveAndUploadAliUtil.putList("LocalTimer", reportData, localTimer);
-        SaveAndUploadAliUtil.saveAndUpload(reportData);
+        Map<String, ValueWrapper> value = structValueWrapper.getValue();
+        if(value != null) {
+            value.put("Enable", new ValueWrapper.BooleanValueWrapper(0));
+            structValueWrapper.setValue(value);
+            SaveAndUploadAliUtil.putList("LocalTimer", reportData, localTimer);
+            SaveAndUploadAliUtil.saveAndUpload(reportData);
+        }
+
     }
 
     @OnClick({R.id.iv_back, R.id.rl_open, R.id.rl_close})

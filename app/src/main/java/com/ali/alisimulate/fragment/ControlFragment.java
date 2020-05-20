@@ -313,14 +313,15 @@ public class ControlFragment extends BaseFragment {
                     Map<String, ValueWrapper> reportData = new HashMap<>();
                     SaveAndUploadAliUtil.putIntParam(intVal, reportData, controlList.get(position).get(2).getIdentifier());
                     SaveAndUploadAliUtil.saveAndUpload(reportData);
+                    Integer finalIntVal = intVal;
                     SaveAndUploadAliUtil.saveAndUpload(reportData, new SaveAndUploadAliUtil.OnUploadSuccessListener() {
                         @Override
                         public void onUnloadSuccess() {
+                            SaveAndUploadAliUtil.saveInt(finalIntVal, controlList.get(position).get(2).getIdentifier());
+                            adapter.notifyItemChanged(position);
                             handler.sendEmptyMessageDelayed(position, 1000);
                         }
                     });
-                    SaveAndUploadAliUtil.saveInt(intVal, controlList.get(position).get(2).getIdentifier());
-                    adapter.notifyItemChanged(position);
                 } else if(intVal == 100) {
                     handler.removeMessages(position);
                     Map<String, ValueWrapper> reportData = new HashMap<>();
