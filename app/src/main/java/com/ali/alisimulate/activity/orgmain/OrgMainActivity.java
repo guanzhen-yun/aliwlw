@@ -2,6 +2,8 @@ package com.ali.alisimulate.activity.orgmain;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -93,6 +96,8 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     private int mCheckPosition = -1;
     private BottomTwoButtonDialog dialog;
 
+    private boolean isConnect = false;//默认没连接上
+
     @Override
     public void initDatas() {
         mPresenter.getUserInfo();
@@ -102,7 +107,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
 
     @Override
     public void initViews() {
-        SharedPreferencesUtils.save(MyApp.getApp(),  Constants.KEY_CONNECT_STATUS, "");
+        SharedPreferencesUtils.save(MyApp.getApp(), Constants.KEY_CONNECT_STATUS, "");
         dropDownOrgSelect = new DropDownOrgSelect();
         dropDownOrgSelect.init(this);
         dropDownOrgSelect.setOnSelectListener(new DropDownOrgSelect.onSelectListener() {
@@ -154,7 +159,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                 if (current == 0) {
                     dropDownOrgSelect.setList(listFirst, currentPosition);
                     for (SelectOrgEntity entity : listFirst) {
-                        if(entity.id.equals(mSelectBranch.id)) {
+                        if (entity.id.equals(mSelectBranch.id)) {
                             entity.isSelect = true;
                         } else {
                             entity.isSelect = false;
@@ -163,10 +168,10 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                     dropDownOrgSelect.showPop(rlDevice);
                     tvDevice.setText(mSelectBranch.name);
                     ivDelete.setVisibility(View.VISIBLE);
-                } else if(current == 1) {
+                } else if (current == 1) {
                     dropDownOrgSelect.setList(listSecond, currentPosition);
                     for (SelectOrgEntity entity : listSecond) {
-                        if(entity.name.equals(mSelectBranchType.name)) {
+                        if (entity.name.equals(mSelectBranchType.name)) {
                             entity.isSelect = true;
                         } else {
                             entity.isSelect = false;
@@ -175,10 +180,10 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                     dropDownOrgSelect.showPop(rlDevice);
                     tvDevice.setText(mSelectBranch.name + "/" + mSelectBranchType.name);
                     ivDelete.setVisibility(View.VISIBLE);
-                } else if(current == 2) {
+                } else if (current == 2) {
                     dropDownOrgSelect.setList(listThird, currentPosition);
                     for (SelectOrgEntity entity : listThird) {
-                        if(entity.id.equals(mSelectProduct.id)) {
+                        if (entity.id.equals(mSelectProduct.id)) {
                             entity.isSelect = true;
                         } else {
                             entity.isSelect = false;
@@ -211,8 +216,9 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         adapter.setOnCheckListener(new DeviceListAdapter.OnCheckListener() {
             @Override
             public void onCheck(int position, boolean isCheck) {
-                if(!isCheck) {
-                    if(rvDevice.isComputingLayout()) {
+                if (!isCheck) {
+                    isConnect = false;
+                    if (rvDevice.isComputingLayout()) {
                         rvDevice.post(new Runnable() {
                             @Override
                             public void run() {
@@ -227,104 +233,108 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                         mCheckPosition = -1;
                     }
                 } else {
-                        if(rvDevice.isComputingLayout()) {
-                            rvDevice.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if(mCheckPosition != -1) {
-                                        if(mCheckPosition < orgDevices.size()) {
-                                            orgDevices.get(mCheckPosition).isCheck = false;
-                                        }
-                                        adapter.notifyItemChanged(mCheckPosition);
+                    if (rvDevice.isComputingLayout()) {
+                        rvDevice.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mCheckPosition != -1) {
+                                    if (mCheckPosition < orgDevices.size()) {
+                                        orgDevices.get(mCheckPosition).isCheck = false;
                                     }
-                                    orgDevices.get(position).isCheck = true;
-                                    adapter.notifyItemChanged(position);
-                                    mCheckPosition = position;
-                                    showConnectDialog();
+                                    adapter.notifyItemChanged(mCheckPosition);
                                 }
-                            });
-                        } else {
-                            if(mCheckPosition != -1) {
-                                if(mCheckPosition < orgDevices.size()) {
-                                    orgDevices.get(mCheckPosition).isCheck = false;
-                                }
-                                adapter.notifyItemChanged(mCheckPosition);
+                                orgDevices.get(position).isCheck = true;
+                                adapter.notifyItemChanged(position);
+                                mCheckPosition = position;
+                                isConnect = false;
+                                connect(orgDevices.get(position));
                             }
-                            orgDevices.get(position).isCheck = true;
-                            adapter.notifyItemChanged(position);
-                            mCheckPosition = position;
-                            showConnectDialog();
+                        });
+                    } else {
+                        if (mCheckPosition != -1) {
+                            if (mCheckPosition < orgDevices.size()) {
+                                orgDevices.get(mCheckPosition).isCheck = false;
+                            }
+                            adapter.notifyItemChanged(mCheckPosition);
+                        }
+                        orgDevices.get(position).isCheck = true;
+                        adapter.notifyItemChanged(position);
+                        mCheckPosition = position;
+                        isConnect = false;
+                        connect(orgDevices.get(position));
                     }
                 }
             }
         });
 
-        adapter.setOnSelectListener(new DeviceListAdapter.OnSelectListener() {
+        adapter.setOnSelectListener(position -> {
+            OrgDevice.DeviceList deviceList = orgDevices.get(position);
+            if ("配件".equals(adapter.getModelStr(deviceList.deviceModel))) {
+                return;
+            }
+            if (!deviceList.isCheck) {
+                ToastUtils.showToast("请先联网");
+                return;
+            }
+            isConnect = false;
+            connect(deviceList);
+        });
+    }
+
+    private void connect(OrgDevice.DeviceList deviceList) {
+        if (LinkKit.getInstance().getDeviceThing() == null) {
+            showConnectDialog();
+            regist(deviceList);
+        } else {
+            if (!TextUtils.isEmpty(deviceList.deviceName) && !deviceList.deviceName.equals(SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CONNECT_STATUS))) {
+                MyApp.getApp().unregistConnectAli();
+                showConnectDialog();
+                regist(deviceList);
+            } else {
+                showConnectDialog();
+                handler.sendEmptyMessageDelayed(0, 200);
+            }
+        }
+    }
+
+    private void regist(OrgDevice.DeviceList deviceList) {
+        MyApp.getApp().regist(deviceList.deviceName, deviceList.productKey, deviceList.deviceSecret, new MyApp.OnConnectListener() {
             @Override
-            public void onSelect(int position) {
-                OrgDevice.DeviceList deviceList = orgDevices.get(position);
-                if("配件".equals(adapter.getModelStr(deviceList.deviceModel))) {
-                    return;
-                }
-                if(!deviceList.isCheck) {
-                    ToastUtils.showToast("请先联网");
-                    return;
-                }
-                if (LinkKit.getInstance().getDeviceThing() == null) {
-//                    ToastUtils.showToast("物模型功能未启用");
-//                    return;
-                    MyApp.getApp().regist(deviceList.deviceName, deviceList.productKey, deviceList.deviceSecret, new MyApp.OnConnectListener() {
-                        @Override
-                        public void onConnect() {
-                            Bundle bundle = new Bundle();
-                            bundle.putString("productKey", deviceList.productKey);
-                            bundle.putString("deviceName", deviceList.deviceName);
-                            bundle.putString("deviceComment", deviceList.deviceComment);
-                            bundle.putString("deviceSecret", deviceList.deviceSecret);
-                            bundle.putString("deviceId", deviceList.deviceId);
-                            bundle.putString("title", adapter.getModelStr(deviceList.deviceModel));
-                            Intent intent = new Intent(OrgMainActivity.this, DeviceDetailActivity.class);
-                            intent.putExtras(bundle);
-                            startActivity(intent);
-                        }
-                    });
-                } else {
-                    if(!TextUtils.isEmpty(deviceList.deviceName) && !deviceList.deviceName.equals(SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CONNECT_STATUS))) {
-                        MyApp.getApp().unregistConnectAli();
-                        MyApp.getApp().regist(deviceList.deviceName, deviceList.productKey, deviceList.deviceSecret, new MyApp.OnConnectListener() {
-                            @Override
-                            public void onConnect() {
-                                Bundle bundle = new Bundle();
-                                bundle.putString("productKey", deviceList.productKey);
-                                bundle.putString("deviceName", deviceList.deviceName);
-                                bundle.putString("deviceComment", deviceList.deviceComment);
-                                bundle.putString("deviceSecret", deviceList.deviceSecret);
-                                bundle.putString("deviceId", deviceList.deviceId);
-                                bundle.putString("title", adapter.getModelStr(deviceList.deviceModel));
-                                Intent intent = new Intent(OrgMainActivity.this, DeviceDetailActivity.class);
-                                intent.putExtras(bundle);
-                                startActivity(intent);
-                            }
-                        });
-                    } else {
-                        Bundle bundle = new Bundle();
-                        bundle.putString("productKey", deviceList.productKey);
-                        bundle.putString("deviceName", deviceList.deviceName);
-                        bundle.putString("deviceComment", deviceList.deviceComment);
-                        bundle.putString("deviceSecret", deviceList.deviceSecret);
-                        bundle.putString("deviceId", deviceList.deviceId);
-                        bundle.putString("title", adapter.getModelStr(deviceList.deviceModel));
-                        Intent intent = new Intent(OrgMainActivity.this, DeviceDetailActivity.class);
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-                    }
+            public void onConnect() {
+                if (dialog != null) {
+                    handler.sendEmptyMessageDelayed(0, 200);
                 }
             }
         });
     }
 
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            if(msg.what == 0) {
+                isConnect = true;
+                dialog.loading(false);
+                dialog.setContent("初始化成功");
+            }
+        }
+    };
+
+    private void jumpToDetail(OrgDevice.DeviceList deviceList) {
+        Bundle bundle = new Bundle();
+        bundle.putString("productKey", deviceList.productKey);
+        bundle.putString("deviceName", deviceList.deviceName);
+        bundle.putString("deviceComment", deviceList.deviceComment);
+        bundle.putString("deviceSecret", deviceList.deviceSecret);
+        bundle.putString("deviceId", deviceList.deviceId);
+        bundle.putString("title", adapter.getModelStr(deviceList.deviceModel));
+        Intent intent = new Intent(OrgMainActivity.this, DeviceDetailActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
     private void showConnectDialog() {
-        if(dialog == null) {
+        if (dialog == null) {
             dialog = new BottomTwoButtonDialog(OrgMainActivity.this);
         }
         dialog.setContent("联网中,设备正在初始化\n其他联网设备已断开连接");
@@ -333,17 +343,30 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         dialog.setOnClickDialogListener(new BottomTwoButtonDialog.OnClickDialogListener() {
             @Override
             public void onClickLeft() {
-
+                if (!isConnect && mCheckPosition != -1) {//需要清除选中的
+                    orgDevices.get(mCheckPosition).isCheck = false;
+                    adapter.notifyItemChanged(mCheckPosition);
+                    mCheckPosition = -1;
+                }
                 dialog.dismiss();
             }
 
             @Override
             public void onClickRight() {
-                dialog.dismiss();
+                if (isConnect) {
+                    dialog.dismiss();
+                    if(mCheckPosition != -1) {
+                        jumpToDetail(orgDevices.get(mCheckPosition));
+                    }
+                } else {
+                    ToastUtils.showToast("还没有初始化完成!");
+                }
             }
         });
         dialog.show();
         dialog.loading(true);
+
+
     }
 
     private void getDeviceList(boolean isFirst) {
