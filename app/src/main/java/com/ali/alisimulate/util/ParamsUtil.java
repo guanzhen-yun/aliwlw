@@ -1,7 +1,6 @@
 package com.ali.alisimulate.util;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.ali.alisimulate.Constants;
 

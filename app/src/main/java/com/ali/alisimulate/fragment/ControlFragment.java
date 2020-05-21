@@ -283,6 +283,9 @@ public class ControlFragment extends BaseFragment {
             try {
                 ReceiveMsg receiveMsg = new Gson().fromJson(data, ReceiveMsg.class);
                 Map<String, Object> params = receiveMsg.params;
+                if(params == null) {
+                    return;
+                }
                 for (int i = 0; i < controlList.size(); i++) {
                     Property property = controlList.get(i).get(0);
                     if (params.containsKey(property.getIdentifier())) {

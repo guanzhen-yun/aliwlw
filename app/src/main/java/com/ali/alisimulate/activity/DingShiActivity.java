@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Switch;
 
-import com.ali.alisimulate.Constants;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.util.SaveAndUploadAliUtil;
-import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.ziroom.base.BaseActivity;
 import com.ziroom.base.ViewInject;
@@ -42,13 +40,23 @@ public class DingShiActivity extends BaseActivity {
         } else {
             Map<String, ValueWrapper> value1 = (Map<String, ValueWrapper>) value.get(0).getValue();
             if(value1.size() > 0) {
-                mSwOpen.setChecked(true);
+                ValueWrapper.BooleanValueWrapper enable = (ValueWrapper.BooleanValueWrapper) value1.get("Enable");
+                if(enable != null && enable.getValue() != null && enable.getValue() == 1) {
+                    mSwOpen.setChecked(true);
+                } else {
+                    mSwOpen.setChecked(false);
+                }
             } else {
                 mSwOpen.setChecked(false);
             }
             Map<String, ValueWrapper> value2 = (Map<String, ValueWrapper>) value.get(1).getValue();
             if(value2.size() > 0) {
-                mSwClose.setChecked(true);
+                ValueWrapper.BooleanValueWrapper enable = (ValueWrapper.BooleanValueWrapper) value2.get("Enable");
+                if(enable != null && enable.getValue() != null && enable.getValue() == 1) {
+                    mSwClose.setChecked(true);
+                } else {
+                    mSwClose.setChecked(false);
+                }
             } else {
                 mSwClose.setChecked(false);
             }

@@ -125,7 +125,7 @@ public class ControlAdapter extends RecyclerView.Adapter {
                                 pw.dismiss();
                                 viewHolder.tv_choose.setText(list.get(pos));
                                 if (onCheckListener != null) {
-                                    onCheckListener.onSelect(position, listKey.get(pos));
+                                    onCheckListener.onSelect(viewHolder.getAdapterPosition(), listKey.get(pos));
                                 }
                             }
                         });
@@ -171,6 +171,19 @@ public class ControlAdapter extends RecyclerView.Adapter {
                     onCheckListener.onCheck(position, dd == 1);
                 }
                 mDatas = null;
+            } else if(mDatas != null && mDatas instanceof Double && mPosition == position) {
+                double dd = (double) mDatas;
+                if (dd == 1) {
+                    viewHolder.sw.setChecked(true);
+                    viewHolder.tv_status.setText("已开启");
+                } else {
+                    viewHolder.sw.setChecked(false);
+                    viewHolder.tv_status.setText("未开启");
+                }
+                if (onCheckListener != null) {
+                    onCheckListener.onCheck(position, dd == 1);
+                }
+                mDatas = null;
             }
 
             viewHolder.sw.setVisibility(View.VISIBLE);
@@ -184,7 +197,7 @@ public class ControlAdapter extends RecyclerView.Adapter {
                         viewHolder.tv_status.setText("未开启");
                     }
                     if (onCheckListener != null) {
-                        onCheckListener.onCheck(position, b);
+                        onCheckListener.onCheck(viewHolder.getAdapterPosition(), b);
                     }
                 }
             });
@@ -213,6 +226,9 @@ public class ControlAdapter extends RecyclerView.Adapter {
                 } else {
                     viewHolder.tv_other_per.setText(pervalue + "%");
                 }
+            } else {
+                viewHolder.tv_other_status.setVisibility(View.GONE);
+                viewHolder.tv_other_per.setVisibility(View.GONE);
             }
         } else if (TmpConstant.TYPE_VALUE_ARRAY.equals(name.getDataType().getType()) && name.getIdentifier().equals("LocalTimer")) {
             viewHolder.tv_other_status.setVisibility(View.GONE);
@@ -220,14 +236,19 @@ public class ControlAdapter extends RecyclerView.Adapter {
             if (propertyValue != null) {
                 viewHolder.sw.setVisibility(View.VISIBLE);
                 viewHolder.tv_status.setVisibility(View.VISIBLE);
+                viewHolder.sw.setChecked(false);
+                viewHolder.tv_status.setText("未开启");
                 List<ValueWrapper> value = ((ValueWrapper.ArrayValueWrapper) propertyValue).getValue();
                 if (value != null && value.size() > 0) {
                     for (ValueWrapper valueWrapper : value) {
                         Map<String, ValueWrapper> reportData = (Map<String, ValueWrapper>) valueWrapper.getValue();
                         if (reportData != null && reportData.size() > 0) {
-                            viewHolder.sw.setChecked(true);
-                            viewHolder.tv_status.setText("已开启");
-                            break;
+                            ValueWrapper.BooleanValueWrapper enable = (ValueWrapper.BooleanValueWrapper) reportData.get("Enable");
+                            if(enable != null && enable.getValue() != null && enable.getValue() == 1) {
+                                viewHolder.sw.setChecked(true);
+                                viewHolder.tv_status.setText("已开启");
+                                break;
+                            }
                         }
                     }
                 }
