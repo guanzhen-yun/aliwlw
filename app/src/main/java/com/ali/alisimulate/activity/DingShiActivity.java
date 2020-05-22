@@ -64,61 +64,22 @@ public class DingShiActivity extends BaseActivity {
 
         mSwOpen.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b) {
-                saveOpenTime(true);
+                SaveAndUploadAliUtil.saveOpenTime(true);
             } else {
-                closeStatus(true);
+                SaveAndUploadAliUtil.closeStatus(true);
             }
         });
 
         mSwClose.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b) {
-                saveOpenTime(false);
+                SaveAndUploadAliUtil.saveOpenTime(false);
             } else {
-                closeStatus(false);
+                SaveAndUploadAliUtil.closeStatus(false);
             }
         });
     }
 
-    private void saveOpenTime(boolean isOpen) {
-        Map<String, ValueWrapper> reportData = new HashMap<>();
-       List<ValueWrapper> localTimer = SaveAndUploadAliUtil.getList("LocalTimer");
-        if (localTimer == null) {
-            localTimer = new ArrayList<>();
-            if (!isOpen) {//关机
-                Map<String, ValueWrapper> value2 = new HashMap<>();
-                ValueWrapper.StructValueWrapper structValueWrapper2 = new ValueWrapper.StructValueWrapper();
-                structValueWrapper2.setValue(value2);
-                localTimer.add(structValueWrapper2);
-            }
-            Map<String, ValueWrapper> value1 = new HashMap<>();
-            addMap(value1);
-            ValueWrapper.StructValueWrapper structValueWrapper = new ValueWrapper.StructValueWrapper();
-            structValueWrapper.setValue(value1);
-            localTimer.add(structValueWrapper);
-            if (isOpen) {//开机
-                Map<String, ValueWrapper> value2 = new HashMap<>();
-                ValueWrapper.StructValueWrapper structValueWrapper2 = new ValueWrapper.StructValueWrapper();
-                structValueWrapper2.setValue(value2);
-                localTimer.add(structValueWrapper2);
-            }
-        } else if (localTimer.size() == 2) {
-            ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
-            Map<String, ValueWrapper> value = structValueWrapper.getValue();
-            if(value != null) {
-                value.put("Enable", new ValueWrapper.BooleanValueWrapper(1));
-            } else {
-                Map<String, ValueWrapper> value1 = new HashMap<>();
-                addMap(value1);
-                structValueWrapper.setValue(value1);
-            }
-        }
-        SaveAndUploadAliUtil.putList("LocalTimer", reportData, localTimer);
-        SaveAndUploadAliUtil.saveAndUpload(reportData);
-    }
 
-    private void addMap(Map<String, ValueWrapper> value1) {
-        value1.put("Enable", new ValueWrapper.BooleanValueWrapper(1));
-    }
 
     private void jumpControl(boolean isOpen) {
         Bundle bundle = new Bundle();
@@ -126,20 +87,6 @@ public class DingShiActivity extends BaseActivity {
         Intent intent = new Intent(DingShiActivity.this, DingshiControlActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
-    }
-
-    private void closeStatus(boolean isOpen) {
-        Map<String, ValueWrapper> reportData = new HashMap<>();
-        List<ValueWrapper> localTimer = SaveAndUploadAliUtil.getList("LocalTimer");
-        ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
-        Map<String, ValueWrapper> value = structValueWrapper.getValue();
-        if(value != null) {
-            value.put("Enable", new ValueWrapper.BooleanValueWrapper(0));
-            structValueWrapper.setValue(value);
-            SaveAndUploadAliUtil.putList("LocalTimer", reportData, localTimer);
-            SaveAndUploadAliUtil.saveAndUpload(reportData);
-        }
-
     }
 
     @OnClick({R.id.iv_back, R.id.rl_open, R.id.rl_close})

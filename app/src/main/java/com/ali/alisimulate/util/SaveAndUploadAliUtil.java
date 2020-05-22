@@ -41,7 +41,8 @@ public class SaveAndUploadAliUtil {
             }
         });
     }
-    public static void saveAndUpload(Map<String, ValueWrapper> reportData,  OnUploadSuccessListener onUploadSuccessListener) {
+
+    public static void saveAndUpload(Map<String, ValueWrapper> reportData, OnUploadSuccessListener onUploadSuccessListener) {
         LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
             @Override
             public void onSuccess(String resID, Object o) {
@@ -63,10 +64,10 @@ public class SaveAndUploadAliUtil {
     public static boolean getBoolValue(String indentify) {
         ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue(indentify);
         if (propertyValue != null) {
-            if(propertyValue instanceof ValueWrapper.IntValueWrapper) {
+            if (propertyValue instanceof ValueWrapper.IntValueWrapper) {
                 Integer value = ((ValueWrapper.IntValueWrapper) propertyValue).getValue();
                 return value != null && value == 1;
-            } else if(propertyValue instanceof ValueWrapper.BooleanValueWrapper) {
+            } else if (propertyValue instanceof ValueWrapper.BooleanValueWrapper) {
                 Integer value = ((ValueWrapper.BooleanValueWrapper) propertyValue).getValue();
                 return value != null && value == 1;
             } else {
@@ -201,42 +202,51 @@ public class SaveAndUploadAliUtil {
         }
     }
 
-    private static void addMap(Map<String, ValueWrapper> value1, String selectWeek, String time) {
+    private static void addMap(Map<String, ValueWrapper> value1, String selectWeek, String time, boolean isEnable) {
         value1.put("Timer", new ValueWrapper.StringValueWrapper(selectWeek + ";" + time));
-        value1.put("Enable", new ValueWrapper.BooleanValueWrapper(1));
+        value1.put("Enable", new ValueWrapper.BooleanValueWrapper(isEnable ? 1 : 0));
     }
 
+    /**
+     * 上传本地数据
+     */
     public static void upLoadLocalData(OnUploadSuccessListener onUploadSuccessListener) {
         String weekO = SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_OPEN_WEEK);
         String weekC = SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CLOSE_WEEK);
         String timeO = SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_OPEN_TIME);
         String timeC = SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CLOSE_TIME);
 
+        boolean isOpenTimer = SaveAndUploadAliUtil.isOpenTiner(true);
+
+        boolean isCloseTimer = SaveAndUploadAliUtil.isOpenTiner(false);
+
         Map<String, ValueWrapper> reportData = new HashMap<>();
         if (!TextUtils.isEmpty(timeO) || !TextUtils.isEmpty(timeC)) {
             List<ValueWrapper> localTimer = new ArrayList<>();
             if (!TextUtils.isEmpty(timeO)) {
                 Map<String, ValueWrapper> value1 = new HashMap<>();
-                addMap(value1, weekO, timeO);
+                addMap(value1, weekO, timeO, isOpenTimer);
                 ValueWrapper.StructValueWrapper structValueWrapper = new ValueWrapper.StructValueWrapper();
                 structValueWrapper.setValue(value1);
                 localTimer.add(structValueWrapper);
             } else {
                 Map<String, ValueWrapper> value2 = new HashMap<>();
                 ValueWrapper.StructValueWrapper structValueWrapper2 = new ValueWrapper.StructValueWrapper();
+                value2.put("Enable", new ValueWrapper.BooleanValueWrapper(isOpenTimer ? 1 : 0));
                 structValueWrapper2.setValue(value2);
                 localTimer.add(structValueWrapper2);
             }
 
             if (!TextUtils.isEmpty(timeC)) {
                 Map<String, ValueWrapper> value1 = new HashMap<>();
-                addMap(value1, weekC, timeC);
+                addMap(value1, weekC, timeC, isCloseTimer);
                 ValueWrapper.StructValueWrapper structValueWrapper = new ValueWrapper.StructValueWrapper();
                 structValueWrapper.setValue(value1);
                 localTimer.add(structValueWrapper);
             } else {
                 Map<String, ValueWrapper> value2 = new HashMap<>();
                 ValueWrapper.StructValueWrapper structValueWrapper2 = new ValueWrapper.StructValueWrapper();
+                value2.put("Enable", new ValueWrapper.BooleanValueWrapper(isCloseTimer ? 1 : 0));
                 structValueWrapper2.setValue(value2);
                 localTimer.add(structValueWrapper2);
             }
@@ -260,23 +270,29 @@ public class SaveAndUploadAliUtil {
             }
         }
 
-        LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
-            @Override
-            public void onSuccess(String resID, Object o) {
-                Log.e("ProductActivity", "属性上报成功");
-                if (onUploadSuccessListener != null) {
-                    onUploadSuccessListener.onUnloadSuccess();
-                }
+        if(reportData.size() == 0) {
+            if (onUploadSuccessListener != null) {
+                onUploadSuccessListener.onUnloadSuccess();
             }
+        } else {
+            LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
+                @Override
+                public void onSuccess(String resID, Object o) {
+                    Log.e("ProductActivity", "属性上报成功");
+                    if (onUploadSuccessListener != null) {
+                        onUploadSuccessListener.onUnloadSuccess();
+                    }
+                }
 
-            @Override
-            public void onError(String resId, AError aError) {
-                Log.e("ProductActivity", "属性上报失败");
-                if (onUploadSuccessListener != null) {
-                    onUploadSuccessListener.onUnloadSuccess();
+                @Override
+                public void onError(String resId, AError aError) {
+                    Log.e("ProductActivity", "属性上报失败");
+                    if (onUploadSuccessListener != null) {
+                        onUploadSuccessListener.onUnloadSuccess();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     public interface OnUploadSuccessListener {
@@ -284,16 +300,216 @@ public class SaveAndUploadAliUtil {
     }
 
     /**
-     * 保存开机状态
+     * 获取开机/关机状态
      */
-    public static void saveTimerStata(boolean hasOpen, boolean hasClose) {
 
+    public static boolean isOpenTiner(boolean isOpen) {
+        String str = SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_TIMER);
+        String openStatus = str.split("-")[0];
+        String closeStatus = str.split("-")[1];
+        return isOpen ? "1".equals(openStatus) : "1".equals(closeStatus);
     }
 
     /**
      * 修改开机/关机状态
      */
     public static void changeTimerState(boolean isOpen, int state) {
+        String str = SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_TIMER);
+        String openStatus = str.split("-")[0];
+        String closeStatus = str.split("-")[1];
+        openStatus = isOpen ? String.valueOf(state) : openStatus;
+        closeStatus = isOpen ? closeStatus : String.valueOf(state);
+        str = openStatus + "-" + closeStatus;
+        SharedPreferencesUtils.save(MyApp.getApp(), Constants.KEY_TIMER, str);
+    }
+
+    /**
+     * 如果没有开关机定时状态 设置默认的开关机状态
+     */
+
+    public static void setInitOpenStatus() {
+        String str = SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_TIMER);
+        if (TextUtils.isEmpty(str)) {
+            SharedPreferencesUtils.save(MyApp.getApp(), Constants.KEY_TIMER, "0-0");
+        }
+    }
+
+    public static boolean getIsOpenOrCloseTimer(boolean isOpen) {
+        List<ValueWrapper> localTimer = SaveAndUploadAliUtil.getList("LocalTimer");
+        if (localTimer == null || localTimer.size() != 2) {
+            return false;
+        }
+
+        ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
+        if (structValueWrapper == null) {
+            return false;
+        }
+
+        Map<String, ValueWrapper> value = structValueWrapper.getValue();
+        if (value == null || !value.containsKey("Enable")) {
+            return false;
+        }
+
+        ValueWrapper.BooleanValueWrapper enable = (ValueWrapper.BooleanValueWrapper) value.get("Enable");
+        if (enable != null && enable.getValue() != null && 1 == enable.getValue()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 获取循环的周期
+     * 如果设置了 则每次定时结束不关掉定时
+     */
+    public static String getOpenOrCloseWeek(boolean isOpen) {
+        List<ValueWrapper> localTimer = SaveAndUploadAliUtil.getList("LocalTimer");
+        if (localTimer == null || localTimer.size() != 2) {
+            return null;
+        }
+
+        ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
+        if (structValueWrapper == null) {
+            return null;
+        }
+
+        Map<String, ValueWrapper> value = structValueWrapper.getValue();
+        if (value == null || !value.containsKey("Timer")) {
+            return null;
+        }
+        ValueWrapper.StringValueWrapper timer = (ValueWrapper.StringValueWrapper) value.get("Timer");
+        if (timer != null && timer.getValue() != null && !TextUtils.isEmpty(timer.getValue())) {
+            String time = timer.getValue();
+            if (time.contains(";") && time.split(";").length == 2) {
+                String week = time.split(";")[0];
+                if (!TextUtils.isEmpty(week)) {
+                    return week;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取定时的时间
+     * 如果设置了 则每次回到控制页面都去开启定时器 去监听状态
+     */
+
+
+    public static String getOpenOrCloseTime(boolean isOpen) {
+        List<ValueWrapper> localTimer = SaveAndUploadAliUtil.getList("LocalTimer");
+        if (localTimer == null || localTimer.size() != 2) {
+            return null;
+        }
+
+        ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
+        if (structValueWrapper == null) {
+            return null;
+        }
+
+        Map<String, ValueWrapper> value = structValueWrapper.getValue();
+        if (value == null || !value.containsKey("Timer")) {
+            return null;
+        }
+        ValueWrapper.StringValueWrapper timer = (ValueWrapper.StringValueWrapper) value.get("Timer");
+        if (timer != null && timer.getValue() != null && !TextUtils.isEmpty(timer.getValue())) {
+            String time = timer.getValue();
+            if (time.contains(";") && time.split(";").length == 2) {
+                String tt = time.split(";")[1];
+                if (!TextUtils.isEmpty(tt)) {
+                    return tt;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 设置开关机定时开启状态
+     */
+    public static void saveOpenTime(boolean isOpen) {
+        SaveAndUploadAliUtil.changeTimerState(isOpen, 1);
+        Map<String, ValueWrapper> reportData = new HashMap<>();
+        List<ValueWrapper> localTimer = SaveAndUploadAliUtil.getList("LocalTimer");
+        if (localTimer == null) {
+            localTimer = new ArrayList<>();
+            if (!isOpen) {//关机
+                Map<String, ValueWrapper> value2 = new HashMap<>();
+                ValueWrapper.StructValueWrapper structValueWrapper2 = new ValueWrapper.StructValueWrapper();
+                structValueWrapper2.setValue(value2);
+                localTimer.add(structValueWrapper2);
+            }
+            Map<String, ValueWrapper> value1 = new HashMap<>();
+            addMap(value1);
+            ValueWrapper.StructValueWrapper structValueWrapper = new ValueWrapper.StructValueWrapper();
+            structValueWrapper.setValue(value1);
+            localTimer.add(structValueWrapper);
+            if (isOpen) {//开机
+                Map<String, ValueWrapper> value2 = new HashMap<>();
+                ValueWrapper.StructValueWrapper structValueWrapper2 = new ValueWrapper.StructValueWrapper();
+                structValueWrapper2.setValue(value2);
+                localTimer.add(structValueWrapper2);
+            }
+        } else if (localTimer.size() == 2) {
+            ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
+            Map<String, ValueWrapper> value = structValueWrapper.getValue();
+            if(value != null) {
+                value.put("Enable", new ValueWrapper.BooleanValueWrapper(1));
+            } else {
+                Map<String, ValueWrapper> value1 = new HashMap<>();
+                addMap(value1);
+                structValueWrapper.setValue(value1);
+            }
+        }
+        SaveAndUploadAliUtil.putList("LocalTimer", reportData, localTimer);
+        SaveAndUploadAliUtil.saveAndUpload(reportData);
+    }
+
+    /**
+     * 关闭定时
+     */
+
+    public static void closeTimer() {
+        SaveAndUploadAliUtil.changeTimerState(true, 0);
+        SaveAndUploadAliUtil.changeTimerState(false, 0);
+        Map<String, ValueWrapper> reportData = new HashMap<>();
+        List<ValueWrapper> localTimer = SaveAndUploadAliUtil.getList("LocalTimer");
+        if (localTimer != null && localTimer.size() == 2) {
+            ValueWrapper.StructValueWrapper structValueWrapper1 = (ValueWrapper.StructValueWrapper) localTimer.get(0);
+            ValueWrapper.StructValueWrapper structValueWrapper2 = (ValueWrapper.StructValueWrapper) localTimer.get(1);
+            Map<String, ValueWrapper> value1 = structValueWrapper1.getValue();
+            if(value1 != null) {
+                value1.put("Enable", new ValueWrapper.BooleanValueWrapper(0));
+            }
+            Map<String, ValueWrapper> value2 = structValueWrapper2.getValue();
+            if(value2 != null) {
+                value2.put("Enable", new ValueWrapper.BooleanValueWrapper(0));
+            }
+        }
+        SaveAndUploadAliUtil.putList("LocalTimer", reportData, localTimer);
+        SaveAndUploadAliUtil.saveAndUpload(reportData);
+    }
+
+
+    public static void addMap(Map<String, ValueWrapper> value1) {
+        value1.put("Enable", new ValueWrapper.BooleanValueWrapper(1));
+    }
+
+    /**
+     * 设置开关机关闭状态
+     */
+
+    public static void closeStatus(boolean isOpen) {
+        SaveAndUploadAliUtil.changeTimerState(isOpen, 0);
+        Map<String, ValueWrapper> reportData = new HashMap<>();
+        List<ValueWrapper> localTimer = SaveAndUploadAliUtil.getList("LocalTimer");
+        ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
+        Map<String, ValueWrapper> value = structValueWrapper.getValue();
+        if(value != null) {
+            value.put("Enable", new ValueWrapper.BooleanValueWrapper(0));
+            structValueWrapper.setValue(value);
+            SaveAndUploadAliUtil.putList("LocalTimer", reportData, localTimer);
+            SaveAndUploadAliUtil.saveAndUpload(reportData);
+        }
 
     }
 }

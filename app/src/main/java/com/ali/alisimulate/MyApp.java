@@ -177,68 +177,6 @@ public class MyApp extends Application {
                     listener.onConnect();
                 }
 
-                // 监听云端设备影子更新
-                LinkKit.getInstance().getDeviceShadow().setShadowChangeListener(new IShadowRRPC() {
-                    @Override
-                    public void onSubscribeSuccess(ARequest aRequest) {
-                        // 订阅设备影子下行数据成功
-                    }
-
-                    @Override
-                    public void onSubscribeFailed(ARequest aRequest, AError aError) {
-                        // 订阅设备影子下行数据失败
-                    }
-
-                    @Override
-                    public void onReceived(ARequest aRequest, AResponse aResponse, IConnectRrpcHandle iConnectRrpcHandle) {
-                        // 接收到云端数据下行，下行数据在 aResponse 想里面
-                        try {
-                            if (aRequest != null) {
-                                String dataStr = null;
-                                if (aResponse.data instanceof byte[]) {
-                                    dataStr = new String((byte[]) aResponse.data, "UTF-8");
-                                } else if (aResponse.data instanceof String) {
-                                    dataStr = (String) aResponse.data;
-                                } else {
-                                    dataStr = String.valueOf(aResponse.data);
-                                }
-                                // Log.d(TAG, "dataStr = " + dataStr);
-                                // 返回数据示例
-                                //{"method":"control","payload":{"state":{"desired":{"mode":2,"color":"white"},"reported":{"mode":"1","color":"red"}},"metadata":{"desired":{"mode":{"timestamp":1547642408},"color":{"timestamp":1547642408}},"reported":{"mode":{"timestamp":1547642408},"color":{"timestamp":1547642408}}}},"timestamp":1547642408,"version":12}
-                                // 仅供参考
-                                ShadowResponse<String> shadowResponse = JSONObject.parseObject(dataStr, new TypeReference<ShadowResponse<String>>() {
-                                }.getType());
-                                Long version = 0l;
-                                if (shadowResponse != null && shadowResponse.version != null && TextUtils.isDigitsOnly(shadowResponse.version)) {
-                                    version = Long.valueOf(shadowResponse.version);
-                                }
-
-                                AResponse response = new AResponse();
-                                // TODO 用户实现控制设备
-                                // 用户控制设备之后 上报影子的值到云端
-                                // 上报设置之后的值到云端
-                                // 根据当前实际值上报
-//                                response.data = shadowUpdate.replace("{ver}", String.valueOf(version + 1));
-                                // 第一个值 replyTopic 有默认值 用户不需要设置
-                                iConnectRrpcHandle.onRrpcResponse(null, response);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onResponseSuccess(ARequest aRequest) {
-                        // 下行处理之后上报成功
-                    }
-
-                    @Override
-                    public void onResponseFailed(ARequest aRequest, AError aError) {
-                        // 下行处理之后上报失败
-                    }
-                });
-
-
             }
         });
 

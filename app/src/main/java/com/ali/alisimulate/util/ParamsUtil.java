@@ -1,8 +1,6 @@
 package com.ali.alisimulate.util;
 
-import android.content.Context;
-
-import com.ali.alisimulate.Constants;
+import android.text.TextUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,22 +79,27 @@ public class ParamsUtil {
         return year + "-" + month + "-" + day;
     }
 
-    public static long getOpenOrCloseTime(Context context, boolean isOpen) {
+    /**
+     * 获取应该定时开机/关机 的时间
+     */
+    public static long getOpenOrCloseTime(boolean isOpen) {
         long time = 0;
 
-        String weeks = SharedPreferencesUtils.getStr(context, isOpen ? Constants.KEY_OPEN_WEEK : Constants.KEY_CLOSE_WEEK);
-//        if (!TextUtils.isEmpty(weeks) && weeks.contains(getCurrentWeek())) {
-        String str = SharedPreferencesUtils.getStr(context, isOpen ? Constants.KEY_OPEN_TIME : Constants.KEY_CLOSE_TIME);
-        if(str.split(",").length <=1) {
+        String weeks = SaveAndUploadAliUtil.getOpenOrCloseWeek(isOpen);
+
+        String timer = SaveAndUploadAliUtil.getOpenOrCloseTime(isOpen);
+
+        if (TextUtils.isEmpty(timer) || timer.split(",").length <= 1) {
             return 0;
         }
-        String hour = str.split(",")[0];
-        String minute = str.split(",")[1];
+
+        String hour = timer.split(",")[0];
+        String minute = timer.split(",")[1];
 
         String openTime = getDateStr() + " " + hour + ":" + minute + ":" + 0;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINESE);
         sdf.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
-        Date date = null;
+        Date date;
         try {
             date = sdf.parse(openTime);
             if (date != null) {
@@ -105,9 +108,15 @@ public class ParamsUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        } else {
-//
-//        }
-        return time;
+        boolean isOpenTimer = SaveAndUploadAliUtil.getIsOpenOrCloseTimer(isOpen);
+        if (!isOpenTimer) {
+            return 0;
+        }
+        if (!TextUtils.isEmpty(weeks) && weeks.contains(getCurrentWeek())) {
+            return time;
+        } else if (TextUtils.isEmpty(weeks)) {
+            return time;
+        }
+        return 0;
     }
 }

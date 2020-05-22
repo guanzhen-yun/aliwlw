@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -57,7 +58,7 @@ public class ControlFragment extends BaseFragment {
     private List<List<Property>> controlList = new ArrayList<>();
     private ControlAdapter adapter;
     private Map<String, Property> map_control = new HashMap<>();
-    private boolean mIsOpen;
+    private boolean mIsOpen;//是否开机 默认关机
 
     public List<String> getControlList() {
         return list_deviceIndenty;
@@ -82,7 +83,7 @@ public class ControlFragment extends BaseFragment {
         // 获取所有属性
         List<Property> properties = LinkKit.getInstance().getDeviceThing().getProperties();
 
-        if(properties == null) {
+        if (properties == null) {
             return;
         }
 
@@ -174,7 +175,7 @@ public class ControlFragment extends BaseFragment {
             mIvClose.setVisibility(View.VISIBLE);
             Property powerSwitch = map_control.get("PowerSwitch");
             if (powerSwitch != null && TmpConstant.TYPE_VALUE_BOOLEAN.equals(powerSwitch.getDataType().getType())) {
-                if(SaveAndUploadAliUtil.getBoolValue(powerSwitch.getIdentifier())) {
+                if (SaveAndUploadAliUtil.getBoolValue(powerSwitch.getIdentifier())) {
                     mIsOpen = true;
                     mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
                 } else {
@@ -183,10 +184,10 @@ public class ControlFragment extends BaseFragment {
                 }
                 mIvClose.setOnClickListener(view -> {
                     Map<String, ValueWrapper> reportData = new HashMap<>();
-                    SaveAndUploadAliUtil.putBoolParam(!mIsOpen,reportData,"PowerSwitch");
+                    SaveAndUploadAliUtil.putBoolParam(!mIsOpen, reportData, "PowerSwitch");
                     SaveAndUploadAliUtil.saveAndUpload(reportData);
                     SaveAndUploadAliUtil.saveBoolean(!mIsOpen, "PowerSwitch");
-                    if(mIsOpen) {
+                    if (mIsOpen) {
                         mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
                     } else {
                         mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
@@ -209,15 +210,15 @@ public class ControlFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         if (map_control.containsKey("PowerSwitch") && map_control.containsKey("LocalTimer")) {
-            long openT = ParamsUtil.getOpenOrCloseTime(mContext, true);
-            long closeT = ParamsUtil.getOpenOrCloseTime(mContext, false);
+            long openT = ParamsUtil.getOpenOrCloseTime(true);
+            long closeT = ParamsUtil.getOpenOrCloseTime(false);
             adapter.setLocalOpenOrFalse();
 
             long currentTime = System.currentTimeMillis();
             long totalTime = 0;
-            if (mIsOpen && closeT > 0) {//关机的倒计时
+            if (mIsOpen && closeT > 0 && SaveAndUploadAliUtil.getIsOpenOrCloseTimer(false)) {//关机的倒计时
                 totalTime = closeT - currentTime;
-            } else if (!mIsOpen && openT > 0) {
+            } else if (!mIsOpen && openT > 0 && SaveAndUploadAliUtil.getIsOpenOrCloseTimer(true)) {
                 totalTime = openT - currentTime;
             }
 
@@ -238,6 +239,7 @@ public class ControlFragment extends BaseFragment {
                             SaveAndUploadAliUtil.saveAndUpload(reportData);
                             SaveAndUploadAliUtil.saveBoolean(mIsOpen, "PowerSwitch");
                             mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
+                            handleOneTime();
                         } else {
                             mIsOpen = true;
                             Map<String, ValueWrapper> reportData = new HashMap<>();
@@ -245,6 +247,7 @@ public class ControlFragment extends BaseFragment {
                             SaveAndUploadAliUtil.saveAndUpload(reportData);
                             SaveAndUploadAliUtil.saveBoolean(mIsOpen, "PowerSwitch");
                             mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
+                            handleOneTime();
                         }
                     }
                 };
@@ -258,7 +261,11 @@ public class ControlFragment extends BaseFragment {
      */
 
     private void handleOneTime() {
-
+        if (TextUtils.isEmpty(SaveAndUploadAliUtil.getOpenOrCloseWeek(!mIsOpen))) {//判断是否需要取消开机定时或者关机的定时
+            SaveAndUploadAliUtil.closeStatus(!mIsOpen);
+            SaveAndUploadAliUtil.changeTimerState(!mIsOpen, 0);
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -283,7 +290,7 @@ public class ControlFragment extends BaseFragment {
             try {
                 ReceiveMsg receiveMsg = new Gson().fromJson(data, ReceiveMsg.class);
                 Map<String, Object> params = receiveMsg.params;
-                if(params == null) {
+                if (params == null) {
                     return;
                 }
                 for (int i = 0; i < controlList.size(); i++) {
@@ -292,20 +299,20 @@ public class ControlFragment extends BaseFragment {
                         adapter.setDataByPos(i, params.get(property.getIdentifier()));
                     }
                 }
-                if(params.containsKey("PowerSwitch")) {
+                if (params.containsKey("PowerSwitch")) {
                     double pw = (double) params.get("PowerSwitch");
                     Map<String, ValueWrapper> reportData = new HashMap<>();
                     mIsOpen = (1 == pw);
-                    SaveAndUploadAliUtil.putBoolParam(mIsOpen,reportData,"PowerSwitch");
+                    SaveAndUploadAliUtil.putBoolParam(mIsOpen, reportData, "PowerSwitch");
                     SaveAndUploadAliUtil.saveAndUpload(reportData);
                     SaveAndUploadAliUtil.saveBoolean(pw == 1, "PowerSwitch");
-                    if(mIsOpen) {
+                    if (mIsOpen) {
                         mIvClose.setBackgroundResource(R.mipmap.icon_opendevice);
                     } else {
                         mIvClose.setBackgroundResource(R.mipmap.icon_closedevice);
                     }
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -316,11 +323,11 @@ public class ControlFragment extends BaseFragment {
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             int position = msg.what;
-            if(controlList.get(position).size() == 3) {
+            if (controlList.get(position).size() == 3) {
                 Property property = controlList.get(position).get(2);
                 Integer intVal = SaveAndUploadAliUtil.getIntVal(property.getIdentifier());
                 intVal = intVal + 1;
-                if(intVal < 100) {
+                if (intVal < 100) {
                     Map<String, ValueWrapper> reportData = new HashMap<>();
                     SaveAndUploadAliUtil.putIntParam(intVal, reportData, controlList.get(position).get(2).getIdentifier());
                     SaveAndUploadAliUtil.saveAndUpload(reportData);
@@ -333,7 +340,7 @@ public class ControlFragment extends BaseFragment {
                             handler.sendEmptyMessageDelayed(position, 1000);
                         }
                     });
-                } else if(intVal == 100) {
+                } else if (intVal == 100) {
                     handler.removeMessages(position);
                     Map<String, ValueWrapper> reportData = new HashMap<>();
                     Property statusP = controlList.get(position).get(1);
@@ -367,10 +374,10 @@ public class ControlFragment extends BaseFragment {
                 Map<String, ValueWrapper> reportData = new HashMap<>();
                 // identifier 是云端定义的属性的唯一标识，valueWrapper是属性的值
                 Property property = controlList.get(position).get(0);
-                if(TmpConstant.TYPE_VALUE_BOOLEAN.equals(property.getDataType().getType())) {
+                if (TmpConstant.TYPE_VALUE_BOOLEAN.equals(property.getDataType().getType())) {
                     reportData.put(property.getIdentifier(), new ValueWrapper.BooleanValueWrapper(isOpen ? 1 : 0));  // 参考示例，更多使用可参考demo
                     SaveAndUploadAliUtil.saveBoolean(isOpen, property.getIdentifier());
-                    if(controlList.get(position).size() == 3) {
+                    if (controlList.get(position).size() == 3) {
                         Property statusP = controlList.get(position).get(1);
                         EnumSpec specs = (EnumSpec) statusP.getDataType().getSpecs();
                         Set<String> strings = specs.keySet();
@@ -378,10 +385,10 @@ public class ControlFragment extends BaseFragment {
                         for (String string : strings) {
                             listKey.add(string);
                         }
-                        if(isOpen) {
-                            SaveAndUploadAliUtil.putEnumParam(Integer.parseInt(listKey.get(listKey.size()-1)), reportData, statusP.getIdentifier());
+                        if (isOpen) {
+                            SaveAndUploadAliUtil.putEnumParam(Integer.parseInt(listKey.get(listKey.size() - 1)), reportData, statusP.getIdentifier());
                             SaveAndUploadAliUtil.putIntParam(0, reportData, controlList.get(position).get(2).getIdentifier());
-                            SaveAndUploadAliUtil.saveEnum(Integer.parseInt(listKey.get(listKey.size()-1)), statusP.getIdentifier());
+                            SaveAndUploadAliUtil.saveEnum(Integer.parseInt(listKey.get(listKey.size() - 1)), statusP.getIdentifier());
                             SaveAndUploadAliUtil.saveInt(0, controlList.get(position).get(2).getIdentifier());
                             SaveAndUploadAliUtil.saveAndUpload(reportData, new SaveAndUploadAliUtil.OnUploadSuccessListener() {
                                 @Override
@@ -406,14 +413,9 @@ public class ControlFragment extends BaseFragment {
                     } else {
                         SaveAndUploadAliUtil.saveAndUpload(reportData);
                     }
-                } else if(TmpConstant.TYPE_VALUE_ARRAY.equals(property.getDataType().getType()) && "LocalTimer".equals(property.getIdentifier())) {
-                    //定时
-                        reportData.put(property.getIdentifier(), null);
-                        SharedPreferencesUtils.save(mContext, Constants.KEY_CLOSE_TIME, "");
-                        SharedPreferencesUtils.save(mContext, Constants.KEY_CLOSE_WEEK, "");
-                        SharedPreferencesUtils.save(mContext, Constants.KEY_OPEN_WEEK, "");
-                        SharedPreferencesUtils.save(mContext, Constants.KEY_OPEN_TIME, "");
-                        SaveAndUploadAliUtil.saveAndUpload(reportData);
+                } else if (TmpConstant.TYPE_VALUE_ARRAY.equals(property.getDataType().getType()) && "LocalTimer".equals(property.getIdentifier())) {
+                    //关闭定时
+                    SaveAndUploadAliUtil.closeTimer();
                 }
             }
 

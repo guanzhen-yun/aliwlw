@@ -30,6 +30,7 @@ import com.ali.alisimulate.entity.OrgDevice;
 import com.ali.alisimulate.entity.SelectOrgEntity;
 import com.ali.alisimulate.entity.UserInfoEntity;
 import com.ali.alisimulate.util.LoadMoreOnScrollListener;
+import com.ali.alisimulate.util.SaveAndUploadAliUtil;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.view.DropDownOrgSelect;
@@ -107,7 +108,9 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
 
     @Override
     public void initViews() {
+        //默认都断开连接
         SharedPreferencesUtils.save(MyApp.getApp(), Constants.KEY_CONNECT_STATUS, "");
+        SaveAndUploadAliUtil.setInitOpenStatus();//设置定时开关机本地状态
         dropDownOrgSelect = new DropDownOrgSelect();
         dropDownOrgSelect.init(this);
         dropDownOrgSelect.setOnSelectListener(new DropDownOrgSelect.onSelectListener() {

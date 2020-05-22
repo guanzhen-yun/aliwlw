@@ -256,17 +256,14 @@ public class ControlAdapter extends RecyclerView.Adapter {
                 viewHolder.sw.setChecked(false);
                 viewHolder.tv_status.setText("未开启");
             }
-            viewHolder.sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (b) {
-                        viewHolder.tv_status.setText("已开启");
-                    } else {
-                        viewHolder.tv_status.setText("未开启");
-                    }
-                    if (onCheckListener != null) {
-                        onCheckListener.onCheck(position, b);
-                    }
+            viewHolder.sw.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (b) {
+                    viewHolder.tv_status.setText("已开启");
+                } else {
+                    viewHolder.tv_status.setText("未开启");
+                }
+                if (onCheckListener != null && !b) {
+                    onCheckListener.onCheck(position, b);
                 }
             });
 

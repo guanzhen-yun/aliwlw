@@ -131,7 +131,6 @@ public class ZXingUtils {
             result = writer.encode(contents, format, desiredWidth,
                     desiredHeight, null);
         } catch (WriterException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

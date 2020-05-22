@@ -25,5 +25,5 @@ public class Constants {
 
     public static final String KEY_LOCAN_ALI = "local_ali";
 
-    public static final String KEY_TIMER = "timer";//开启定时的涨停 “开机-关机”;
+    public static final String KEY_TIMER = "timer";//开启定时的 “开机-关机”; 选中1 未选中0
 }

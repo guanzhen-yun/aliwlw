@@ -15,13 +15,14 @@ import androidx.viewpager.widget.ViewPager;
 import com.ali.alisimulate.R;
 import com.ali.alisimulate.fragment.ControlFragment;
 import com.ali.alisimulate.fragment.param.ParamFragment;
-import com.ali.alisimulate.util.ParamsUtil;
 import com.ali.alisimulate.util.SaveAndUploadAliUtil;
 import com.aliyun.alink.linkkit.api.LinkKit;
 import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
 import com.google.android.material.tabs.TabLayout;
 import com.ziroom.base.BaseActivity;
 import com.ziroom.base.ViewInject;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +53,6 @@ public class DeviceDetailActivity extends BaseActivity {
 
     private List<Fragment> fragmentList = new ArrayList<Fragment>();
     private String[] strings = new String[]{"控制", "参数设置"};
-    private String productKey;
-    private String deviceName;
-    private String deviceSecret;
     private String deviceComment;
     private String deviceId;
     private String title;
@@ -63,9 +61,6 @@ public class DeviceDetailActivity extends BaseActivity {
 
     @Override
     public void fetchIntents() {
-        productKey = getIntent().getStringExtra("productKey");
-        deviceName = getIntent().getStringExtra("deviceName");
-        deviceSecret = getIntent().getStringExtra("deviceSecret");
         deviceId = getIntent().getStringExtra("deviceId");
         title = getIntent().getStringExtra("title");
         deviceComment = getIntent().getStringExtra("deviceComment");
@@ -77,26 +72,17 @@ public class DeviceDetailActivity extends BaseActivity {
         ValueWrapper propertyValue = LinkKit.getInstance().getDeviceThing().getPropertyValue("PowerSwitch");
         if (propertyValue != null) {//阿里云有数据 没断开过连接
             addFragment();
-        } else if (SaveAndUploadAliUtil.getAliList() == null) {
-            long openT = ParamsUtil.getOpenOrCloseTime(this, true);
-            long closeT = ParamsUtil.getOpenOrCloseTime(this, false);
-            if (openT != 0 || closeT != 0) {
-                upLoadLocal();
-            } else {
-                addFragment();
-            }
-        } else {
+        } else {//本地有数据
             upLoadLocal();
         }
     }
 
+    /**
+     * 同步本地数据
+     */
+
     private void upLoadLocal() {
-        SaveAndUploadAliUtil.upLoadLocalData(new SaveAndUploadAliUtil.OnUploadSuccessListener() {
-            @Override
-            public void onUnloadSuccess() {
-                addFragment();
-            }
-        });
+        SaveAndUploadAliUtil.upLoadLocalData(this::addFragment);
     }
 
     private void addFragment() {
@@ -117,15 +103,13 @@ public class DeviceDetailActivity extends BaseActivity {
 
     @OnClick({R.id.iv_back})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.iv_back:
-                finish();
-                break;
+        if (view.getId() == R.id.iv_back) {
+            finish();
         }
     }
 
     public class MyAdapter extends FragmentPagerAdapter {
-        public MyAdapter(FragmentManager fm) {
+        MyAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -134,6 +118,7 @@ public class DeviceDetailActivity extends BaseActivity {
             return 2;
         }
 
+        @NotNull
         @Override
         public Fragment getItem(int position) {
             return fragmentList.get(position);
