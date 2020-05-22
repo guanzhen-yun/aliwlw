@@ -291,8 +291,13 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         } else {
             if (!TextUtils.isEmpty(deviceList.deviceName) && !deviceList.deviceName.equals(SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CONNECT_STATUS))) {
                 showConnectDialog();
-                MyApp.getApp().unregistConnectAli();
-                regist(deviceList);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MyApp.getApp().unregistConnectAli();
+                        regist(deviceList);
+                    }
+                }).start();
             } else {
                 showConnectDialog();
                 handler.sendEmptyMessageDelayed(0, 200);
