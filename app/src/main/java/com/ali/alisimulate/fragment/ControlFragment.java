@@ -209,6 +209,7 @@ public class ControlFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        adapter.notifyDataSetChanged();
         if (map_control.containsKey("PowerSwitch") && map_control.containsKey("LocalTimer")) {
             long openT = ParamsUtil.getOpenOrCloseTime(true);
             long closeT = ParamsUtil.getOpenOrCloseTime(false);

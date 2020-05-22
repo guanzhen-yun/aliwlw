@@ -236,10 +236,10 @@ public class ControlAdapter extends RecyclerView.Adapter {
             if (propertyValue != null) {
                 viewHolder.sw.setVisibility(View.VISIBLE);
                 viewHolder.tv_status.setVisibility(View.VISIBLE);
-                viewHolder.sw.setChecked(false);
                 viewHolder.tv_status.setText("未开启");
                 List<ValueWrapper> value = ((ValueWrapper.ArrayValueWrapper) propertyValue).getValue();
                 if (value != null && value.size() > 0) {
+                    boolean isOpen = false;
                     for (ValueWrapper valueWrapper : value) {
                         Map<String, ValueWrapper> reportData = (Map<String, ValueWrapper>) valueWrapper.getValue();
                         if (reportData != null && reportData.size() > 0) {
@@ -247,9 +247,13 @@ public class ControlAdapter extends RecyclerView.Adapter {
                             if(enable != null && enable.getValue() != null && enable.getValue() == 1) {
                                 viewHolder.sw.setChecked(true);
                                 viewHolder.tv_status.setText("已开启");
+                                isOpen = true;
                                 break;
                             }
                         }
+                    }
+                    if(!isOpen) {
+                        viewHolder.sw.setChecked(false);
                     }
                 }
             } else {
