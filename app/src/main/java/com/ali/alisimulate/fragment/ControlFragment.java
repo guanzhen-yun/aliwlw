@@ -262,9 +262,9 @@ public class ControlFragment extends BaseFragment {
      */
 
     private void handleOneTime() {
-        if (TextUtils.isEmpty(SaveAndUploadAliUtil.getOpenOrCloseWeek(!mIsOpen))) {//判断是否需要取消开机定时或者关机的定时
-            SaveAndUploadAliUtil.closeStatus(!mIsOpen);
-            SaveAndUploadAliUtil.changeTimerState(!mIsOpen, 0);
+        if (TextUtils.isEmpty(SaveAndUploadAliUtil.getOpenOrCloseWeek(mIsOpen))) {//判断是否需要取消开机定时或者关机的定时
+            SaveAndUploadAliUtil.closeStatus(mIsOpen);
+            SaveAndUploadAliUtil.changeTimerState(mIsOpen, 0);
             adapter.notifyDataSetChanged();
         }
     }

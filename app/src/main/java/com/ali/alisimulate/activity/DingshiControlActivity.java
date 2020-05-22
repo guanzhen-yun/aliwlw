@@ -84,21 +84,21 @@ public class DingshiControlActivity extends BaseActivity {
         if (localTimer != null && localTimer.size() == 2) {
             ValueWrapper valueWrapper = localTimer.get("定时关机".equals(title) ? 1 : 0);
             Map<String, ValueWrapper> value = (Map<String, ValueWrapper>) valueWrapper.getValue();
-            if(value != null && value.size() > 0) {
+            if (value != null && value.size() > 0) {
                 ValueWrapper.StringValueWrapper timer = (ValueWrapper.StringValueWrapper) value.get("Timer");
-                if(timer != null) {
+                if (timer != null) {
                     String value1 = timer.getValue();
                     String week = value1.split(";")[0];
                     String t = value1.split(";")[1];
-                    if(!TextUtils.isEmpty(week)) {
+                    if (!TextUtils.isEmpty(week)) {
                         for (WeekEntity weekEntity : weekEntities) {
-                            if(week.contains(weekEntity.week)) {
+                            if (week.contains(weekEntity.week)) {
                                 weekEntity.isSelect = true;
                             }
                         }
                         adapter.notifyDataSetChanged();
                     }
-                    if(!TextUtils.isEmpty(t)) {
+                    if (!TextUtils.isEmpty(t)) {
                         hour = t.split(",")[0];
                         minite = t.split(",")[1];
                         tvTime.setText(hour + ":" + minite);
@@ -143,7 +143,7 @@ public class DingshiControlActivity extends BaseActivity {
             } else {
                 keyValue = new KeyValue(String.valueOf(i));
             }
-            if(keyValue.getValue().equals(minite)) {
+            if (keyValue.getValue().equals(minite)) {
                 initPos = i;
             }
             listMinute.add(keyValue);
@@ -161,8 +161,8 @@ public class DingshiControlActivity extends BaseActivity {
             } else {
                 keyValue = new KeyValue(String.valueOf(i));
             }
-            if(keyValue.getValue().equals(hour)) {
-                initPos = i-1;
+            if (keyValue.getValue().equals(hour)) {
+                initPos = i - 1;
             }
             listHour.add(keyValue);
         }
@@ -210,7 +210,7 @@ public class DingshiControlActivity extends BaseActivity {
                 localTimer.add(structValueWrapper2);
             }
             Map<String, ValueWrapper> value1 = new HashMap<>();
-            addMap(value1, selectWeek, isOpen);
+            addMap(value1, selectWeek);
             ValueWrapper.StructValueWrapper structValueWrapper = new ValueWrapper.StructValueWrapper();
             structValueWrapper.setValue(value1);
             localTimer.add(structValueWrapper);
@@ -222,16 +222,21 @@ public class DingshiControlActivity extends BaseActivity {
             }
         } else if (localTimer.size() == 2) {
             ValueWrapper.StructValueWrapper structValueWrapper = (ValueWrapper.StructValueWrapper) localTimer.get(isOpen ? 0 : 1);
-            Map<String, ValueWrapper> value1 = new HashMap<>();
-            addMap(value1, selectWeek, isOpen);
+            Map<String, ValueWrapper> value1 = structValueWrapper.getValue();
+            if(value1 == null) {
+                value1 = new HashMap<>();
+            }
+            addMap(value1, selectWeek);
             structValueWrapper.setValue(value1);
         }
         SaveAndUploadAliUtil.putList("LocalTimer", reportData, localTimer);
         SaveAndUploadAliUtil.saveAndUpload(reportData);
     }
 
-    private void addMap(Map<String, ValueWrapper> value1, String selectWeek, boolean isOpen) {
+    private void addMap(Map<String, ValueWrapper> value1, String selectWeek) {
         value1.put("Timer", new ValueWrapper.StringValueWrapper(selectWeek + ";" + hour + "," + minite));
-        value1.put("Enable", new ValueWrapper.BooleanValueWrapper(isOpen ?  1: 0));
+        if (!value1.containsKey("Enable")) {
+            value1.put("Enable", new ValueWrapper.BooleanValueWrapper(0));
+        }
     }
 }

@@ -290,8 +290,8 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
             regist(deviceList);
         } else {
             if (!TextUtils.isEmpty(deviceList.deviceName) && !deviceList.deviceName.equals(SharedPreferencesUtils.getStr(MyApp.getApp(), Constants.KEY_CONNECT_STATUS))) {
-                MyApp.getApp().unregistConnectAli();
                 showConnectDialog();
+                MyApp.getApp().unregistConnectAli();
                 regist(deviceList);
             } else {
                 showConnectDialog();
