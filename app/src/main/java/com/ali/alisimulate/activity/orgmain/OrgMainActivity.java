@@ -77,7 +77,6 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     @BindView(R.id.srLayout)
     SmartRefreshLayout srLayout;
 
-    private List<OrgDevice.DeviceList> orgDevices = new ArrayList<>();
     private DeviceListAdapter adapter;
     private int page = 1;
     private DropDownOrgSelect dropDownOrgSelect;
@@ -211,7 +210,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         }
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rvDevice.setLayoutManager(linearLayoutManager);
-        adapter = new DeviceListAdapter(orgDevices);
+        adapter = new DeviceListAdapter(new ArrayList<>());
         adapter.setLoadMoreView(new ZgLoadMoreView());
         rvDevice.setAdapter(adapter);
         adapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
@@ -230,13 +229,13 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                         rvDevice.post(new Runnable() {
                             @Override
                             public void run() {
-                                orgDevices.get(position).isCheck = false;
+                                adapter.getData().get(position).isCheck = false;
                                 adapter.notifyItemChanged(position);
                                 mCheckPosition = -1;
                             }
                         });
                     } else {
-                        orgDevices.get(position).isCheck = false;
+                        adapter.getData().get(position).isCheck = false;
                         adapter.notifyItemChanged(position);
                         mCheckPosition = -1;
                     }
@@ -246,37 +245,37 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                             @Override
                             public void run() {
                                 if (mCheckPosition != -1) {
-                                    if (mCheckPosition < orgDevices.size()) {
-                                        orgDevices.get(mCheckPosition).isCheck = false;
+                                    if (mCheckPosition < adapter.getData().size()) {
+                                        adapter.getData().get(mCheckPosition).isCheck = false;
                                     }
                                     adapter.notifyItemChanged(mCheckPosition);
                                 }
-                                orgDevices.get(position).isCheck = true;
+                                adapter.getData().get(position).isCheck = true;
                                 adapter.notifyItemChanged(position);
                                 mCheckPosition = position;
                                 isConnect = false;
-                                connect(orgDevices.get(position));
+                                connect(adapter.getData().get(position));
                             }
                         });
                     } else {
                         if (mCheckPosition != -1) {
-                            if (mCheckPosition < orgDevices.size()) {
-                                orgDevices.get(mCheckPosition).isCheck = false;
+                            if (mCheckPosition < adapter.getData().size()) {
+                                adapter.getData().get(mCheckPosition).isCheck = false;
                             }
                             adapter.notifyItemChanged(mCheckPosition);
                         }
-                        orgDevices.get(position).isCheck = true;
+                        adapter.getData().get(position).isCheck = true;
                         adapter.notifyItemChanged(position);
                         mCheckPosition = position;
                         isConnect = false;
-                        connect(orgDevices.get(position));
+                        connect(adapter.getData().get(position));
                     }
                 }
             }
         });
 
         adapter.setOnSelectListener(position -> {
-            OrgDevice.DeviceList deviceList = orgDevices.get(position);
+            OrgDevice.DeviceList deviceList = adapter.getData().get(position);
             if ("配件".equals(adapter.getModelStr(deviceList.deviceModel))) {
                 return;
             }
@@ -380,7 +379,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
             @Override
             public void onClickLeft() {
                 if (!isConnect && mCheckPosition != -1) {//需要清除选中的
-                    orgDevices.get(mCheckPosition).isCheck = false;
+                    adapter.getData().get(mCheckPosition).isCheck = false;
                     adapter.notifyItemChanged(mCheckPosition);
                     mCheckPosition = -1;
                 }
@@ -392,7 +391,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                 if (isConnect) {
                     dialog.dismiss();
                     if(mCheckPosition != -1) {
-                        jumpToDetail(orgDevices.get(mCheckPosition));
+                        jumpToDetail(adapter.getData().get(mCheckPosition));
                     }
                 } else {
                     ToastUtils.showToast("还没有初始化完成!");

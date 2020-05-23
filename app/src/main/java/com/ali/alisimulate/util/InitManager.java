@@ -215,7 +215,7 @@ public class InitManager {
 
             if (ConnectSDK.getInstance().getPersistentConnectId().equals(connectId) && !TextUtils.isEmpty(topic) &&
                     topic.startsWith("/ext/rrpc/")) {
-                ToastUtils.showToast("收到云端自定义RRPC下行：topic=" + topic + ",data=" + data);
+//                ToastUtils.showToast("收到云端自定义RRPC下行：topic=" + topic + ",data=" + data);
                 //示例 topic=/ext/rrpc/1138654706478941696//a1ExY4afKY1/testDevice/user/get
                 //ALog.d(TAG, "receice Message=" + new String((byte[]) aMessage.data));
                 // 服务端返回数据示例  {"method":"thing.service.test_service","id":"123374967","params":{"vv":60},"version":"1.0.0"}
@@ -230,18 +230,18 @@ public class InitManager {
                     @Override
                     public void onResponse(ARequest aRequest, AResponse aResponse) {
                         // 响应成功
-                        ToastUtils.showToast("云端系统RRPC下行响应成功");
+//                        ToastUtils.showToast("云端系统RRPC下行响应成功");
                     }
 
                     @Override
                     public void onFailure(ARequest aRequest, AError aError) {
                         // 响应失败
-                        ToastUtils.showToast("云端系统RRPC下行响应失败");
+//                        ToastUtils.showToast("云端系统RRPC下行响应失败");
                     }
                 });
             } else if (ConnectSDK.getInstance().getPersistentConnectId().equals(connectId) && !TextUtils.isEmpty(topic) &&
                     topic.startsWith("/sys/" + MyApp.getApp().productKey + "/" + MyApp.getApp().deviceName + "/rrpc/request/")) {
-                ToastUtils.showToast("收到云端系统RRPC下行：topic=" + topic + ",data=" + data);
+//                ToastUtils.showToast("收到云端系统RRPC下行：topic=" + topic + ",data=" + data);
 //                    ALog.d(TAG, "receice Message=" + new String((byte[]) aMessage.data));
                 // 服务端返回数据示例  {"method":"thing.service.test_service","id":"123374967","params":{"vv":60},"version":"1.0.0"}
                 MqttPublishRequest request = new MqttPublishRequest();
@@ -257,12 +257,12 @@ public class InitManager {
                 LinkKit.getInstance().publish(request, new IConnectSendListener() {
                     @Override
                     public void onResponse(ARequest aRequest, AResponse aResponse) {
-                        ToastUtils.showToast("云端系统RRPC下行响应成功");
+//                        ToastUtils.showToast("云端系统RRPC下行响应成功");
                     }
 
                     @Override
                     public void onFailure(ARequest aRequest, AError aError) {
-                        ToastUtils.showToast("云端系统RRPC下行响应失败");
+//                        ToastUtils.showToast("云端系统RRPC下行响应失败");
                     }
                 });
             } else if (ConnectSDK.getInstance().getPersistentConnectId().equals(connectId) && !TextUtils.isEmpty(topic) &&
@@ -275,7 +275,7 @@ public class InitManager {
                  * 如云端： org.apache.commons.codec.binary.Base64.encodeBase64String("broadcastContent".getBytes())
                  */
                 //
-                ToastUtils.showToast("收到云端批量广播下行：topic=" + topic + ",data=" + data);
+//                ToastUtils.showToast("收到云端批量广播下行：topic=" + topic + ",data=" + data);
 
             } else if (ConnectSDK.getInstance().getPersistentConnectId().equals(connectId) && !TextUtils.isEmpty(topic) &&
                     topic.startsWith("/broadcast/" + MyApp.getApp().productKey)) {
@@ -286,9 +286,9 @@ public class InitManager {
                  * 注意：触发端数据需要进行Base64编码，否则会出现端上乱码，
                  * 如云端： org.apache.commons.codec.binary.Base64.encodeBase64String("broadcastContent".getBytes())
                  */
-                ToastUtils.showToast("收到云端广播下行：topic=" + topic + ",data=" + data);
+//                ToastUtils.showToast("收到云端广播下行：topic=" + topic + ",data=" + data);
             } else {
-                ToastUtils.showToast("收到云端下行：topic=" + topic + ",data=" + data);
+//                ToastUtils.showToast("收到云端下行：topic=" + topic + ",data=" + data);
                 /**
                  * 根据订阅的具体 topic 做业务处理
                  */

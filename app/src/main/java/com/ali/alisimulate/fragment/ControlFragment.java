@@ -414,7 +414,7 @@ public class ControlFragment extends BaseFragment {
                     } else {
                         SaveAndUploadAliUtil.saveAndUpload(reportData);
                     }
-                } else if (TmpConstant.TYPE_VALUE_ARRAY.equals(property.getDataType().getType()) && "LocalTimer".equals(property.getIdentifier())) {
+                } else if (TmpConstant.TYPE_VALUE_ARRAY.equals(property.getDataType().getType()) && "LocalTimer".equals(property.getIdentifier()) && !isOpen) {
                     //关闭定时
                     SaveAndUploadAliUtil.closeTimer();
                 }

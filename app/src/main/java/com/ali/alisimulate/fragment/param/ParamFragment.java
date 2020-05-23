@@ -429,6 +429,9 @@ public class ParamFragment extends BaseFragment<ParamPresenter> implements Param
             try {
                 ReceiveMsg receiveMsg = new Gson().fromJson(data, ReceiveMsg.class);
                 Map<String, Object> params = receiveMsg.params;
+                if(params == null) {
+                    return;
+                }
                 for (int i = 0; i < paramList.size(); i++) {
                     Property property = paramList.get(i);
                     if (params.containsKey(property.getIdentifier())) {

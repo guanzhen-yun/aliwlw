@@ -31,7 +31,7 @@
                 android:id="@+id/iv_load"
                 tools:background="@mipmap/icon_loading"
                 android:layout_width="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_centerVertical="true"
                 android:visibility="visible"
                 android:layout_height="20dp"/>
             <TextView
