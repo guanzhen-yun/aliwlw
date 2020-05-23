@@ -29,13 +29,17 @@ import com.ali.alisimulate.entity.LoginSuccess;
 import com.ali.alisimulate.entity.OrgDevice;
 import com.ali.alisimulate.entity.SelectOrgEntity;
 import com.ali.alisimulate.entity.UserInfoEntity;
-import com.ali.alisimulate.util.LoadMoreOnScrollListener;
 import com.ali.alisimulate.util.SaveAndUploadAliUtil;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.ali.alisimulate.util.ToastUtils;
 import com.ali.alisimulate.view.DropDownOrgSelect;
+import com.ali.alisimulate.view.ZgLoadMoreView;
 import com.aliyun.alink.linkkit.api.LinkKit;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
 import com.ziroom.base.BaseActivity;
 import com.ziroom.base.ViewInject;
 
@@ -70,10 +74,12 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     ImageView ivAddDevice;
     @BindView(R.id.iv_delete)
     ImageView ivDelete;
+    @BindView(R.id.srLayout)
+    SmartRefreshLayout srLayout;
 
     private List<OrgDevice.DeviceList> orgDevices = new ArrayList<>();
     private DeviceListAdapter adapter;
-    private int page = 0;
+    private int page = 1;
     private DropDownOrgSelect dropDownOrgSelect;
     private List<BranchEntity> mBranchList;
 
@@ -81,7 +87,6 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     private List<SelectOrgEntity> listFirst;
 
     private int currentPosition = 0;
-    private List<BranchTypeEntity> mBranchTypeList;
 
     private List<SelectOrgEntity> listSecond = new ArrayList<>();//1 配件  2.空气净化器 3净水器
     private Map<String, List<BranchTypeEntity>> listMap = new HashMap<>();
@@ -104,6 +109,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         mPresenter.getUserInfo();
         getDeviceList(true);//获取全部数据
         mPresenter.getBranchList();
+        initRefreshLayout();
     }
 
     @Override
@@ -205,16 +211,15 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         }
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rvDevice.setLayoutManager(linearLayoutManager);
-        adapter = new DeviceListAdapter(this, orgDevices);
+        adapter = new DeviceListAdapter(orgDevices);
+        adapter.setLoadMoreView(new ZgLoadMoreView());
         rvDevice.setAdapter(adapter);
-        rvDevice.addOnScrollListener(new LoadMoreOnScrollListener(linearLayoutManager) {
+        adapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
             @Override
-            public void onLoadMore(int currentPage) {
-                if (currentPage > page) {
-                    getDeviceList(false);
-                }
+            public void onLoadMoreRequested() {
+                getDeviceList(false);
             }
-        });
+        }, rvDevice);
 
         adapter.setOnCheckListener(new DeviceListAdapter.OnCheckListener() {
             @Override
@@ -284,6 +289,15 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         });
     }
 
+    private void setData(List<OrgDevice.DeviceList> list) {
+        if (page == 1) {
+            adapter.setNewData(list);
+        } else {
+            adapter.addData(list);
+            adapter.loadMoreComplete();
+        }
+    }
+
     private void connect(OrgDevice.DeviceList deviceList) {
         if (LinkKit.getInstance().getDeviceThing() == null) {
             showConnectDialog();
@@ -303,6 +317,20 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
                 handler.sendEmptyMessageDelayed(0, 200);
             }
         }
+    }
+
+    private void initRefreshLayout() {
+        srLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
+            @Override
+            public void onLoadMore(RefreshLayout refreshLayout) {
+
+            }
+
+            @Override
+            public void onRefresh(RefreshLayout refreshLayout) {
+                getDeviceList(true);
+            }
+        });
     }
 
     private void regist(OrgDevice.DeviceList deviceList) {
@@ -379,7 +407,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
 
     private void getDeviceList(boolean isFirst) {
         if (isFirst) {
-            page = 0;
+            page = 1;
         } else {
             page++;
         }
@@ -387,7 +415,7 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
         if (mSelectProduct != null) {
             productKey = mSelectProduct.id;
         }
-        mPresenter.getDeviceList(page + 1, 10, productKey);
+        mPresenter.getDeviceList(page, 10, productKey);
     }
 
     public void adddevice(View view) {
@@ -427,17 +455,34 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
 
     @Override
     public void getDeviceListSuccess(OrgDevice orgDevice) {
-        if (orgDevice == null && page == 0) {
-            llNone.setVisibility(View.VISIBLE);
-            rvDevice.setVisibility(View.GONE);
-        } else {
-            llNone.setVisibility(View.GONE);
-            rvDevice.setVisibility(View.VISIBLE);
-            if (page == 0) {
-                orgDevices.clear();
+        if(orgDevice == null) {
+            finishRefresh();
+            if (page != 1 && adapter != null) {
+                --page;
+                adapter.loadMoreFail();
             }
-            orgDevices.addAll(orgDevice.data);
-            adapter.notifyDataSetChanged();
+        } else {
+            finishRefresh();
+            List<OrgDevice.DeviceList> list = orgDevice.data;
+            if (list != null && !list.isEmpty()) {
+                setData(list);
+                llNone.setVisibility(View.GONE);
+            } else {
+                if (page != 1) {
+                    adapter.loadMoreEnd();
+                } else {
+                    llNone.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+    }
+
+    private void finishRefresh() {
+        if (srLayout.isRefreshing()) {
+            srLayout.finishRefresh(true);
+        }
+        if (srLayout.isLoading()) {
+            srLayout.finishLoadMore(true);
         }
     }
 
@@ -457,9 +502,8 @@ public class OrgMainActivity extends BaseActivity<OrgMainPresenter> implements O
     public void getBranchTypeListResult(List<BranchTypeEntity> list) {
         listSecond.clear();
         listMap.clear();
-        mBranchTypeList = list;
 
-        for (BranchTypeEntity branchTypeEntity : mBranchTypeList) {
+        for (BranchTypeEntity branchTypeEntity : list) {
             String type = branchTypeEntity.type;
             if (listMap.containsKey(type)) {
                 List<BranchTypeEntity> branchTypeEntities = listMap.get(type);

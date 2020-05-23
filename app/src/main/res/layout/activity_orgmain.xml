@@ -88,6 +88,21 @@
             android:textColorHint="#ADADAD" />
     </RelativeLayout>
 
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/rl_device"
+        android:layout_marginTop="1dp"
+        android:id="@+id/srLayout"
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_device"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:itemCount="3"
+            android:visibility="visible"
+            tools:listitem="@layout/item_devicelist" />
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
     <LinearLayout
         android:id="@+id/ll_none"
         android:layout_width="match_parent"
@@ -113,15 +128,4 @@
             android:text="暂无设备!" />
 
     </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_device"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/rl_device"
-        android:layout_marginTop="1dp"
-        tools:itemCount="3"
-        android:visibility="visible"
-        tools:listitem="@layout/item_devicelist" />
-
 </RelativeLayout>

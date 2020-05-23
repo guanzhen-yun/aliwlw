@@ -25,6 +25,8 @@ import com.ali.alisimulate.entity.OrgDevice;
 import com.ali.alisimulate.util.DisplayUtil;
 import com.ali.alisimulate.util.SharedPreferencesUtils;
 import com.ali.alisimulate.util.ZXingUtils;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 
 import java.util.List;
 
@@ -33,21 +35,73 @@ import java.util.List;
  * Date:2020/5/13 18:31
  * Description:DeviceListAdapter
  **/
-public class DeviceListAdapter extends RecyclerView.Adapter {
-    private List<OrgDevice.DeviceList> mData;
-    private Context context;
-    private Handler handler = new Handler();
+public class DeviceListAdapter extends BaseQuickAdapter<OrgDevice.DeviceList, BaseViewHolder> {
 
-    public DeviceListAdapter(Context context, List<OrgDevice.DeviceList> data) {
-        mData = data;
-        this.context = context;
+    public DeviceListAdapter(List<OrgDevice.DeviceList> data) {
+        super(R.layout.item_devicelist, data);
     }
 
-    @NonNull
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_devicelist, parent, false);
-        return new DesignViewHolder(inflate);
+    protected void convert(BaseViewHolder helper, OrgDevice.DeviceList name) {
+        TextView tv_net = helper.getView(R.id.tv_net);
+        TextView tv_unnet = helper.getView(R.id.tv_unnet);
+        if(name.isCheck) {
+            tv_net.setCompoundDrawablesWithIntrinsicBounds(mContext.getDrawable(R.drawable.icon_check), null, null, null);
+            tv_unnet.setCompoundDrawablesWithIntrinsicBounds(mContext.getDrawable(R.drawable.icon_uncheck), null, null, null);
+        } else {
+            tv_net.setCompoundDrawablesWithIntrinsicBounds(mContext.getDrawable(R.drawable.icon_uncheck), null, null, null);
+            tv_unnet.setCompoundDrawablesWithIntrinsicBounds(mContext.getDrawable(R.drawable.icon_check), null, null, null);
+        }
+
+        tv_net.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onCheckListener.onCheck(helper.getAdapterPosition(), true);
+            }
+        });
+
+        tv_unnet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onCheckListener.onCheck(helper.getAdapterPosition(), false);
+            }
+        });
+
+        Bitmap bitmap = ZXingUtils.createQRImage(name.deviceName, DisplayUtil.dip2px(mContext, 24), DisplayUtil.dip2px(mContext, 24));
+        ImageView iv_code = helper.getView(R.id.iv_code);
+
+        iv_code.setImageBitmap(bitmap);
+        helper.setText(R.id.tv_devicename, name.deviceComment);
+        helper.setText(R.id.tv_devicekey, "设备名称: " + name.deviceName);
+        helper.setText(R.id.tv_alias, name.brandName + " " + getModelStr(name.deviceModel) + " " + name.deviceComment);
+        helper.setText(R.id.tv_status, name.bindingStatus);
+        TextView tv_status = helper.getView(R.id.tv_status);
+        if("1".equals(name.deviceModel)) {
+            tv_net.setVisibility(View.INVISIBLE);
+            tv_status.setVisibility(View.INVISIBLE);
+            tv_unnet.setVisibility(View.INVISIBLE);
+        } else {
+            tv_net.setVisibility(View.VISIBLE);
+            tv_unnet.setVisibility(View.VISIBLE);
+            tv_status.setVisibility(View.VISIBLE);
+        }
+
+        helper.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onSelectListener != null) {
+                    onSelectListener.onSelect(helper.getAdapterPosition());
+                }
+            }
+        });
+
+        iv_code.setOnClickListener(view -> {
+            SecondWCodeDialog dialog = new SecondWCodeDialog(mContext);
+            dialog.setDeviceName(name.deviceName);
+            dialog.setDeviceDesc(name.brandName + " " + getModelStr(name.deviceModel) + " " + name.deviceComment);
+            dialog.show();
+        });
     }
 
     public void setOnCheckListener(OnCheckListener onCheckListener) {
@@ -59,82 +113,6 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
     }
 
     private OnCheckListener onCheckListener;
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        DesignViewHolder viewHolder = (DesignViewHolder) holder;
-        OrgDevice.DeviceList name = mData.get(position);
-        if(name.isCheck) {
-            viewHolder.tv_net.setCompoundDrawablesWithIntrinsicBounds(context.getDrawable(R.drawable.icon_check), null, null, null);
-            viewHolder.tv_unnet.setCompoundDrawablesWithIntrinsicBounds(context.getDrawable(R.drawable.icon_uncheck), null, null, null);
-        } else {
-            viewHolder.tv_net.setCompoundDrawablesWithIntrinsicBounds(context.getDrawable(R.drawable.icon_uncheck), null, null, null);
-            viewHolder.tv_unnet.setCompoundDrawablesWithIntrinsicBounds(context.getDrawable(R.drawable.icon_check), null, null, null);
-        }
-
-        viewHolder.tv_net.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onCheckListener.onCheck(viewHolder.getAdapterPosition(), true);
-            }
-        });
-
-        viewHolder.tv_unnet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onCheckListener.onCheck(viewHolder.getAdapterPosition(), false);
-            }
-        });
-
-        Bitmap bitmap = ZXingUtils.createQRImage(name.deviceName, DisplayUtil.dip2px(context, 24), DisplayUtil.dip2px(context, 24));
-        viewHolder.iv_code.setImageBitmap(bitmap);
-        viewHolder.tv_devicename.setText(name.deviceComment);
-        viewHolder.tv_devicekey.setText("设备名称: " + name.deviceName);
-
-        viewHolder.tv_alias.setText(name.brandName + " " + getModelStr(name.deviceModel) + " " + name.deviceComment);
-        viewHolder.tv_status.setText(name.bindingStatus);
-
-        if("1".equals(name.deviceModel)) {
-            viewHolder.tv_net.setVisibility(View.INVISIBLE);
-            viewHolder.tv_status.setVisibility(View.INVISIBLE);
-            viewHolder.tv_unnet.setVisibility(View.INVISIBLE);
-        } else {
-            viewHolder.tv_net.setVisibility(View.VISIBLE);
-            viewHolder.tv_unnet.setVisibility(View.VISIBLE);
-            viewHolder.tv_status.setVisibility(View.VISIBLE);
-        }
-
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (onSelectListener != null) {
-                    onSelectListener.onSelect(position);
-                }
-            }
-        });
-
-        viewHolder.iv_code.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SecondWCodeDialog dialog = new SecondWCodeDialog(context);
-                dialog.setDeviceName(name.deviceName);
-                dialog.setDeviceDesc(name.brandName + " " + getModelStr(name.deviceModel) + " " + name.deviceComment);
-                dialog.show();
-            }
-        });
-    }
-
-    private void setPreUninit(String predevice) {
-        SharedPreferencesUtils.save(MyApp.getApp(),  Constants.KEY_CONNECT_STATUS, "");
-        for (int i = 0; i < mData.size(); i++) {
-            OrgDevice.DeviceList deviceList = mData.get(i);
-            if(deviceList.deviceName.equals(predevice)) {
-                notifyItemChanged(i);
-                break;
-            }
-        }
-    }
 
     public String getModelStr(String model) {
         switch (model) {
@@ -155,27 +133,6 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
 
     public void setOnSelectListener(OnSelectListener onSelectListener) {
         this.onSelectListener = onSelectListener;
-    }
-
-    public class DesignViewHolder extends RecyclerView.ViewHolder {
-        private TextView tv_net;
-        private TextView tv_unnet;
-        private ImageView iv_code;
-        private TextView tv_devicename;
-        private TextView tv_devicekey;
-        private TextView tv_alias;
-        private TextView tv_status;
-
-        public DesignViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tv_net = itemView.findViewById(R.id.tv_net);
-            tv_unnet = itemView.findViewById(R.id.tv_unnet);
-            tv_status = itemView.findViewById(R.id.tv_status);
-            tv_alias = itemView.findViewById(R.id.tv_alias);
-            tv_devicekey = itemView.findViewById(R.id.tv_devicekey);
-            tv_devicename = itemView.findViewById(R.id.tv_devicename);
-            iv_code = itemView.findViewById(R.id.iv_code);
-        }
     }
 
     private OnSelectListener onSelectListener;
