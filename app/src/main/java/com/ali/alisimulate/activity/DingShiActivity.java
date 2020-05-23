@@ -2,6 +2,7 @@ package com.ali.alisimulate.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Switch;
 
@@ -92,11 +93,21 @@ public class DingShiActivity extends BaseActivity {
     @OnClick({R.id.iv_back, R.id.rl_open, R.id.rl_close})
     public void onViewClicked(View v) {
         if(v.getId() == R.id.iv_back) {
-            finish();
+            onBackPressed();
         } else if(v.getId() == R.id.rl_open) {
             jumpControl(true);
         }else if(v.getId() == R.id.rl_close) {
             jumpControl(false);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+            }
+        }, 500);
     }
 }
